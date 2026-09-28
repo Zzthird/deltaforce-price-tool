@@ -1,0 +1,22 @@
+{
+  "鱼月徽权杖首": {
+    "mode": "replace",
+    "sources": ["长弓溪谷", "航天基地"]
+  },
+  "反应堆总控核心": {
+    "mode": "replace",
+    "sources": ["零号大坝", "航天基地"]
+  },
+  "海洋之泪": {
+    "mode": "append",
+    "sources": ["潮汐监狱"]
+  },
+  "15050600003": {
+    "mode": "replace",
+    "sources": ["巴克什"]
+  },
+  "某条确认没有出产地的物品": {
+    "mode": "replace",
+    "sources": []
+  }
+}

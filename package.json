@@ -1,0 +1,32 @@
+{
+  "name": "deltaforce-priceboard",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "三角洲行动 · 摸金物资价值榜 — 本地取数服务 + 可视化网页",
+  "workspaces": [
+    "shared",
+    "get-data",
+    "web"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "concurrently -n api,web -c cyan,magenta \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:api": "npm --workspace @deltaforce/get-data run dev",
+    "dev:web": "npm --workspace @deltaforce/web run dev",
+    "probe": "npm --workspace @deltaforce/get-data run probe --",
+    "fetch": "npm --workspace @deltaforce/get-data run fetch --",
+    "provenance:todo": "npm --workspace @deltaforce/get-data run provenance:todo --",
+    "provenance:import": "npm --workspace @deltaforce/get-data run provenance:import --",
+    "season:rollover": "npm --workspace @deltaforce/get-data run season:rollover --",
+    "test": "npm --workspace @deltaforce/get-data run test && npm --workspace @deltaforce/web run test",
+    "typecheck": "npm --workspace @deltaforce/shared run typecheck && npm --workspace @deltaforce/get-data run typecheck && npm --workspace @deltaforce/web run typecheck",
+    "build": "npm --workspace @deltaforce/web run build"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0",
+    "typescript": "^5.7.2"
+  }
+}

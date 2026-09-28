@@ -1,0 +1,8025 @@
+{
+  ".357 Magnum 9号霰射\"鼠弹\"": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  ".357 Magnum FMJ": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  ".357 Magnum HP": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  ".357 Magnum JHP": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  ".357口径左轮长枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  ".357左轮": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  ".357左轮逐风者后握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  ".357左轮逐风者枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  ".357左轮逐风者枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  ".357左轮逐风者长枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  ".45 ACP AP": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  ".45 ACP FMJ": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  ".45 ACP HS": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  ".45 ACP JHP": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  ".45 ACP RIP": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  ".45 ACP Super​": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  ".50 AE FMJ": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  ".50 AE HP": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  ".50 AE JHP": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "“蓝宝石”龙舌兰": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "“雷明顿”打字机": {
+    "mode": "append",
+    "sources": [
+      "潮汐监狱"
+    ]
+  },
+  "“起舞的女郎”挂饰": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "“天圆地方”": {
+    "mode": "append",
+    "sources": [
+      "巴克什"
+    ]
+  },
+  "“纵横”": {
+    "mode": "append",
+    "sources": [
+      "巴克什"
+    ]
+  },
+  "“钻石”鱼子酱": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "1014固定枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "1014伸缩托（展开）": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "1014伸缩托（折叠）": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "12 Gauge 7毫米鹿弹": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "12 Gauge 8.5毫米鹿弹": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "12 Gauge 箭形弹": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "12 Gauge 龙息弹": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "12 Gauge DART": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "12 Gauge独头 AP-20": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "12 Gauge独头 FTX": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "12 Gauge独头 GT": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "12 Gauge独头 RIP": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "12.7x55mm PD12双头弹": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "12.7x55mm PS12": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "12.7x55mm PS12A": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "12.7x55mm PS12B": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "1号审讯室": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "1p-29俄制3倍瞄准镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "1p33 2/4倍望远镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "3/7可调倍率狙击镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "37280300001": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "37280400001": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "37280500001": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "3号宿舍里屋": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "3H战术背包": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "4.6 x 30mm AP ST": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "4.6 x 30mm CT": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "4.6 x 30mm FMJ ST": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "4.6x30mm AP SX": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "4.6x30mm FMJ SX": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "4.6x30mm Subsonic SX": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "416-C伸缩枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "416轻型枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "416实用后握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "416稳固枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "45-70 Govt FMJ": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "45-70 Govt FTX": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "45-70 Govt RN": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "45发 K437扩容弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "5.45x39mm BS": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "5.45x39mm BT": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "5.45x39mm PRS": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "5.45x39mm PS": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "5.45x39mm T": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "5.56*45 30发聚合物弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "5.56*45 30发铝匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "5.56x45mm FMJ": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "5.56x45mm M855": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "5.56x45mm M855A1": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "5.56x45mm M995": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "5.56x45mm RRLP": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "5.7x28mm L191": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "5.7x28mm R37.F": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "5.7x28mm SS190": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "5.7x28mm SS193": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "5.7x28mm SS197SR": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "5.7x28mm SS198LF": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "5.8新式30发弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "5.8新式45发 扩容弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "5.8新式60发弹鼓": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "5.8x42mm DBP10": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "5.8x42mm DBP87": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "5.8x42mm DVC12": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "5.8x42mm DVP88": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "6.8x51mm FMJ": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "6.8x51mm Hybrid": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "6/12神射手变倍狙击镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "7.62x39mm AP": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "7.62x39mm BP": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "7.62x39mm LP": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "7.62x39mm PS": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "7.62x39mm T45M": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "7.62x51mm BPZ": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "7.62x51mm M62": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "7.62x51mm M80": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "7.62x51mm UN": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "7.62x54R BT": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "7.62x54R LPS": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "7.62x54R T46M": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "725双管霰弹枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "725双管霰弹枪拦截者截短枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "725双管霰弹枪牛仔消音器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "725双管霰弹枪守望者枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "725双管霰弹枪鹰隼长枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "725双管霰弹枪州长短枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "93R": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "93R 18发弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "93R 24发弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "93R实用轻枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "93R实用长枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "93R实用重枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "93R远射超长枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "93R战术枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "95长弓平台套件": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "9V电池": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "9x19mm AP6.3": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "9x19mm PBP": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "9x19mm PSO": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "9x19mm Pst": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "9x19mm RIP": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "9x39mm BP": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "9x39mm SP5": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "9x39mm SP6": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉风情水壶": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-大王": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-方片10": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-方片2": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-方片3": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-方片4": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-方片5": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-方片6": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-方片7": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-方片8": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-方片9": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-方片A": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-方片J": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-方片K": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-方片Q": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-黑桃10": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-黑桃2": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-黑桃3": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-黑桃4": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-黑桃5": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-黑桃6": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-黑桃7": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-黑桃8": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-黑桃9": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-黑桃A": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-黑桃J": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-黑桃K": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-黑桃Q": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-红桃10": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-红桃2": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-红桃3": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-红桃4": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-红桃5": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-红桃6": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-红桃7": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-红桃8": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-红桃9": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-红桃A": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-红桃J": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-红桃K": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-红桃Q": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-梅花10": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-梅花2": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-梅花3": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-梅花4": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-梅花5": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-梅花6": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-梅花7": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-梅花8": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-梅花9": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-梅花A": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-梅花J": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-梅花K": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-梅花Q": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-牌盒": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉牌-小王": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉时尚周刊": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉特色酒杯": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉特色酒壶": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉特色陶瓷": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉特色提灯": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉卫队机密档案": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉新闻周刊": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阿萨拉娱乐月刊": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "安保防弹衣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "安保头盔": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "暗星燃料单元": {
+    "mode": "replace",
+    "sources": [
+      "航天基地"
+    ]
+  },
+  "奥莉薇娅香槟": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "八倍先进热成像狙击镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "巴别塔供电权限卡": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "堡垒水平补偿器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "奔尼帽": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "本地特色首饰": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "鼻通": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "笔记本电脑": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "变电站技术室": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "变电站宿舍": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "便携军用雷达": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "便携燃料瓶": {
+    "mode": "append",
+    "sources": [
+      "AZ3"
+    ]
+  },
+  "便携生存套组": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "便携式生命支持系统": {
+    "mode": "replace",
+    "sources": [
+      "航天基地"
+    ]
+  },
+  "便携式同位素识别仪": {
+    "mode": "replace",
+    "sources": [
+      "AZ3"
+    ]
+  },
+  "便携胸包": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "便携氧气筒": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "便携液压扳手": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "便携音响": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "标准护甲维修包": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "标准头盔维修包": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "兵锋新式握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "波纹软管": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "玻纤柳叶箭矢": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "博物馆废弃展厅": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "博物馆监控室": {
+    "mode": "replace",
+    "sources": [
+      "巴克什"
+    ]
+  },
+  "博物馆展厅套间": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "布基胶带": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "步战车模型": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "部队饰章": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "残弹挂坠": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "残缺的档案": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "仓库区监控房": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "藏秘筒": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "侧置全景红点瞄准镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "侧置微型红点瞄准镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "侧置战斗红点瞄准镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "侧置Osight微型瞄准镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "侧置XRO快速反应瞄准镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "测距仪": {
+    "mode": "replace",
+    "sources": [
+      "巴克什"
+    ]
+  },
+  "插座": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "超高频读卡器": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "超声波切割刀": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "潮汐监狱地图-1": {
+    "mode": "append",
+    "sources": [
+      "潮汐监狱"
+    ]
+  },
+  "潮汐监狱地图-2": {
+    "mode": "append",
+    "sources": [
+      "潮汐监狱"
+    ]
+  },
+  "潮汐监狱地图-3": {
+    "mode": "append",
+    "sources": [
+      "潮汐监狱"
+    ]
+  },
+  "潮汐监狱地图-4": {
+    "mode": "append",
+    "sources": [
+      "潮汐监狱"
+    ]
+  },
+  "车载急救包": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "炽火抑制器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "充电电池组": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "冲锋枪回声消音器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "初级子弹生产零件": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "穿山甲通用战术包": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "纯金打火机": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "纯净水": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "存储卡": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "大豆蛋白粉包": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "大型登山包": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "大型电台": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "袋装咖啡豆": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "单反相机": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "弹力绷带": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "当地小报": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "当地再制咖啡": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "刀片服务器": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "地下金库储藏间": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "地下通道钥匙": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "低级燃料": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "典雅咖啡杯": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "典狱长收藏室": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "电笔": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "电动爆破锤": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "电动车电池": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "电动马达": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "电动牙刷": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "电火机": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "电容": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "电线": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "电源": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "电子氟化液": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "电子干扰器": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "电子脚镣": {
+    "mode": "append",
+    "sources": [
+      "潮汐监狱"
+    ]
+  },
+  "电子温度计": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "电子显微镜": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "调料套组": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "顶层办公间": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "定位接收器": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "东城民宅卧室": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "东楼经理室": {
+    "mode": "replace",
+    "sources": [
+      "零号大坝"
+    ]
+  },
+  "东区吊桥": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "动力电池组": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "渡鸦项坠": {
+    "mode": "append",
+    "sources": [
+      "潮汐监狱"
+    ]
+  },
+  "短吻鳄枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "多用途电池": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "多用途战术增高架": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "俄式准直二倍瞄准镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "俄系冲锋枪精密消音器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "额温枪": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "鳄鱼蛋": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "二级监狱权限卡": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "发条八音盒": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "帆布背囊": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "反射式瞄准镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "反应堆冷却核心": {
+    "mode": "append",
+    "sources": [
+      "AZ3"
+    ]
+  },
+  "反应堆总控核心": {
+    "mode": "replace",
+    "sources": [
+      "AZ3"
+    ]
+  },
+  "芳纶纤维": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "防暴头盔": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "防水胶布": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "仿星器控制室": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "飞秒激光器": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "飞行记录仪": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "飞行员眼镜": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "非洲鼓": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "非洲木雕": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "非洲之心": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "风冷散热器": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "烽火世界杯纪念奖杯": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "蜂网遮光罩": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "浮力补偿设备": {
+    "mode": "replace",
+    "sources": [
+      "潮汐监狱"
+    ]
+  },
+  "浮力室医务间": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "复古摩托头盔": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "复合弓": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "复合弓竞赛箭台": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "复合弓竞赛平衡杆": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "复合弓均衡握把片": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "复合弓轻型弓臂": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "复合弓稳定平衡杆": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "复合弓无框瞄具": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "复合弓增强弓弦": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "复合弓增强握把片": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "复合弓智能倍镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "复合弓重型弓臂": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "复苏呼吸机": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "感知激活针": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "感知强化剂": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "钢制膛口制退器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "杠杆式步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "杠杆式步枪蜂鸟杠杆": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "杠杆式步枪骨架枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "杠杆式步枪猎鹿人枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "杠杆式步枪守望者钢制制退器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "杠杆式步枪守望者狙击镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "杠杆式步枪拓荒者枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "杠杆式步枪稳固狙击枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "杠杆式步枪无托后握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "杠杆式步枪犀牛杠杆": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "杠杆式步枪运动枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "杠杆式步枪战锤战术枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "杠杆式步枪子弹袋": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "高出力粉碎钳": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "高级护甲维修组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "高级咖啡豆": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "高级头盔维修组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "高级子弹生产零件": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "高精数显卡尺": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "高能瓦斯罐": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "高速磁盘阵列": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "高速固态硬盘": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "高性能燃油": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "格赫罗斯的审判": {
+    "mode": "replace",
+    "sources": [
+      "潮汐监狱"
+    ]
+  },
+  "个人信笺": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "工具刀": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "功绩勋章": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "共鸣狙击枪消音器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "共振二代前握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "共振二代一体枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "共振人体工程握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "共振三代握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "古怪的海盗银币": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "古老的海盗望远镜": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "古老的斯芬克斯像": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "骨架狙击枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "骨锯": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "固态硬盘": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "固体燃料": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "光学狙击8倍瞄准镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "广角镜头": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "哈夫克特工信息装备": {
+    "mode": "append",
+    "sources": [
+      "AZ3"
+    ]
+  },
+  "海盗弯刀": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "海神消焰器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "海鲜粥罐头": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "海洋监测厅": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "海洋之泪": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "含氟牙膏": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "航天测试数据": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "航天冷却剂": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "核心导轨枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "荷美尔陶俑": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "盒装挂耳咖啡": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "盒装蜡烛": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "黑室服务器室": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "恒星敏感器": {
+    "mode": "replace",
+    "sources": [
+      "航天基地"
+    ]
+  },
+  "后处理厂机房": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "后妃耳环": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "呼吸机": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "胡椒瓶": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "户外棒球帽": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "户外医疗箱": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "花小蝶": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "滑膛枪展品": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "缓释止痛片": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "幻影垂直握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "幻影后握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "黄金瞪羚": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "黄金鳄鱼头雕像": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "黄金鸟窝": {
+    "mode": "replace",
+    "sources": [
+      "长弓溪谷"
+    ]
+  },
+  "黄金饰章": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "灰熊全威力口径快拔套(黑)": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "灰熊全威力快拔套(绿)": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "灰熊全威力快拔套(沙)": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "火柴": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "火箭燃料": {
+    "mode": "append",
+    "sources": [
+      "航天基地"
+    ]
+  },
+  "火药": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "机械破障锤": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "机械硬盘": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "基础蛋白粉": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "犄角墙饰": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "急救喷雾": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "棘龙爪化石": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "继电器": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "加密路由器": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "加密手记": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "尖嘴钳": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "间谍笔": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "监狱服务器房": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "监狱审讯室": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "监狱体检室": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "检查站库房": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "检眼镜": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "简易防刺服": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "简易挂载包": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "简易手术包": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "简易携行弹挂": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "简易注射器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "建筑图纸1号": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "建筑图纸2号": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "建筑图纸3号": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "建筑图纸4号": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "建筑图纸5号": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "键盘": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "郊狼中间威力口径快拔套(黑)": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "郊狼中间威力快拔套(绿)": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "郊狼中间威力快拔套(沙)": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "胶囊咖啡机套组": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "角磨机": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "金笔": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "金枝桂冠": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "禁区一体枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "经典咖啡机": {
+    "mode": "replace",
+    "sources": [
+      "长弓溪谷"
+    ]
+  },
+  "精密工具组": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "精密护甲维修包": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "精密头盔维修包": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "精英防弹背心": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "精英轻型枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "精英手枪制退器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "净化手枪消音器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "竞赛阻手器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "静脉定位器": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "镜头": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "酒店方片房": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "酒店国王房": {
+    "mode": "replace",
+    "sources": [
+      "长弓溪谷"
+    ]
+  },
+  "酒店黑桃房": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "酒店将军房": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "酒店王子房": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "酒店宣传海报": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "巨像稳定器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "飓风D-1后握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "聚乙烯纤维": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "绝密服务器": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "军情录音": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "军情照片": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "军事通行证": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "军营保管室": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "军用弹道计算机": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "军用地图匣": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "军用电台": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "军用罐头": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "军用控制终端": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "军用露营灯": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "军用炮弹": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "军用热像仪": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "军用网络模块": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "军用望远镜": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "军用卫星通讯仪": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "军用无人机": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "军用信息终端": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "军用移动电源": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "军用炸药": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "咖啡": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "可编程处理器": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "可乐": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "克劳迪乌斯半身像": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "快速侦察胸挂": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "狂蜂护木片": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "喇叭口消焰器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "蓝室玻璃房": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "蓝室核心": {
+    "mode": "replace",
+    "sources": [
+      "航天基地"
+    ]
+  },
+  "蓝室数据中心": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "老式钢盔": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "老浴场餐厅": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "老浴场贵宾室": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "雷达侧门钥匙": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "雷达站会议室": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "雷达站控制室": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "雷达站数据中心": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "雷达站无人机平台": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "雷斯的乐谱本": {
+    "mode": "append",
+    "sources": [
+      "长弓溪谷"
+    ]
+  },
+  "雷斯的留声机": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "棱镜通用二倍光学瞄具": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "离心机": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "黎明三角手电握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "亮闪闪的海盗金币": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "量子存储": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "灵眼3/7测距狙击瞄准镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "灵眼6/12测距狙击瞄准镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "鎏金卡牌": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "陆军万用表": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "露营背包": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "旅店用餐间": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "旅店员工休息室": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "旅行背包": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "螺丝刀": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "马赛克灯台": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "曼德尔超算单元": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "锚点导轨后托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "昴星干脆面": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "门诊室": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "迷你氢电池": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "迷你阻手器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "密令斜角握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "蜜獾小口径快拔套(黑)": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "蜜獾小口径快拔套(绿)": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "蜜獾小口径快拔套(沙)": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "名贵机械表": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "名窑瓷器": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "模块化AR后握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "模拟温度计": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "摩卡咖啡壶": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "摩托马甲": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "木雕烟斗": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "牧场管理房": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "脑机控制端子": {
+    "mode": "replace",
+    "sources": [
+      "航天基地"
+    ]
+  },
+  "脑机头戴设备": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "脑机relink医疗报告": {
+    "mode": "replace",
+    "sources": [
+      "巴克什",
+      "航天基地"
+    ]
+  },
+  "内存条": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "尼龙防弹衣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "尼龙挎包": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "鸟雕": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "鸟笼消焰器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "浓缩铀样本": {
+    "mode": "append",
+    "sources": [
+      "AZ3"
+    ]
+  },
+  "喷漆": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "平衡握把底座": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "苹果": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "瓶装抗生素": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "破晓垂直手电握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "扑克牌-10": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "扑克牌-2": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "扑克牌-3": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "扑克牌-4": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "扑克牌-5": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "扑克牌-6": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "扑克牌-7": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "扑克牌-8": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "扑克牌-9": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "扑克牌-大王": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "扑克牌-小王": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "扑克牌-A": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "扑克牌-J": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "扑克牌-K": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "扑克牌-Q": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "汽轮机控制室": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "签章联运单": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "枪械零件": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "强化碳纤维板": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "强力胶": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "强力吸尘器": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "强袭战术背心": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "强效注射器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "侵掠核心枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "侵袭后握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "轻型防弹衣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "轻型户外背包": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "轻型户外炉具": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "轻型战术胸挂": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "轻语战术消音器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "清新橘味能量凝胶": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "情报文件": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "去甲肾上腺素": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "全景红点瞄准镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "全息二型瞄准镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "全息瞄准镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "燃料电池": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "燃气罐": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "燃气喷灯": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "人工膝关节": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "人偶影印室": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "人像照片": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "赛伊德的怀表": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "赛伊德的手弩": {
+    "mode": "replace",
+    "sources": [
+      "零号大坝"
+    ]
+  },
+  "三级监狱权限卡": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "三角蚌小珍珠": {
+    "mode": "append",
+    "sources": [
+      "潮汐监狱"
+    ]
+  },
+  "三角洲特种部队：刺刀特遣队": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "三角洲特种部队：黑鹰坠落-战队之刃": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "扫拖一体机器人": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "沙暴垂直补偿器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "沙漠之鹰": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "沙漠之鹰镂空竞赛套件": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "沙鹰13发弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "沙鹰竞技后握": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "沙鹰竞技枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "沙鹰膛线长枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "闪电导轨枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "设备领用室": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "射手战术背心": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "射手AK后握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "射手D-2后握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "摄像头": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "摄影机": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "伸缩脚架握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "身份牌": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "生化培养箱": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "生津柠檬茶": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "生物数据机房": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "生物样本室": {
+    "mode": "replace",
+    "sources": [
+      "潮汐监狱"
+    ]
+  },
+  "诗集": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "石工锤": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "实验楼办公室": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "实验楼资料室": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "实验数据": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "实用垂直握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "实用两脚架": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "实用枪灯": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "实用轻型枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "实用手枪消焰器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "实用稳定枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "实用霰弹收束器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "实用消焰器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "实用消音器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "实用战术枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "实用AK后握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "食堂洗碗间": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "侍卫稳固后握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "视点3倍瞄准镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "试制聚变供能单元": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "收音机": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "手机": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "手机电池": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "手锯": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "手术剪刀": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "手术镊子": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "狩猎火柴": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "售票办公室": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "枢机稳固枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "枢机先进战斗枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "输液工具": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "输液加温器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "鼠标": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "数码相机": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "爽身粉": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "水泥厂办公室": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "水泥厂宿舍201": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "水平仪": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "水位控制室": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "私密笔记簿": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "死寂消音器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "酸奶": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "太阳碟": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "太阳能板": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "钛金竞赛制退器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "泰坦补偿器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "泰坦消音器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "碳纤维穿甲箭矢": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "碳纤维刺骨箭矢": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "汤姆逊冲锋枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "汤姆逊弧光轻质枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "汤姆逊加长弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "汤姆逊精工长枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "汤姆逊聚合物后握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "汤姆逊木制防滑纹后握": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "汤姆逊人体工学后握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "汤姆逊拓展型护木": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "汤姆逊先进枪身系统": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "汤姆逊一体冲锋枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "糖三角": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "特种钢": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "腾龙突击步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "体内除颤器": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "体能激活针": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "体能强化剂": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "天蝎座后握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "跳舞的女郎挂饰": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "铁脊车站售票室": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "铁路通道钥匙": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "听诊器": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "通用托腮板": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "通用战术背心": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "通用战术胸挂": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "突击手防弹背心": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "突击者战术背心": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "突袭战术背包": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "图腾箭矢": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "托卡马克数据中心": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "外科手套": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "万金泪冠": {
+    "mode": "append",
+    "sources": [
+      "巴克什"
+    ]
+  },
+  "万足金条": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "腕带": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "网线": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "微型反应炉": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "微型红点瞄准镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "微型瞄具增高架": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "微型燃料棒": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "维生素泡腾片": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "卫队金扳指": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "卫星电话": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "稳定AK后握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "稳固握把底座": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "无菌敷料包": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "无糖缓释能量棒": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "无线便携电钻": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "无线耳机": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "武士防弹背心": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "物流信息单": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "西城民宅卧室": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "西楼调控房": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "西楼监视室": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "西楼医务室": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "西区大门": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "下挂手枪灯": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "先进白热成像战斗瞄准镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "先进多口径消音器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "先进热融合全息瞄准镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "显卡": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "霰弹快速装填器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "霰弹枪回声消音器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "霰弹枪精密消音器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "霰弹枪巨炮制退器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "霰弹枪囚笼补偿器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "霰弹枪涡流收束器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "相位战斗前握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "香喷喷炒面": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "小糖人姜饼人": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "小药瓶": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "小镇餐厅": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "哮喘吸入器": {
+    "mode": "replace",
+    "sources": [
+      "航天基地"
+    ]
+  },
+  "斜角阻手器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "斜挎包": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "心灵感应.魔方": {
+    "mode": "replace",
+    "sources": [
+      "巴克什"
+    ]
+  },
+  "心脏支架": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "新式45发扩容弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "新式尖兵轻型握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "新式蛟龙战术长枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "新式侍剑重型握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "新式腾龙高速导气箍": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "新式腾龙稳固导气箍": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "新式雪豹短枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "薪火螺旋消焰器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "信号棒": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "袖珍录像带": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "锈迹斑斑的海盗铜币": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "漩涡消焰器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "血压仪": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "血氧仪": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "压力计": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "压水堆服务器室": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "盐溶液": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "羊角锤": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "样本试管": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "耀斑战术手电": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "野蜂冲锋枪快拔套(黑)": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "野蜂冲锋枪快拔套(绿)": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "野蜂冲锋枪快拔套(沙)": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "野牛 64发弹筒": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "野牛冲锋枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "野牛打击者标准枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "野牛刀锋超长枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "野牛伞兵短枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "野牛碳纤维护木": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "野外能量棒": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "野战急救包": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "野战徒步背包": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "夜莺一体消音组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "液晶显示屏": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "液压破门器": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "一包水泥": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "一盒钉子": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "一级监狱权限卡": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "一桶油漆": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "医疗会议室": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "医疗机械人": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "医疗无人机": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "医用酒精": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "医用吻合器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "仪典匕首": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "移动电缆": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "已封存音源": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "已损坏的热像仪": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "音波测距卷尺": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "音频播放器": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "印刷电路板": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "印象派名画": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "英式袋泡茶": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "营养粥罐头": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "影袭导轨枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "影袭托芯枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "勇士45发扩容弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "勇士冲锋枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "勇士海狸枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "勇士战术枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "优秀雇员奖杯": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "油漆刷": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "游侠护木片": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "余烬消音器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "鱼月徽权杖首": {
+    "mode": "replace",
+    "sources": [
+      "长弓溪谷"
+    ]
+  },
+  "雨林猎手背包": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "员工通道": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "原木木板": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "云存储阵列": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "运动背包": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "运输机会议室": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "泽宁特拉机柄帽": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "战地医疗箱": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "战斗红点瞄准镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "战术垂直握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "战术快拆背包": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "战术快拆手术包": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "战术三角握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "折叠握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "侦察1.5/5可调瞄准镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "阵列服务器": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "证物光碟": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "直角尺": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "植物样本": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "制式防弹背心": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "中控室三楼": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "中心贵宾室": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "重型登山包": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "重型突击背心": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "珠宝头冠": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "蛛网钛制制退器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "主战坦克模型": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "注射器": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "专业声卡": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "转换插座": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "装甲车电池": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "资料：军事情报": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "资料：商业文件": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "资料：设计图纸": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "资料残页": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "紫外线灯": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "自动体外除颤器": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "自旋型手锯": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "自制护甲维修包": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "自制头盔维修包": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "总裁会议室": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "总裁室会客厅": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "组合式护木片": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "组装车间二楼实验室": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "左轮狙击后握": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "左轮实用短管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "左轮实用长管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "座钟": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "A作战计划书": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "ACOG精准六倍镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AK-12突击步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AK12脚架": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AK12精英脚架长枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AK12聚合物30发弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AK12前线长枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AK19枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AK545口径30发弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AK762弹匣30发（木色）": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AK骨架枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AK聚合物枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AK镂空握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AK枪托缓冲垫": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AK枪托尾盖": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AK实用补偿器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AK勇火消音器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AK折叠枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AK重塔握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AKM30发聚合物弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AKM超然长枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AKM大弹鼓70发": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AKM海狸枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AKM海狸长枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AKM实用标准枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AKM实用长枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AKM突击步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AKM性能枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AKM延长匣40发": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AKS-74U聚合物弹鼓75发": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AKS-74U突击步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AKS-74U延长弹匣45发": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AKS74U 30发弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AKS74U导轨上护木": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AKS74U导轨下护木": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "Alpha脑机实验数据-渡鸦": {
+    "mode": "append",
+    "sources": [
+      "潮汐监狱"
+    ]
+  },
+  "ALS背负系统": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AMR-HT镂空枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AP5000反射式瞄准镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "APX组合瞄具": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AR 60发扩容弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AR MOE后握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AR57激流超长枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AR57突击步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AR标准枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AR加百列长枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AR聚合物30发 弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AR轻薄握把片": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AR碳纤维枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AR特攻短枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AR特勤一体消音组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AR战壕标准枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AR重塔握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AR重型握把片": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AS Val刺客高级枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AS Val枪托尾盖": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AS Val突击步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "ASh-12 歼灭高精长枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "ASh-12 CQB短枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "ASh-12骨架枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "ASh-12狙击枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "ASh-12扩容30发弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "ASh-12战斗步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "ASH-12战斧重型枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "ASOS电脑主板": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AUG45发扩容弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "aug60发": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AUG晨零一体消音管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AUG尖兵标准枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AUG脚架": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AUG精英脚架长枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AUG枪托垫": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AUG实用集成三倍镜枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AUG突击步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AWM狙击步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AWM两脚架": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AWM穹顶套件": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "AWM天际线长枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "CAR-15突击步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "CAR15绑手电": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "CAT止血带": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "Cobra准直式瞄准镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "CPU": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "CR棱镜阻手器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "CT增强型后托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "D01轻型胸挂": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "D2战术登山包": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "D3战术登山包": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "D6 战术头盔": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "DAS 防弹头盔": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "DASH战术背包": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "DBAL-X2紫色激光镭指": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "DD蟒蛇护木片": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "DEK野战手术包": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "DG运动背包": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "DICH 训练头盔": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "DICH-1战术头盔": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "DRC先进侦察胸挂": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "DRO 战术头盔": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "DSA战术胸挂": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "DT-AVS防弹衣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "DTK制退器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "DVD光驱": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "DVE止疼片": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "E型滤毒罐": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "EC通用前阻手": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "ECMO": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "FFC双流制退器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "FS-12短弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "FS-12加长弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "FS-12剑冢长枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "FS-12扩容弹鼓": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "FS-12人体工学护木": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "FS-12霰弹枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "FS复合防弹衣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "G.T.I卫星通信天线": {
+    "mode": "append",
+    "sources": [
+      "航天基地"
+    ]
+  },
+  "G01战术弹挂": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "G17": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "G17轻量化枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "G17战术重枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "G18": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "G18冲击长枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "G3 30发弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "G3 50发弹鼓": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "G3后握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "G3加强长枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "G3飓风短枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "G3镂空握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "G3平台神射枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "G3枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "G3伸缩枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "G3守卫标准枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "G3稳定枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "G3战斗步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "G系手枪25发弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "G系手枪33发弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "GA野战背包": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "GIR野战胸挂": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "GN 久战重型夜视头盔": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "GN 重型头盔": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "GN 重型夜视头盔": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "GS5 手柄": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "GT1 战术头盔": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "GT1户外登山包": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "GT5野战背包": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "H01 战术头盔": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "H07 战术头盔": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "H09 防暴头盔": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "H70 精英头盔": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "HA-2防弹装甲": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "HAMR组合瞄准镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "HD3战术胸挂": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "HIFI声卡": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "HK3便携胸挂": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "HLS-2重型背包": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "HMP特勤防弹衣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "HT战术背心": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "Hvk-2防弹衣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "HVK风怒供弹套件": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "HVK箭匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "Hvk快拆防弹衣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "HVK双发枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "HVK鼬鼠冲锋枪套件": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "JAD下挂激光": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "K1精英斜角握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "K416精英重枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "K416特勤短枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "K416突击步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "K416A8枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "K416A8长枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "K437 60发弹鼓": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "K437断刃短枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "K437特攻一体消音枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "K437突击步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "K437长矛手长枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "KC17短刃枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "KC17突击步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "KC17先进战斗枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "KC17影舞者消音": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "KC17长剑枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "KC猎犬护木片": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "LA-3C绿色激光镭指": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "LED灯管": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "LPVO多倍率战斗瞄具": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M1014导轨护木": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M1014断点枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M1014霰弹枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M14 20发弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M14 30发弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M14 50发弹鼓": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M14导轨一体枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M14洞察超长枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M14聚合物一体枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M14漫游标准枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M14轻语短枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M14射手步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M14先进枪身系统": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M14EBR枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M157火控光学系统": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M16A4突击步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M16A4稳定枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M1911": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M1911 11发扩容弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M1911夜鹰战术扳机": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M1911夜鹰战术后握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M1911夜鹰战术击锤": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M1911夜鹰战术枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M1肌肉强化针": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M249导轨护木": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M249海湾短枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M249脚架护木": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M249精英骨架枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M249军规导轨护木": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M249轻机枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M249尾盖": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M249犀牛长枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M249蝎尾握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M250 75发弹链": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M250侍卫短枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M250钛金长枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M250通用机枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M2肌肉注射剂": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M3狙击镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M4弹鼓60发": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M4缓冲托芯": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M4扩容45发弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M4A1突击步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M7 30发6.8弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M7 45发6.8弹鼓": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M700 10发弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M700黑色一体枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M700狙击步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M700军规护木": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M700猎食军规枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M700平流层长枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M700托腮板": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M700稳定一体枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M700先进枪身系统": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M700一体消音管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M7堤风超长枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M7灵蜥短枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M7实用消音器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M7实用长枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M7稳定后握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M7战斗步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M82狙击步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M82扩容弹鼓": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M870导轨护木": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M870扩容枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M870霰弹枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M9黑色均衡后握": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M9木色稳定后握": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "M9肉色操控后握": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MAP侦察背包": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "Mask-1铁壁头盔": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MC201 头盔": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MC防弹头盔": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MCX LT猎手枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MCX LT突击步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MCX LT焰魂枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MDR.308对峙者长枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MDR.308缓冲枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MDR.308扩容弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MDR.308渗透者短枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MDR.308托腮板": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MDR战斗步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MEO微型瞄具增高架": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MHS 战术头盔": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "Mini-14 20发弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "Mini-14 30发弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "Mini-14聚合物枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "Mini-14聚合物一体枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "Mini-14射手步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "Mini-14先进枪身系统": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "Mini-14增强枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MK-2战术背心": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MK4 48发弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MK4730发弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MK47鏖战枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MK47突击步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MK47余烬枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MK47主宰者后托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MK4冲锋枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MK4击剑手枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MK4深空镀铬枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MP5 50发弹鼓": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MP5斥候长枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MP5冲锋枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MP5伸缩枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MP5尾盖": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MP5性能枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MP5隐蔽短枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MP5战术枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MP5K折叠枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MP5SD特勤一体消音枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MP7 30发弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MP7 40发弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MP7 60发弹鼓": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MP7冲锋枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MP7蜂刺长枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MP7狼牙轻枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MP7平衡后握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MP7枪托尾盖": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MP7稳固后握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MP7月影镀铬枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MP7增强枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "MRGS镂空枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "OE2战斗兴奋剂": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "okp-7反射瞄准镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "OLIGHT Baldr Pro R多功能手电": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "OLIGHT Odin S战术手电": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "OLIGHT WARRIOR 3S联名手电": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "OLIGHT WARRIOR 3S战术手电": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "OPS消音器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "Osight微型瞄准镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "P90冲锋枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "P90猎豹重枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "P90枪托垫": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "P90长弓精钢枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "P90重攻长枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "PBS俄式消音器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "PEQ-2红色激光镭指": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "PERST-7蓝色激光镭指": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "PKM地平线重枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "PKM壕战短枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "PKM扩容弹箱": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "PKM两脚架": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "PKM枪托尾盖": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "PKM通用机枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "PKM泽宁特枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "PSG 20发扩容弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "PSG-1后握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "PSG-1精确扳机": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "PSG-1射手步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "PSO狙击8倍瞄准镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "PSO战斗2.5倍瞄准镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "PT1特种枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "PT3死士枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "PTR-32突击步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "QBZ95-1实用短枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "QBZ95-1突击步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "QBZ95-1长弓枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "QBZ95战术枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "QBZ托腮板": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "QCQ171冲锋枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "QCQ171新式高射速化枪机": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "QCQ171新式红缨战术枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "QCQ171新式狡兔短枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "QCQ171新式渗透一体消音枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "QCQ171新式稳固枪机": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "QJB201脚架": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "QJB201轻机枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "QJB201新式高速导气箍": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "QJB201新式獠牙短枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "QJB201新式稳固导气箍": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "QJB201新式重锤战术枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "QR高性能后托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "QSZ92G": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "QSZ92G响尾蛇战术枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "R93 15发弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "R93狙击步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "R93裂变长枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "R93枪管隔热网": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "R93轻盈短枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "Relink植入手术室": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "RK-0前握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "RK3后握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "RM277断流消音器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "RM277鲸鲨枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "RM277突击步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "RM277托垫": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "RM277托腮板": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "RM277重型一体枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "S12K防御者短枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "S12K扩容10发弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "S12K扩容24发弹鼓": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "S12K破阵长枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "S12K实用短枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "S12K实用长枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "S12K霰弹枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "S12K撞火枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SCAR-H枪托尾盖": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SCARH 30发弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SCARH 50发弹鼓": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SCARH海狸长枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SCARH零式短枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SCARH实用标准枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SCARH战斗步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SG552 30发弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SG552 45发扩容弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SG552猎犬轻型枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SG552骑士重枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SG552枪托尾盖": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SG552突击步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SKS截断标准枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SKS射手步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SKS瞬息超长枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SKS先进护木": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SMG-45冲锋枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SMG45 40发扩容弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SMG45裂变长枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SMG45枪托尾盖": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "smg45实用重枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SMG45竹鼠短枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SMG长弩超长枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SR-25射手步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SR-25主宰者护木": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SR-3M紧凑突击步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SR-3M枪托尾盖": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SR-3M隐击消音器": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SR-3M铸钢战术枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SR25 20发弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SR25 30发扩容弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SR25精英护木": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SR25瞬息短枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SR25新星超长枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SR25追风长枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SR9射手步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SUR隔热外罩": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SV-98狙击步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SV98两脚架": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SV98灵巧短枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SV98龙萤轻枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SV98升华超长枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SVCH爆发枪机": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SVCH短护木": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SVCH短枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SVCH精确射手步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SVCH扩容弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SVCH凌风并联弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SVCH镂空后握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SVCH稳固后握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SVCH一体式护木": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SVCH长枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SVCH专用后托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SVD 20发弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SVD导轨护木": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SVD黑刺超长枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SVD狙击步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "svd聚合物护木": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "svd聚合物一体枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "svd实用长枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "SVD握把转接": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "TG-H防弹衣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "TG战术防弹衣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "U盘": {
+    "mode": "append",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "UHX全息瞄准镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "UR特种战术枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "UZI 35发弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "UZI 45发弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "UZI冲锋枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "UZI导轨护木": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "UZI竞赛性能长枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "UZI军需长枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "UZI枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "UZI枪托尾盖": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "UZI突击标准枪管": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "UZI性能护木": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "Vector堡垒重枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "Vector冲锋枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "Vector导轨枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "Vector共振一体式枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "Vector扩容30发弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "Vector扩容40发弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "Vector扩容CMAG70发": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "Vector枪托尾盖": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "Vector长剑超长枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "VFG骑士前握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "VMX无框瞄具": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "VSS 45发弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "VSS30发弹匣": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "VSS海啸长枪管组合": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "VSS精英一体枪托": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "VSS射手步枪": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "X25U斜侧战斗握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "XCOG突击3.5倍瞄准镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "XK防滑纹后握": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "XK竞技后握": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "XK橡胶套后握": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "XRO快速反应瞄准镜": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  },
+  "ZFSG战术握把": {
+    "mode": "replace",
+    "sources": [
+      "全地图"
+    ]
+  }
+}

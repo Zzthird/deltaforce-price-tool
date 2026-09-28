@@ -1,0 +1,27 @@
+{
+  "name": "@deltaforce/web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "网页：读取 get-data 的 API 并可视化",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run --passWithNoTests",
+    "typecheck": "vue-tsc --noEmit"
+  },
+  "dependencies": {
+    "@deltaforce/shared": "*",
+    "element-plus": "^2.9.1",
+    "pinia": "^2.3.0",
+    "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.1",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.7",
+    "vitest": "^3.0.0",
+    "vue-tsc": "^2.2.0"
+  }
+}

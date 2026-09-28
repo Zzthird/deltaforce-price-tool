@@ -1,0 +1,1526 @@
+{
+  ".300BLK BCP SUB": {
+    "unitsPerSlot": 60,
+    "seasonal": "past"
+  },
+  ".300BLK V SUB": {
+    "unitsPerSlot": 60,
+    "seasonal": "past"
+  },
+  ".338 Lap Mag AP": {
+    "availability": "unobtainable",
+    "listable": false,
+    "unitsPerSlot": 20
+  },
+  ".357 Magnum 9号霰射\"鼠弹\"": {
+    "unitsPerSlot": 60
+  },
+  ".357 Magnum FMJ": {
+    "unitsPerSlot": 60
+  },
+  ".357 Magnum HP": {
+    "unitsPerSlot": 60
+  },
+  ".357 Magnum JHP": {
+    "unitsPerSlot": 60
+  },
+  ".45 ACP AP": {
+    "unitsPerSlot": 60
+  },
+  ".45 ACP CT": {
+    "unitsPerSlot": 60,
+    "seasonal": "past"
+  },
+  ".45 ACP FMJ": {
+    "unitsPerSlot": 60
+  },
+  ".45 ACP HS": {
+    "unitsPerSlot": 60
+  },
+  ".45 ACP JHP": {
+    "unitsPerSlot": 60
+  },
+  ".45 ACP RIP": {
+    "unitsPerSlot": 60
+  },
+  ".45 ACP Super​": {
+    "unitsPerSlot": 60,
+    "seasonal": "current"
+  },
+  ".50 AE AP": {
+    "unitsPerSlot": 60,
+    "seasonal": "past"
+  },
+  ".50 AE FMJ": {
+    "unitsPerSlot": 60
+  },
+  ".50 AE HP": {
+    "unitsPerSlot": 60
+  },
+  ".50 AE JHP": {
+    "unitsPerSlot": 60
+  },
+  ".50 BMG M10 RAZOR": {
+    "availability": "unobtainable",
+    "listable": false,
+    "unitsPerSlot": 10
+  },
+  ".50 BMG M3 K-0": {
+    "availability": "unobtainable",
+    "listable": false,
+    "unitsPerSlot": 10
+  },
+  ".50 BMG M903 SLAP": {
+    "availability": "unobtainable",
+    "listable": false,
+    "unitsPerSlot": 10
+  },
+  "“雷明顿”打字机": {
+    "listable": false
+  },
+  "“六”级弹": {
+    "availability": "expired",
+    "listable": false
+  },
+  "《逆战·未来》OST光碟": {
+    "availability": "expired",
+    "listable": false
+  },
+  "12 Gauge 7毫米鹿弹": {
+    "unitsPerSlot": 20
+  },
+  "12 Gauge 8.5毫米鹿弹": {
+    "unitsPerSlot": 20
+  },
+  "12 Gauge 独头 APX": {
+    "listable": false,
+    "unitsPerSlot": 20,
+    "seasonal": "past"
+  },
+  "12 Gauge 箭形弹": {
+    "unitsPerSlot": 20
+  },
+  "12 Gauge 龙息弹": {
+    "unitsPerSlot": 20
+  },
+  "12 Gauge DART": {
+    "unitsPerSlot": 20,
+    "seasonal": "current"
+  },
+  "12 Gauge独头 AP-20": {
+    "unitsPerSlot": 20
+  },
+  "12 Gauge独头 FTX": {
+    "unitsPerSlot": 20
+  },
+  "12 Gauge独头 GT": {
+    "unitsPerSlot": 20
+  },
+  "12 Gauge独头 RIP": {
+    "unitsPerSlot": 20
+  },
+  "12.7x55mm PD12双头弹": {
+    "unitsPerSlot": 60
+  },
+  "12.7x55mm PS12": {
+    "unitsPerSlot": 60
+  },
+  "12.7x55mm PS12A": {
+    "unitsPerSlot": 60
+  },
+  "12.7x55mm PS12B": {
+    "unitsPerSlot": 60
+  },
+  "15200000228": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "15200000229": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "15200000240": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "15200000241": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "15200000252": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "15200000253": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "15200000264": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "15200000265": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "15200000276": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "15200000277": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "37280300001": {
+    "unitsPerSlot": 60
+  },
+  "37280400001": {
+    "unitsPerSlot": 60
+  },
+  "37280500001": {
+    "unitsPerSlot": 60
+  },
+  "4.6 x 30mm AP ST": {
+    "unitsPerSlot": 60,
+    "seasonal": "current"
+  },
+  "4.6 x 30mm CT": {
+    "unitsPerSlot": 60,
+    "seasonal": "current"
+  },
+  "4.6 x 30mm FMJ ST": {
+    "unitsPerSlot": 60,
+    "seasonal": "current"
+  },
+  "4.6x30mm AP SX": {
+    "unitsPerSlot": 60
+  },
+  "4.6x30mm FMJ SX": {
+    "unitsPerSlot": 60
+  },
+  "4.6x30mm Subsonic SX": {
+    "unitsPerSlot": 60
+  },
+  "45-70 Govt FMJ": {
+    "unitsPerSlot": 20
+  },
+  "45-70 Govt FTX": {
+    "unitsPerSlot": 20
+  },
+  "45-70 Govt RN": {
+    "unitsPerSlot": 20
+  },
+  "5.45*39mm BS ST+": {
+    "unitsPerSlot": 60,
+    "seasonal": "past"
+  },
+  "5.45*39mm BT ST": {
+    "unitsPerSlot": 60,
+    "seasonal": "past"
+  },
+  "5.45x39mm BS": {
+    "unitsPerSlot": 60
+  },
+  "5.45x39mm BT": {
+    "unitsPerSlot": 60
+  },
+  "5.45x39mm BT +P": {
+    "listable": false,
+    "unitsPerSlot": 60,
+    "seasonal": "past"
+  },
+  "5.45x39mm PRS": {
+    "unitsPerSlot": 60
+  },
+  "5.45x39mm PS": {
+    "unitsPerSlot": 60
+  },
+  "5.45x39mm T": {
+    "unitsPerSlot": 60
+  },
+  "5.56*45mm M855 APC": {
+    "unitsPerSlot": 60,
+    "seasonal": "past"
+  },
+  "5.56*45mm M855A1 APC+": {
+    "unitsPerSlot": 60,
+    "seasonal": "past"
+  },
+  "5.56x45mm FMJ": {
+    "unitsPerSlot": 60
+  },
+  "5.56x45mm M855": {
+    "unitsPerSlot": 60
+  },
+  "5.56x45mm M855A1": {
+    "unitsPerSlot": 60
+  },
+  "5.56x45mm M995": {
+    "unitsPerSlot": 60
+  },
+  "5.56x45mm RRLP": {
+    "unitsPerSlot": 60
+  },
+  "5.7 x 28mm HT+": {
+    "listable": false,
+    "unitsPerSlot": 60,
+    "seasonal": "past"
+  },
+  "5.7x28mm L191": {
+    "unitsPerSlot": 60
+  },
+  "5.7x28mm R37.F": {
+    "unitsPerSlot": 60
+  },
+  "5.7x28mm SS190": {
+    "unitsPerSlot": 60
+  },
+  "5.7x28mm SS193": {
+    "unitsPerSlot": 60
+  },
+  "5.7x28mm SS197SR": {
+    "unitsPerSlot": 60
+  },
+  "5.7x28mm SS198LF": {
+    "unitsPerSlot": 60
+  },
+  "5.8*42mm DBP10+P": {
+    "unitsPerSlot": 60,
+    "seasonal": "past"
+  },
+  "5.8*42mm DVC12+P": {
+    "unitsPerSlot": 60
+  },
+  "5.8x42mm DBP10": {
+    "unitsPerSlot": 60
+  },
+  "5.8x42mm DBP87": {
+    "unitsPerSlot": 60
+  },
+  "5.8x42mm DVC12": {
+    "unitsPerSlot": 60
+  },
+  "5.8x42mm DVP88": {
+    "unitsPerSlot": 60
+  },
+  "6.8*51mm PLY-I": {
+    "unitsPerSlot": 90,
+    "seasonal": "past"
+  },
+  "6.8*51mm PLY-II": {
+    "unitsPerSlot": 90,
+    "seasonal": "past"
+  },
+  "6.8*51mm PLY-III": {
+    "unitsPerSlot": 90,
+    "seasonal": "past"
+  },
+  "6.8x51mm AP": {
+    "availability": "unobtainable",
+    "listable": false,
+    "unitsPerSlot": 60
+  },
+  "6.8x51mm FMJ": {
+    "unitsPerSlot": 60
+  },
+  "6.8x51mm Hybrid": {
+    "unitsPerSlot": 60
+  },
+  "7.62 x 51mm LS": {
+    "availability": "expired",
+    "listable": false,
+    "unitsPerSlot": 60,
+    "seasonal": "past"
+  },
+  "7.62*39mm AP SUB": {
+    "unitsPerSlot": 60,
+    "seasonal": "past"
+  },
+  "7.62*39mm BP SUB": {
+    "unitsPerSlot": 60,
+    "seasonal": "past"
+  },
+  "7.62x39mm AP": {
+    "unitsPerSlot": 60
+  },
+  "7.62x39mm BP": {
+    "unitsPerSlot": 60
+  },
+  "7.62x39mm LP": {
+    "unitsPerSlot": 60
+  },
+  "7.62x39mm PS": {
+    "unitsPerSlot": 60
+  },
+  "7.62x39mm T45M": {
+    "unitsPerSlot": 60
+  },
+  "7.62x51mm BPZ": {
+    "unitsPerSlot": 60
+  },
+  "7.62x51mm M61": {
+    "availability": "unobtainable",
+    "listable": false,
+    "unitsPerSlot": 60
+  },
+  "7.62x51mm M62": {
+    "unitsPerSlot": 60
+  },
+  "7.62x51mm M80": {
+    "unitsPerSlot": 60
+  },
+  "7.62x51mm UN": {
+    "unitsPerSlot": 60
+  },
+  "7.62x54R BT": {
+    "unitsPerSlot": 60
+  },
+  "7.62x54R LPS": {
+    "unitsPerSlot": 60
+  },
+  "7.62x54R SNB": {
+    "availability": "unobtainable",
+    "listable": false,
+    "unitsPerSlot": 60
+  },
+  "7.62x54R T46M": {
+    "unitsPerSlot": 60
+  },
+  "9*19mm CT": {
+    "unitsPerSlot": 60,
+    "seasonal": "past"
+  },
+  "9*39mm PAB-7": {
+    "unitsPerSlot": 60,
+    "seasonal": "past"
+  },
+  "9*39mm PAB-9": {
+    "unitsPerSlot": 60,
+    "seasonal": "past"
+  },
+  "9x19mm AP6.3": {
+    "unitsPerSlot": 60
+  },
+  "9x19mm PBP": {
+    "unitsPerSlot": 60
+  },
+  "9x19mm PSO": {
+    "unitsPerSlot": 60
+  },
+  "9x19mm Pst": {
+    "unitsPerSlot": 60
+  },
+  "9x19mm RIP": {
+    "unitsPerSlot": 60
+  },
+  "9x39mm BP": {
+    "unitsPerSlot": 60
+  },
+  "9x39mm SP5": {
+    "unitsPerSlot": 60
+  },
+  "9x39mm SP6": {
+    "unitsPerSlot": 60
+  },
+  "阿娜伊斯·德穆兰的身份牌": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "阿萨拉赤忱勋章": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "阿萨拉极品平安果": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "阿萨拉牌-大王": {
+    "listable": false
+  },
+  "阿萨拉牌-方片10": {
+    "listable": false
+  },
+  "阿萨拉牌-方片2": {
+    "listable": false
+  },
+  "阿萨拉牌-方片3": {
+    "listable": false
+  },
+  "阿萨拉牌-方片4": {
+    "listable": false
+  },
+  "阿萨拉牌-方片5": {
+    "listable": false
+  },
+  "阿萨拉牌-方片6": {
+    "listable": false
+  },
+  "阿萨拉牌-方片7": {
+    "listable": false
+  },
+  "阿萨拉牌-方片8": {
+    "listable": false
+  },
+  "阿萨拉牌-方片9": {
+    "listable": false
+  },
+  "阿萨拉牌-方片A": {
+    "listable": false
+  },
+  "阿萨拉牌-方片J": {
+    "listable": false
+  },
+  "阿萨拉牌-方片K": {
+    "listable": false
+  },
+  "阿萨拉牌-方片Q": {
+    "listable": false
+  },
+  "阿萨拉牌-黑桃10": {
+    "listable": false
+  },
+  "阿萨拉牌-黑桃2": {
+    "listable": false
+  },
+  "阿萨拉牌-黑桃3": {
+    "listable": false
+  },
+  "阿萨拉牌-黑桃4": {
+    "listable": false
+  },
+  "阿萨拉牌-黑桃5": {
+    "listable": false
+  },
+  "阿萨拉牌-黑桃6": {
+    "listable": false
+  },
+  "阿萨拉牌-黑桃7": {
+    "listable": false
+  },
+  "阿萨拉牌-黑桃8": {
+    "listable": false
+  },
+  "阿萨拉牌-黑桃9": {
+    "listable": false
+  },
+  "阿萨拉牌-黑桃A": {
+    "listable": false
+  },
+  "阿萨拉牌-黑桃J": {
+    "listable": false
+  },
+  "阿萨拉牌-黑桃K": {
+    "listable": false
+  },
+  "阿萨拉牌-黑桃Q": {
+    "listable": false
+  },
+  "阿萨拉牌-红桃10": {
+    "listable": false
+  },
+  "阿萨拉牌-红桃2": {
+    "listable": false
+  },
+  "阿萨拉牌-红桃3": {
+    "listable": false
+  },
+  "阿萨拉牌-红桃4": {
+    "listable": false
+  },
+  "阿萨拉牌-红桃5": {
+    "listable": false
+  },
+  "阿萨拉牌-红桃6": {
+    "listable": false
+  },
+  "阿萨拉牌-红桃7": {
+    "listable": false
+  },
+  "阿萨拉牌-红桃8": {
+    "listable": false
+  },
+  "阿萨拉牌-红桃9": {
+    "listable": false
+  },
+  "阿萨拉牌-红桃A": {
+    "listable": false
+  },
+  "阿萨拉牌-红桃J": {
+    "listable": false
+  },
+  "阿萨拉牌-红桃K": {
+    "listable": false
+  },
+  "阿萨拉牌-红桃Q": {
+    "listable": false
+  },
+  "阿萨拉牌-梅花10": {
+    "listable": false
+  },
+  "阿萨拉牌-梅花2": {
+    "listable": false
+  },
+  "阿萨拉牌-梅花3": {
+    "listable": false
+  },
+  "阿萨拉牌-梅花4": {
+    "listable": false
+  },
+  "阿萨拉牌-梅花5": {
+    "listable": false
+  },
+  "阿萨拉牌-梅花6": {
+    "listable": false
+  },
+  "阿萨拉牌-梅花7": {
+    "listable": false
+  },
+  "阿萨拉牌-梅花8": {
+    "listable": false
+  },
+  "阿萨拉牌-梅花9": {
+    "listable": false
+  },
+  "阿萨拉牌-梅花A": {
+    "listable": false
+  },
+  "阿萨拉牌-梅花J": {
+    "listable": false
+  },
+  "阿萨拉牌-梅花K": {
+    "listable": false
+  },
+  "阿萨拉牌-梅花Q": {
+    "listable": false
+  },
+  "阿萨拉牌-牌盒": {
+    "listable": false
+  },
+  "阿萨拉牌-小王": {
+    "listable": false
+  },
+  "阿萨拉平安果": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "阿萨拉优品平安果": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "阿萨拉制式勋章": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "阿托斯·利尔的身份牌": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "安全总监工卡": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "暗星燃料单元": {
+    "listable": false
+  },
+  "巴克什藏宝图10号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "巴克什藏宝图11号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "巴克什藏宝图1号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "巴克什藏宝图2号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "巴克什藏宝图3号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "巴克什藏宝图4号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "巴克什藏宝图5号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "巴克什藏宝图6号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "巴克什藏宝图7号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "巴克什藏宝图9号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "白里出红瓶": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "比利狼": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "便携式同位素识别仪": {
+    "listable": false
+  },
+  "玻纤柳叶箭矢": {
+    "unitsPerSlot": 16
+  },
+  "测距仪": {
+    "listable": false
+  },
+  "赤诚之钥": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "赤枭档案": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "赤枭重装突击背心": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "赤枭装甲防弹面具": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "赤小枭": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "磁化的A级工卡": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "大肥鲤": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "得吃鸡缸杯": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "德小兰": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "德小兰·灰鲭鲨模型": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "电动马达": {
+    "listable": false
+  },
+  "渡鸦的录音数据-1": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "渡鸦的录音数据-2": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "渡鸦的录音数据-3": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "渡鸦的录音数据-4": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "渡鸦的录音数据-5": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "渡鸦的录音数据-6": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "渡鸦的密信": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "断裂的A级工卡": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "鳄鱼血样": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "防弹陶瓷": {
+    "availability": "unobtainable"
+  },
+  "烽火世界杯纪念奖杯": {
+    "listable": false
+  },
+  "浮力补偿设备": {
+    "listable": false
+  },
+  "高分子布料": {
+    "availability": "unobtainable"
+  },
+  "高级咖啡豆": {
+    "listable": false
+  },
+  "高级情报凭证": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "高级燃料": {
+    "availability": "unobtainable"
+  },
+  "高级子弹生产零件": {
+    "listable": false
+  },
+  "工具箱": {
+    "availability": "unobtainable"
+  },
+  "哈夫克端脑止疼剂": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "哈夫克机密档案": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "哈夫克精英勋章": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "哈夫克脑机液-“超体”": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "哈夫克制式勋章": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "航天基地藏宝图10号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "航天基地藏宝图11号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "航天基地藏宝图1号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "航天基地藏宝图2号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "航天基地藏宝图3号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "航天基地藏宝图4号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "航天基地藏宝图5号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "航天基地藏宝图6号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "航天基地藏宝图7号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "航天基地藏宝图9号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "好运爆红烟花": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "好粥道-黑米粥": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "好粥道-莲子玉米粥": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "好粥道-椰奶燕麦粥": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "好粥道-薏米红豆粥": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "好粥道-紫薯紫米粥": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "黑鹰野战胸挂": {
+    "availability": "unobtainable",
+    "listable": false
+  },
+  "红鲤王": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "花小蝶": {
+    "listable": false,
+    "seasonal": "current"
+  },
+  "划伤的B级工卡": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "黄金鲤": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "黄金鸟蛋": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "黄金鸟窝": {
+    "listable": false
+  },
+  "黄金足球": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "灰鲭鲨模型": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "火箭燃料": {
+    "listable": false
+  },
+  "机械工蜂模型": {
+    "availability": "unobtainable",
+    "listable": false
+  },
+  "金刚防弹衣": {
+    "availability": "unobtainable",
+    "listable": false
+  },
+  "金玫瑰": {
+    "availability": "expired",
+    "listable": false
+  },
+  "经典咖啡机": {
+    "listable": false
+  },
+  "巨兽机甲": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "飓风战术胸挂": {
+    "availability": "unobtainable",
+    "listable": false
+  },
+  "克小圈": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "肯小桶": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "空白存储": {
+    "availability": "unobtainable",
+    "listable": false
+  },
+  "拉小宅": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "兰小登": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "零号大坝藏宝图10号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "零号大坝藏宝图11号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "零号大坝藏宝图1号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "零号大坝藏宝图2号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "零号大坝藏宝图3号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "零号大坝藏宝图4号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "零号大坝藏宝图5号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "零号大坝藏宝图6号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "零号大坝藏宝图7号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "零号大坝藏宝图9号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "露小娜": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "马上起飞": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "马上转运": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "麦小蛋": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "曼德尔砖-电玩高手": {
+    "listable": false
+  },
+  "曼德尔砖-电玩高手S2": {
+    "listable": false
+  },
+  "曼德尔砖-疾光魅影": {
+    "listable": false
+  },
+  "曼德尔砖-棱镜攻势": {
+    "listable": false
+  },
+  "曼德尔砖-棱镜攻势S2": {
+    "listable": false
+  },
+  "曼德尔砖-美杜莎": {
+    "listable": false
+  },
+  "曼德尔砖-命运王牌": {
+    "listable": false
+  },
+  "曼德尔砖-气象感应": {
+    "listable": false
+  },
+  "曼德尔砖-群星": {
+    "listable": false
+  },
+  "曼德尔砖-悬赏令": {
+    "listable": false
+  },
+  "曼德尔砖-造物纪元": {
+    "listable": false
+  },
+  "明日方舟OST-1": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "磨损的B级工卡": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "浓缩铀样本": {
+    "listable": false
+  },
+  "普罗透斯干扰器": {
+    "availability": "unobtainable"
+  },
+  "奇怪的蛋": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "契约之钥": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "燃油": {
+    "availability": "unobtainable"
+  },
+  "仁悯之钥": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "三角洲特种部队：黑鹰坠落（盒装版）": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "手办-阿米娅": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "手办-阿米娅（近卫）": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "手办：盾峰": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "手办：劳拉": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "手办：劳拉（崛起）": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "手办：守夜人": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "手弩赤小枭": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "数据密钥": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "岁岁鸭": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "钛合金": {
+    "availability": "unobtainable"
+  },
+  "泰坦防弹装甲": {
+    "availability": "unobtainable",
+    "listable": false
+  },
+  "碳纤维穿甲箭矢": {
+    "unitsPerSlot": 16
+  },
+  "碳纤维刺骨箭矢": {
+    "unitsPerSlot": 16
+  },
+  "碳纤维散射箭矢": {
+    "unitsPerSlot": 16,
+    "seasonal": "past"
+  },
+  "特里克MAS2.0装甲": {
+    "availability": "unobtainable",
+    "listable": false
+  },
+  "特殊装备补给": {
+    "availability": "unobtainable",
+    "listable": false
+  },
+  "威小龙": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "乌小蛋": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "无人机": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "吴彦祖之镜": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "希望之钥": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "牺牲之钥": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "小河鲤": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "幸运木雕": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "幸运圆蛋": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "炫彩花小蝶": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "炫彩克小圈": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "炫彩拉小宅": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "炫彩兰小登": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "炫彩露小娜": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "炫彩麦小蛋": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "炫彩鸟蛋": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "炫彩威小龙": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "炫彩乌小蛋": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "炫彩足球": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "乙巳玄武": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "勇毅之钥": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "勇者之证": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "源石碎片": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "长弓溪谷藏宝图10号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "长弓溪谷藏宝图11号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "长弓溪谷藏宝图1号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "长弓溪谷藏宝图2号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "长弓溪谷藏宝图3号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "长弓溪谷藏宝图4号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "长弓溪谷藏宝图5号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "长弓溪谷藏宝图6号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "长弓溪谷藏宝图7号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "长弓溪谷藏宝图9号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "至纯源石": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "智慧之钥": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "中级子弹生产零件": {
+    "availability": "unobtainable"
+  },
+  "足球": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "AZ3藏宝图10号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "AZ3藏宝图11号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "AZ3藏宝图1号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "AZ3藏宝图2号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "AZ3藏宝图3号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "AZ3藏宝图4号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "AZ3藏宝图5号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "AZ3藏宝图6号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "AZ3藏宝图7号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "AZ3藏宝图9号": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "D7战术背包": {
+    "availability": "unobtainable",
+    "listable": false
+  },
+  "DAR突击手胸挂": {
+    "availability": "unobtainable",
+    "listable": false
+  },
+  "DICH-9重型头盔": {
+    "availability": "unobtainable",
+    "listable": false
+  },
+  "G.T.I.勇气勋章": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "G.T.I.制式勋章": {
+    "availability": "expired",
+    "listable": false,
+    "seasonal": "past"
+  },
+  "G.T.I卫星通信天线": {
+    "listable": false
+  },
+  "GT5 指挥官头盔": {
+    "availability": "unobtainable",
+    "listable": false
+  },
+  "GTO重型战术包": {
+    "availability": "unobtainable",
+    "listable": false
+  },
+  "H70 夜视精英头盔": {
+    "availability": "unobtainable",
+    "listable": false
+  },
+  "HVK旋风枪身系统": {
+    "availability": "expired",
+    "seasonal": "past"
+  },
+  "HVK旋风强化导气": {
+    "availability": "expired",
+    "seasonal": "past"
+  }
+}

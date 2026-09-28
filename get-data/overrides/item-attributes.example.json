@@ -1,0 +1,8 @@
+{
+  "某活动限定物品": "已失效",
+  "某只能兑换的物品": { "availability": "unobtainable", "note": "只能军需处兑换" },
+  "某不可上架的物品": { "listable": false, "note": "官方说只能出售商人" },
+  "6.8x51mm Hybrid": { "unitsPerSlot": 60 },
+  "6.8*51mm PLY-III": { "unitsPerSlot": 90 },
+  "15050600003": { "availability": "unobtainable" }
+}

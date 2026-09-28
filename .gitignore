@@ -1,0 +1,30 @@
+node_modules/
+dist/
+*.log
+
+# ⚠️ `.env` 里有你的联系邮箱（UA 用），**绝不入库**。
+# 新环境从 `get-data/.env.example` 拷贝一份。
+.env
+.env.local
+*.env
+
+# 抓取产物与原始响应留存（能重新抓；保留在本地是为了省请求、对源站礼貌）
+get-data/data/
+
+# 探测/调试的临时工作区
+# （里面有 Phase 0 的探测脚本、你手填 CSV 的备份、以及抓下来的原始样本）
+.recon/
+
+# ⚠️ 这一条是**故意不写的**：
+#   `get-data/overrides/provenance-todo.csv`
+# 它是你手填标注的编辑面。JSON 虽然是真相源，但**还没 import 的填写只存在于 CSV** ——
+# 漏跑一次 import，一晚上的填写就没有备份。所以它要入库。
+
+# AI 助手的技能配置（playwright 等），不属于项目代码
+.agents/
+
+# 编辑器
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

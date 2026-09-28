@@ -1,0 +1,17 @@
+{
+  "name": "@deltaforce/shared",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "只放类型的共享包（types-only）。运行时零依赖 —— 两端必须用 import type 引入。",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts"
+    }
+  },
+  "sideEffects": false,
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  }
+}
