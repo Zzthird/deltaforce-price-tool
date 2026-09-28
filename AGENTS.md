@@ -201,12 +201,13 @@ import type { Item } from '@deltaforce/shared'
 | Phase 6.5 | ✅ 完成 | 数据修正：护甲耐久度选档、同名物品品质前缀兜底、标注键改官方ID。见 `docs/source-recon.md` §八 |
 | Phase 7 | ✅ 完成 | HTTP API：`server.ts` 五个路由 + 真正的 `src/index.ts` 入口（**无定时器**）。25 个 `fastify.inject` 测试 |
 | Phase 8 | ✅ 完成 | 网页骨架 + **第一版可用界面**：Vite + Vue 3 + Element Plus + Pinia + API 客户端。见 `web/src/` |
-| **Phase 9** | ⏳ **下一步** | `ItemsTable` / `FilterBar`（三级联动）/ `ThresholdSlider` / `StatusBar` |
-| Phase 10–11 | 未开始 | 见 `PLAN.md` §11 |
+| Phase 9 | ✅ 完成 | `FilterBar`（三级联动 + 交叉计数）/ `ThresholdSlider`（对数滑块）/ `StatusBar`（可见性轮询）/ `ItemsTable`（判定列 + 分页）。26 个 store 测试 |
+| **Phase 10** | ⏳ **下一步** | `MapView`（三档标记 + 三个开关）+ 出产地来源徽章 + 网页上就地补标注 |
+| Phase 11 | 未开始 | 补齐测试 + 走完整验收 + README 每步中文原理讲解 |
 
-**当前状态**：`npm run typecheck` 0 错误、`npm test` **333 个测试全绿**（12 个文件）。
+**当前状态**：`npm run typecheck` 0 错误、`npm test` **359 个测试全绿**（333 后端 + 26 前端）。
 已实测跑通：**1,564 条主数据 · 1,294 条带价格（82.7%）· 名称匹配率 100.0% · 出产地覆盖 85.6%**。
-**网页已实测渲染成功**（浏览器打开 5173，1,564 条 / 可排序 1,268 条）。
+**网页已实测**：表格、三级联动、阈值判定、判定过滤、分页全部正常。
 
 **当前可用的命令**：
 
@@ -223,21 +224,43 @@ import type { Item } from '@deltaforce/shared'
 三个读接口**都会触发按需刷新检查**（前端首屏不管先调哪个都对；`/api/items` 在数据过期时会阻塞约 13 秒）；
 `/api/health` 刻意不触发，因为监控会频繁打它。
 
-**前端结构**（Phase 8）：
+**前端结构**（Phase 8–9）：
 
 ```
 web/src/
-├─ api/client.ts     访问后端的**唯一入口**（统一错误处理 + 类型）
-├─ stores/           Pinia：items（物品+刷新）/ meta（筛选器+标签调色板）
-├─ utils/format.ts   金额（万/亿）、时间（“3 分钟前”）格式化
-├─ App.vue           根组件：状态栏 + 排行榜表 + 展开详情
-└─ styles.css        全局样式（深色底）
+├─ api/client.ts            访问后端的**唯一入口**（统一错误处理 + 类型）
+├─ stores/
+│   ├─ items.ts             物品 + 刷新（含“可参与排序”过滤）
+│   ├─ meta.ts              筛选器 + 标签调色板（色值/中文标签从后端来）
+│   ├─ rules.ts             ⭐ 阈值 + 判定 + localStorage 持久化
+│   └─ filters.ts           ⭐ 筛选状态 + 交叉计数 + 排序（逻辑最重的一处）
+├─ composables/
+│   └─ useHealthPolling.ts  只在**标签页可见时**轮询 /api/health
+├─ components/
+│   ├─ StatusBar.vue        数据可信度（多旧 / 什么口径 / 排除了多少）
+│   ├─ FilterBar.vue        三级联动 + 品质 + 地图 + 搜索
+│   ├─ ThresholdSlider.vue  对数滑块 + 判定命中数（可点击筛选）
+│   └─ ItemsTable.vue       判定列 + 分页 + 展开详情
+├─ utils/format.ts          金额（万/亿）、时间（“3 分钟前”）格式化
+├─ App.vue                  只负责拼装与布局
+└─ styles.css               全局样式（深色底）
 ```
 
-⚠️ **前端有一条必须守住的规矩**：从 `@deltaforce/shared` 导入**只能用 `import type`**。
-这个包没有构建产物，靠“`import type` 编译期被整行擦除”才能工作。
-实测验证：编译后的 `main.ts` / `App.vue` / `stores/*.ts` 里 `deltaforce` 出现 **0 次**。
-品质色值、中文标签这类运行时常量**由后端 `/api/meta` 下发**，前端不写第二份。
+⚠️ **前端有三条必须守住的规矩**：
+
+1. **从 `@deltaforce/shared` 导入只能用 `import type`**。这个包没有构建产物，靠“`import type` 编译期被整行擦除”才能工作。实测：编译后 `main.ts` / `App.vue` / `stores/*.ts` 里 `deltaforce` 出现 **0 次**。品质色值、中文标签这类运行时常量**由后端 `/api/meta` 下发**。
+2. **判定规则（阈值）只在前端**（`stores/rules.ts`），存 localStorage，后端完全不感知 —— 拖滑块不该发网络请求。
+3. **组合式函数返回的对象里的 ref 不会在模板里自动解包**。Vue 只对**顶层**绑定做一层 `proxyRefs`。所以要么解构（`const { visible } = useX()`），要么用 `.value`。否则模板里拿到的是 Ref 对象，`polling.lastCheckAt.toLocaleTimeString()` 会直接报错。
+
+**Phase 9 的关键设计**（与直觉相反但很重要）：
+
+- **交叉计数（faceted counts）**：下拉选项后的数字必须是“**选了这个还剩多少**”，不是“这个选项一共有多少”。否则会出现“显示道具 (711)、点进去 0 条”。实现：`filters.ts` 的 `pass(item, skip)` —— 数某维度时把这个维度自己的筛选去掉。
+- **改大类要清空子类/细类**：否则“道具/收集品”改成“弹药”后会得 0 条，且下拉里显示一个不属于弹药的选项。
+- **`unknown` ≠ `skip`**：不可上架/不可摸/无价格的物品判为“未知”（判不了），不是“跳过”（建议别捡）。这两句话的下一步行动完全不同。
+- **判定计数不随判定过滤变化**：从 `rowsBeforeVerdict` 算，否则点了“只看必摸”之后其它档全变 0，就切不回去了。
+- **对数滑块**：单格价值跨度 1 ~ 3427 万（7 个数量级），线性滑块根本调不准。
+- **轮询 `/api/health`（230 字节、不触发抓取）而不是 `/api/items`（2MB、会触发抓取）**，且只在标签页可见时。
+- **`propsDetail` 字段**：`Item` 必填，前端 fixture 容易漏。
 
 **⚠️ 一个容易踩的坑**：`npm run fetch` 是**只看不写**的（`scripts/fetch-once.ts`
 不调 `saveSnapshot`）。磁盘上的 `get-data/data/snapshot.json` 由**刷新器**写，
