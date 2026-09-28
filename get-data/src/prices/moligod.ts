@@ -119,6 +119,28 @@ export const moligodPriceSource: PriceSource = {
   priceBasis: 'moligod 现价（交易行最新成交参考），服务端约 5 分钟刷新',
   requestBudget: 1,
 
+  /**
+   * 实测出来的能力清单（不是按文档抄的）。
+   *
+   * ⚠️ `hasDurabilityVariants: true` 这个字段很关键 ——
+   *    护甲的“裸名”价是**基础参考价、不是行情**，实时价在
+   *    `（全新）/（几乎全新）/（破损）` 三档里（详见 constants.ts）。
+   *    声明出来，网页才知道该显示三档而不是只显示一个数。
+   *
+   * `hasProvenance: false` —— 这是它最大的短板，也是官方接口不可替代的原因。
+   */
+  capabilities: {
+    hasPrice: true,
+    hasSlots: true,
+    hasYesterdayAvg: true,
+    hasYesterdayRange: true,
+    hasRange: true,
+    hasAlias: true,
+    hasSubcategory: true,
+    hasProvenance: false,
+    hasDurabilityVariants: true,
+  },
+
   async fetchPrices(ctx: FetchContext): Promise<Map<string, PriceQuote>> {
     const log = ctx.logger
     const url = `${ctx.config.moligodBaseUrl}/api/market/trade-house-snapshot`

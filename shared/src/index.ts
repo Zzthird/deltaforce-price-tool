@@ -484,6 +484,11 @@ export interface LootRules {
  *   age < 15 分钟            → 什么都不做，直接返回
  *   15 ≤ age < 120 分钟      → 立即返回旧数据 + refreshing=true，后台开始抓
  *   age ≥ 120 分钟 或 无快照  → 阻塞等待一次抓取完成再返回
+ *
+ * ⚠️ `GET /api/meta` 与 `GET /api/sources` **也会触发同一个检查**。
+ *    因为前端首屏会同时要它们，谁先到不确定 —— 不让调用方去管顺序，
+ *    而是让这几个读接口都能当“第一个”。
+ *    `GET /api/health` 刻意**不**触发（监控会频繁打它）。
  */
 export interface ApiItemsResponse {
   items: Item[]
@@ -503,6 +508,49 @@ export interface ApiItemsResponse {
 }
 
 /**
+ * ⭐ 展示用的「文案与调色板」—— 由后端下发，前端不自己写一份。
+ *
+ * ═══════════════════════════════════════════════════════════════════════
+ * 为什么这些必须从后端来
+ * ═══════════════════════════════════════════════════════════════════════
+ *
+ * 1. **本包只能放类型**（见 AGENTS.md §5）。这里的前提是两端都用
+ *    `import type`，编译后整行消失、运行时根本不加载本包。
+ *    一旦在里面写 `export const GRADE_CN = {...}`，前端就必须改成普通
+ *    `import`，运行时真去加载那个 `.ts` 文件 → 直接崩。
+ *
+ * 2. **同一件事不能有两份定义**。品质色值是实测自 dergame 的 CSS 变量
+ *    （不是猜的），要是前后端各写一份，改一次得改两处 —— 迟早会出现
+ *    网页上“金”的边框和“金”的文字是两种颜色这种事。
+ *
+ * 所以后端 `get-data/src/constants.ts` 是唯一定义处，通过 `GET /api/meta` 下发。
+ */
+export interface LabelPalette {
+  /** 品质：值（`"0"`~`"6"`）→ 中文名与颜色 */
+  grade: Record<string, GradeStyle>
+  /** 大类代码 → 中文名（官方接口只给子类中文名，大类名必须我们自己维护） */
+  category: Record<string, string>
+  /** 可获得性：值 → 简短标签（“可摸”/“限时下架”/“非战利品”） */
+  availability: Record<string, string>
+  /** 可获得性：值 → 详细说明（网页 tooltip 用） */
+  availabilityDesc: Record<string, string>
+  /** 赛季限定：值 → 标签（“本季”/“往季”） */
+  seasonal: Record<string, string>
+  /** 出产地来源：值 → 标签（“官方”/“人工补录”/“官方+人工”） */
+  provenanceSource: Record<string, string>
+}
+
+/** 品质的展示口径 */
+export interface GradeStyle {
+  /** 中文名，如 "金" */
+  label: string
+  /** 色系名，网页用来选样式类 */
+  tone: GradeTone
+  /** 十六进制色值 */
+  color: string
+}
+
+/**
  * GET /api/meta —— 筛选器选项与源状态。
  *
  * 所有选项都带 count，方便网页显示"道具 (711)"这样的数量提示。
@@ -517,8 +565,10 @@ export interface ApiMetaResponse {
   sources: SourceStatus[]
   /** 价格口径说明，会直接显示在网页上，避免误解价格含义 */
   priceBasis: string | null
-  /** 主数据源与价格源的名称匹配率（0~1）。实测当前 0.984。 */
+  /** 主数据源与价格源的名称匹配率（0~1）。当前实测 1.0。 */
   matchRate: number | null
+  /** ⭐ 标签与调色板（运行时常量，本包放不下，见 LabelPalette 的说明） */
+  labels: LabelPalette
 }
 
 /** 筛选器的一个选项 */

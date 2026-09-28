@@ -169,6 +169,13 @@ export const SEASONAL_CN: Readonly<Record<string, string>> = {
   past: '往季',
 }
 
+/** 出产地来源的详细说明（网页表示区分“官方给的”与“你手工补的”）*/
+export const PROVENANCE_SOURCE_CN: Readonly<Record<string, string>> = {
+  official: '官方',
+  manual: '人工补录',
+  merged: '官方 + 人工',
+}
+
 /**
  * 可获得性的详细说明，用于网页上的 tooltip。
  * 把“会不会回来”写清楚，避免只看标签产生误解。

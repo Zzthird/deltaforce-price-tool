@@ -76,6 +76,7 @@
 | **人工标注的键：名字唯一用名字，同名用官方ID** | 官方有 6 组同名物品（13 条）。用名字做键会让标注"同时打到 3 条"。导入时自动判断（`--key auto`，默认），13 条走 ID 键 |
 | **物品主数据来自官方** | 官方独有：出产地、物品描述、重量、官方物品 ID、三级分类 |
 | **不能用 7×24 定时器** | 用户要求"按需刷新"——只在有人用网站时才校验并抓取，减少对源站的负担 |
+| **读接口都能当"第一个"** | 前端首屏会同时要 `/api/items` 与 `/api/meta`，谁先到不确定。所以这两个（加 `/api/sources`）**都触发按需刷新检查**。`/api/health` 刻意不触发（监控会频繁打）。**推论**：冷启动时若有抓取在进行中，`ensureFresh` 必须**等它抓完**而不是回空快照 —— 否则服务会回 503，网页显示成"抓取失败"而抓取其实正常（Phase 7 踩到的真 bug）|
 | **不碰游戏客户端** | 不读内存、不注入、不模拟操作、不截图 OCR（会触发反作弊，且违反游戏条款） |
 | **数据源必须可插拔** | 用户未来可能换成付费数据源，换源成本必须是"1 个文件 + 1 行注册" |
 
@@ -196,14 +197,29 @@ import type { Item } from '@deltaforce/shared'
 | Phase 5 | ✅ 完成 | `normalize.ts` + 单元测试 |
 | Phase 6 | ✅ 完成 | `store.ts` 落盘 + `refresher.ts` 按需刷新（三道锁）|
 | Phase 6.5 | ✅ 完成 | 数据修正：护甲耐久度选档、同名物品品质前缀兜底、标注键改官方ID。见 `docs/source-recon.md` §八 |
-| **Phase 7** | ⏳ **下一步** | HTTP API：`server.ts` 五个路由 + 真实 `src/index.ts` 入口 |
-| Phase 8–11 | 未开始 | 见 `PLAN.md` §11 |
+| Phase 7 | ✅ 完成 | HTTP API：`server.ts` 五个路由 + 真正的 `src/index.ts` 入口（**无定时器**）。25 个 `fastify.inject` 测试 |
+| **Phase 8** | ⏳ **下一步** | 网页骨架：Vite + Vue 3 + Element Plus，首个可用界面 |
+| Phase 9–11 | 未开始 | 见 `PLAN.md` §11 |
 
-**当前状态**：`npm run typecheck` 0 错误、`npm test` **305 个测试全绿**（11 个文件）。
-已实测跑通：1,576 条主数据 · 1,294 条带价格（82.1%）· 名称匹配率 99.2% · 出产地覆盖 85.0%。
+**当前状态**：`npm run typecheck` 0 错误、`npm test` **333 个测试全绿**（12 个文件）。
+已实测跑通：**1,564 条主数据 · 1,294 条带价格（82.7%）· 名称匹配率 100.0% · 出产地覆盖 85.6%**。
 
-**当前可用的命令**：`npm install`、`npm run typecheck`
-**当前还不能用**：`npm run dev`（缺 `vite.config.ts` 和前端入口，Phase 8 才做）
+**当前可用的命令**：
+
+| 命令 | 作用 |
+|---|---|
+| `npm run start`（get-data）| **起 HTTP 服务**（端口 3000）+ 后台预热抓取 |
+| `npm run dev`（get-data）| 同上，带文件监听 |
+| `npm run refresh` | 强制刷新并**落盘**（走三道锁）|
+| `npm run fetch` | 只看不写的诊断（打印一张大表，**不落盘**）|
+| `npm run provenance:todo / import / season:rollover` | 人工标注的导出 / 回写 / 换季 |
+| `npm run typecheck` / `npm test` | 全 workspace |
+
+**HTTP 路由**（Phase 7）：`GET /api/items` · `/api/meta` · `/api/sources` · `/api/health` · `POST /api/refresh`。
+前三个读接口**都会触发按需刷新检查**（前端首屏不管先调哪个都对）；`/api/health` 刻意不触发，
+因为监控会频繁打它。
+
+**当前还不能用**：`npm run dev`（根目录的 web 侧）—— 缺 `vite.config.ts` 与前端入口，Phase 8 才做。
 
 **⚠️ 一个容易踩的坑**：`npm run fetch` 是**只看不写**的（`scripts/fetch-once.ts`
 不调 `saveSnapshot`）。磁盘上的 `get-data/data/snapshot.json` 由**刷新器**写，

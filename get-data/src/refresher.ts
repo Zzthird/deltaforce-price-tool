@@ -219,9 +219,34 @@ export class Refresher {
 
     /* ① 无快照，或太旧 → 阻塞等一次抓取 */
     if (this.snapshot === null || (age !== null && age >= blockingThreshold)) {
-      const reason = this.snapshot === null ? '还没有本地数据' : `数据已过期 ${Math.round((age ?? 0) / 60)} 分钟`
+      const reason =
+        this.snapshot === null ? '还没有本地数据' : `数据已过期 ${Math.round((age ?? 0) / 60)} 分钟`
       this.logger.info('触发同步抓取', { reason })
       const result = await this.refresh({ source: 'blocking' })
+
+      /**
+       * ⭐ 专门处理“已经有人在抓”。
+       *
+       * `refresh()` 碰到单飞锁会**立即**返回 `in_progress`。
+       * 对后台档这是对的（马上把旧数据回给用户）；
+       * 但对阻塞档是错的 —— 调用方说的是“**我没有数据可用**”，
+       * 此时唯一正确的做法是**等那一轮抓完**，而不是回一个空快照。
+       *
+       * 实测后果（Phase 7 接 HTTP 时发现的）：
+       *   入口启动时先发起一个后台预热抓取，紧接着 /api/items 进来
+       *   → ensureFresh 返回 in_progress + snapshot=null
+       *   → 服务回 503「没有数据快照」
+       *   而实际上抓取正在进行、几秒后就有数据。网页会显示成“抓取失败”。
+       *
+       * `waitForIdle()` 等的是同一个 `inFlight` promise，而
+       * `performFetch()` 是在那个 promise **内部**给 `this.snapshot` 赋值的，
+       * 所以等完之后 snapshot 一定就绪（除非那一轮真失败了）。
+       */
+      if (result.outcome === 'in_progress') {
+        await this.waitForIdle()
+        return this.buildEnsureResult('blocking')
+      }
+
       return this.buildEnsureResult(result.started ? 'blocking' : 'served')
     }
 

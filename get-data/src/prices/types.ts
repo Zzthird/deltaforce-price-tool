@@ -13,7 +13,7 @@
  * 铁律同物品源：适配器只提供**价格原料**，不算派生指标。
  */
 
-import type { PriceSourceId } from '@deltaforce/shared'
+import type { PriceSourceId, SourceCapabilities } from '@deltaforce/shared'
 import type { FetchContext } from '../sources/types'
 
 /**
@@ -61,6 +61,17 @@ export interface PriceSource {
   readonly id: PriceSourceId
   readonly label: string
   readonly homepage: string
+  /**
+   * 能力声明。
+   *
+   * ⭐ 这是“无痛换源”的另一半：不同源能给的字段不同。
+   * 网页据此**自动隐藏或降级**对应列，而不是显示 undefined。
+   * 例：某个源没有昨日均价 → 网页隐藏“今日涨幅”列。
+   *
+   * 物品源也有同样的字段（`ItemSource.capabilities`），
+   * 两边合起来决定网页上哪些列可用。
+   */
+  readonly capabilities: SourceCapabilities
   /**
    * 价格口径说明，会**原样显示在网页上**。
    * 因为不同源的口径不同（现价 vs 挂单价 vs 均价），不标注会误导判定。
