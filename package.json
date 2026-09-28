@@ -18,6 +18,7 @@
     "dev:web": "npm --workspace @deltaforce/web run dev",
     "probe": "npm --workspace @deltaforce/get-data run probe --",
     "fetch": "npm --workspace @deltaforce/get-data run fetch --",
+    "refresh": "npm --workspace @deltaforce/get-data run refresh --",
     "provenance:todo": "npm --workspace @deltaforce/get-data run provenance:todo --",
     "provenance:import": "npm --workspace @deltaforce/get-data run provenance:import --",
     "season:rollover": "npm --workspace @deltaforce/get-data run season:rollover --",

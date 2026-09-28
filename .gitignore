@@ -23,6 +23,9 @@ get-data/data/
 # AI 助手的技能配置（playwright 等），不属于项目代码
 .agents/
 
+# playwright-cli 的会话/快照/截图附件（浏览器自动化工具的临时产物）
+.playwright-cli/
+
 # 编辑器
 .vscode/
 .idea/

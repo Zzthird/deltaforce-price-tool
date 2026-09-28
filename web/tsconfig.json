@@ -4,7 +4,26 @@
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "types": ["vite/client"],
     "jsx": "preserve",
-    "allowImportingTsExtensions": false
+    "allowImportingTsExtensions": false,
+
+    /*
+     * ⚠️ `@` 别名要**写两处**，这是 Vite + TypeScript 组合的经典坑：
+     *
+     *   · `vite.config.ts` 的 `resolve.alias`  → **Vite（运行时/打包时）** 用
+     *   · `tsconfig.json` 的 `paths`           → **TypeScript（类型检查时）** 用
+     *
+     * 两边互不认识，所以只写一处就会出现这种怪现象：
+     *   `npm run dev` 跑得好好的，`npm run typecheck` 却报
+     *   “Cannot find module '@/stores/items'”。
+     *
+     * 而且报错会**连锁** —— 模块解析不到时，那个模块导出的类（如 ApiError）
+     * 就变成了未知类型，于是 `err instanceof ApiError` 的类型收窄也失效，
+     * 于是又报一堆“… is of type 'unknown'”。真正的原因只有一个，症状却是一屏。
+     */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.vue", "vite.config.ts"]
 }

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>三角洲行动 · 摸金物资价值榜</title>
+    <meta
+      name="description"
+      content="本地运行的摸金物资价值榜：按每格价值排序，看这趟该摸什么"
+    />
+    <!--
+      favicon 用内联 SVG（data: URI），不额外存文件。
+      不写这一行的话，浏览器会去要 /favicon.ico → 404 →
+      控制台永远挂着一个红字错误，以后真的出错时很容易被忽视。
+      形状就用品质色那个金色圆点 —— 与界面里的品质标识一致。
+    -->
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2314161a'/%3E%3Ccircle cx='16' cy='16' r='7' fill='%23e8a64e'/%3E%3C/svg%3E"
+    />
+  </head>
+  <body>
+    <!--
+      Vue 的挂载点。
+
+      页面里只有这一个空 div —— 所有内容都由 JS 画出来。
+      这是"单页应用"（SPA）的典型形态：浏览器只请求一次 HTML，
+      之后切页面/改内容都不再请求新 HTML，只改这个 div 里的东西。
+
+      为什么这里的 div id 必须是 `app`：
+      它要和 `src/main.ts` 里 `app.mount('#app')` 对得上（就是同一个字符串）。
+    -->
+    <div id="app"></div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

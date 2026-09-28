@@ -1,0 +1,68 @@
+/**
+ * 全局样式。
+ *
+ * 只放"跨组件"的东西：页面底色、字体、滚动条、以及少数几个
+ * 必须覆盖 Element Plus 默认值的地方。
+ * 组件的样式写在各自 `.vue` 文件里（`<style scoped>`）。
+ */
+
+:root {
+  /*
+   * 深色底是刻意的选择：这个工具长时间盯着看，而游戏本身也是深色界面。
+   * 另外品质色（金/紫/蓝）在深色底上对比度明显更好。
+   */
+  --df-bg: #14161a;
+  --df-bg-soft: #1b1e24;
+  --df-border: #2c313a;
+  --df-text: #dfe3e8;
+  --df-text-dim: #8b93a1;
+
+  font-family: 'Microsoft YaHei', 'PingFang SC', 'Segoe UI', system-ui, sans-serif;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--df-bg);
+  color: var(--df-text);
+}
+
+#app {
+  min-height: 100vh;
+}
+
+/*
+ * Element Plus 的表头默认是浅灰底，在深色下很突兀。
+ * 本地工具不做主题定制，只把这两处压暗就够了。
+ */
+.el-table {
+  --el-table-border-color: var(--df-border);
+  --el-table-header-bg-color: var(--df-bg-soft);
+  --el-table-row-hover-bg-color: #23272f;
+  background: transparent;
+}
+
+.el-table tr,
+.el-table th.el-table__cell {
+  background: transparent;
+}
+
+/* 长物品名不要撑破列宽 */
+.df-name-cell {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 数字列统一右对齐、等宽字体 —— 不然一列数字参差不齐没法比大小 */
+.df-num {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  font-feature-settings: 'tnum';
+}

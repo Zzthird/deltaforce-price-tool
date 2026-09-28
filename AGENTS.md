@@ -77,6 +77,8 @@
 | **物品主数据来自官方** | 官方独有：出产地、物品描述、重量、官方物品 ID、三级分类 |
 | **不能用 7×24 定时器** | 用户要求"按需刷新"——只在有人用网站时才校验并抓取，减少对源站的负担 |
 | **读接口都能当"第一个"** | 前端首屏会同时要 `/api/items` 与 `/api/meta`，谁先到不确定。所以这两个（加 `/api/sources`）**都触发按需刷新检查**。`/api/health` 刻意不触发（监控会频繁打）。**推论**：冷启动时若有抓取在进行中，`ensureFresh` 必须**等它抓完**而不是回空快照 —— 否则服务会回 503，网页显示成"抓取失败"而抓取其实正常（Phase 7 踩到的真 bug）|
+| **前端只能用 `import type` 引 `shared`** | `shared` 没有构建产物。实测编译后 `deltaforce` 出现 0 次，就是因为 `import type` 被整行擦除。一旦写成普通 `import`，浏览器会去请求 `.ts` 文件 → 直接崩。**推论**：品质色值、中文标签等运行时常量必须由后端 `/api/meta` 下发 |
+| **`@` 别名要写两处** | `vite.config.ts` 的 `resolve.alias`（Vite 用）+ `web/tsconfig.json` 的 `paths`（TS 用）。只写一处会出现“`npm run dev` 正常、`npm run typecheck` 报找不到模块”，且报错会连锁（模块解析不到 → 类变成未知类型 → `instanceof` 收窄失效）|
 | **不碰游戏客户端** | 不读内存、不注入、不模拟操作、不截图 OCR（会触发反作弊，且违反游戏条款） |
 | **数据源必须可插拔** | 用户未来可能换成付费数据源，换源成本必须是"1 个文件 + 1 行注册" |
 
@@ -198,28 +200,44 @@ import type { Item } from '@deltaforce/shared'
 | Phase 6 | ✅ 完成 | `store.ts` 落盘 + `refresher.ts` 按需刷新（三道锁）|
 | Phase 6.5 | ✅ 完成 | 数据修正：护甲耐久度选档、同名物品品质前缀兜底、标注键改官方ID。见 `docs/source-recon.md` §八 |
 | Phase 7 | ✅ 完成 | HTTP API：`server.ts` 五个路由 + 真正的 `src/index.ts` 入口（**无定时器**）。25 个 `fastify.inject` 测试 |
-| **Phase 8** | ⏳ **下一步** | 网页骨架：Vite + Vue 3 + Element Plus，首个可用界面 |
-| Phase 9–11 | 未开始 | 见 `PLAN.md` §11 |
+| Phase 8 | ✅ 完成 | 网页骨架 + **第一版可用界面**：Vite + Vue 3 + Element Plus + Pinia + API 客户端。见 `web/src/` |
+| **Phase 9** | ⏳ **下一步** | `ItemsTable` / `FilterBar`（三级联动）/ `ThresholdSlider` / `StatusBar` |
+| Phase 10–11 | 未开始 | 见 `PLAN.md` §11 |
 
 **当前状态**：`npm run typecheck` 0 错误、`npm test` **333 个测试全绿**（12 个文件）。
 已实测跑通：**1,564 条主数据 · 1,294 条带价格（82.7%）· 名称匹配率 100.0% · 出产地覆盖 85.6%**。
+**网页已实测渲染成功**（浏览器打开 5173，1,564 条 / 可排序 1,268 条）。
 
 **当前可用的命令**：
 
 | 命令 | 作用 |
 |---|---|
-| `npm run start`（get-data）| **起 HTTP 服务**（端口 3000）+ 后台预热抓取 |
-| `npm run dev`（get-data）| 同上，带文件监听 |
+| `npm run dev` | ⭐ **同时起后端 3000 + 前端 5173**（日常就用这个）|
+| `npm run dev:api` / `dev:web` | 只起其中一个 |
 | `npm run refresh` | 强制刷新并**落盘**（走三道锁）|
 | `npm run fetch` | 只看不写的诊断（打印一张大表，**不落盘**）|
 | `npm run provenance:todo / import / season:rollover` | 人工标注的导出 / 回写 / 换季 |
-| `npm run typecheck` / `npm test` | 全 workspace |
+| `npm run typecheck` / `npm test` / `npm run build` | 全 workspace |
 
 **HTTP 路由**（Phase 7）：`GET /api/items` · `/api/meta` · `/api/sources` · `/api/health` · `POST /api/refresh`。
-前三个读接口**都会触发按需刷新检查**（前端首屏不管先调哪个都对）；`/api/health` 刻意不触发，
-因为监控会频繁打它。
+三个读接口**都会触发按需刷新检查**（前端首屏不管先调哪个都对；`/api/items` 在数据过期时会阻塞约 13 秒）；
+`/api/health` 刻意不触发，因为监控会频繁打它。
 
-**当前还不能用**：`npm run dev`（根目录的 web 侧）—— 缺 `vite.config.ts` 与前端入口，Phase 8 才做。
+**前端结构**（Phase 8）：
+
+```
+web/src/
+├─ api/client.ts     访问后端的**唯一入口**（统一错误处理 + 类型）
+├─ stores/           Pinia：items（物品+刷新）/ meta（筛选器+标签调色板）
+├─ utils/format.ts   金额（万/亿）、时间（“3 分钟前”）格式化
+├─ App.vue           根组件：状态栏 + 排行榜表 + 展开详情
+└─ styles.css        全局样式（深色底）
+```
+
+⚠️ **前端有一条必须守住的规矩**：从 `@deltaforce/shared` 导入**只能用 `import type`**。
+这个包没有构建产物，靠“`import type` 编译期被整行擦除”才能工作。
+实测验证：编译后的 `main.ts` / `App.vue` / `stores/*.ts` 里 `deltaforce` 出现 **0 次**。
+品质色值、中文标签这类运行时常量**由后端 `/api/meta` 下发**，前端不写第二份。
 
 **⚠️ 一个容易踩的坑**：`npm run fetch` 是**只看不写**的（`scripts/fetch-once.ts`
 不调 `saveSnapshot`）。磁盘上的 `get-data/data/snapshot.json` 由**刷新器**写，
