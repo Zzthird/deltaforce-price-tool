@@ -18,25 +18,23 @@
 import { ref, watch } from 'vue'
 import { defineStore } from 'pinia'
 
-export type ThemeMode = 'light' | 'dark' | 'night'
+export type ThemeMode = 'light' | 'dark'
 
 /** 主题的中文名（UI 里显示）*/
 export const THEME_LABEL: Readonly<Record<ThemeMode, string>> = {
   light: '日间',
   dark: '深色',
-  night: '深夜',
 }
 
 /** 主题的说明（悬浮提示用）—— 说清"什么时候用哪个" */
 export const THEME_HINT: Readonly<Record<ThemeMode, string>> = {
   light: '日间：白底，白天光线亮时看',
-  dark: '深色（默认）：深灰蓝底 + 卡片分层，晚上开着灯看',
-  night: '深夜：近黑底，关灯躺床上看',
+  dark: '深色（默认）：深灰蓝底 + 卡片分层',
 }
 
 const STORAGE_KEY = 'deltaforce.theme.v1'
 
-const MODES: readonly ThemeMode[] = ['light', 'dark', 'night']
+const MODES: readonly ThemeMode[] = ['light', 'dark']
 
 /**
  * 读主题设置。

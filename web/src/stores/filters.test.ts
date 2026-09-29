@@ -332,92 +332,160 @@ describe('判定 —— 必摸 / 可摸 / 跳过 / 未知', () => {
 
 /* ══════════════════════ 三级联动 ══════════════════════ */
 
-describe('三级联动', () => {
-  it('⭐ 改大类要清空子类与细类', () => {
-    // 不做这一步会出现：筛「道具/收集品」→ 改成「弹药」→ 子类还是「收集品」
-    // → 结果 0 条，而且下拉里显示一个不属于弹药的选项
+describe('⭐ 分组与子类的联动', () => {
+  it('⭐ 切分组会清空子类选择', () => {
+    /**
+     * 子类选项是"当前选中分组的下一级"，换了分组之后原来的子类可能
+     * 根本不存在了（从「消耗品」切到「弹药」，「药品」这个子类就没了）。
+     * 留着它会得到 0 条且看不出原因。
+     */
     const filters = useFiltersStore()
-    filters.categories = ['props']
-    filters.subcategories = ['collection']
+    filters.groups = ['collection']
+    filters.subs = ['x']
 
-    expect(filters.subcategories).toEqual(['collection'])
-
-    filters.toggleCategory('ammo')
-    expect(filters.subcategories).toEqual([])
-    expect(filters.thirdClasses).toEqual([])
+    filters.toggleGroup('ammo')
+    expect(filters.subs).toEqual([])
   })
 
-  it('⭐ 改子类要清空细类', () => {
+  it('点同一个分组两次 = 取消', () => {
     const filters = useFiltersStore()
-    filters.categories = ['props']
-    filters.subcategories = ['collection']
-    filters.thirdClasses = ['something']
+    filters.toggleGroup('collection')
+    expect(filters.groups).toEqual(['collection'])
+    filters.toggleGroup('collection')
+    expect(filters.groups).toEqual([])
+  })
 
-    filters.setSubcategories(['key'])
-    expect(filters.thirdClasses).toEqual([])
+  it('「全部」清空分组与子类', () => {
+    const filters = useFiltersStore()
+    filters.groups = ['collection']
+    filters.subs = ['x']
+    filters.clearGroups()
+    expect(filters.groups).toEqual([])
+    expect(filters.subs).toEqual([])
   })
 })
 
-/* ══════════════════════ 交叉计数 ══════════════════════ */
-
 describe('⭐ 交叉计数 —— 选项后面的数字必须是"选了还剩多少"', () => {
-  it('大类计数：没筛别的时就是全部', () => {
+  it('分组计数：没筛别的时就是池里的数', () => {
     const filters = useFiltersStore()
-    const byValue = Object.fromEntries(filters.categoryOptions.map((o) => [o.value, o.count]))
+    const byValue = Object.fromEntries(filters.groupOptions.map((o) => [o.value, o.count]))
 
-    expect(byValue['props']).toBe(4) // 海洋之泪 / 普通收集品 / 反应堆 / 藏宝图
+    // 收集品：海洋之泪 + 普通收集品 + 藏宝图（火箭燃料/旧赛季弹不在池里）
+    expect(byValue['collection']).toBe(3)
+    expect(byValue['key']).toBe(1) // 反应堆总控核心
     expect(byValue['ammo']).toBe(2)
-    // 配件没有物品，但仍然列出来（"它是 0 条"本身是信息）
+    expect(byValue['gun']).toBe(1)
+    // 没有物品的分组仍然列出来（"它是 0 条"本身是信息）
     expect(byValue['acc']).toBe(0)
   })
 
-  it('⭐ 地图筛选生效后，大类计数要跟着变（不是永远显示全部）', () => {
+  it('⭐ 地图筛选生效后，分组计数要跟着变（不是永远显示全部）', () => {
     const filters = useFiltersStore()
-    filters.maps = ['AZ3'] // 出在 AZ3 的：反应堆（特产）+ 普通收集品（通用）
+    filters.maps = ['AZ3'] // 出在 AZ3 的：反应堆（key）+ 普通收集品（通用）
 
-    const byValue = Object.fromEntries(filters.categoryOptions.map((o) => [o.value, o.count]))
-    expect(byValue['props']).toBe(2)
-    expect(byValue['ammo']).toBe(0) // 弹药两张图都不含 AZ3
+    const byValue = Object.fromEntries(filters.groupOptions.map((o) => [o.value, o.count]))
+    expect(byValue['key']).toBe(1)
+    expect(byValue['collection']).toBe(1) // 只剩普通收集品
+    expect(byValue['ammo']).toBe(0)
   })
 
-  it('⭐ 子类选项受父级大类约束，且计数不带自己', () => {
+  it('⭐ 分组自己的计数不随自己这一维变化（faceted search 的核心）', () => {
     const filters = useFiltersStore()
-    filters.toggleCategory('ammo')
+    filters.grades = [6] // 红：海洋之泪 + 藏宝图（+ 火箭燃料/旧赛季弹不在池里）
 
-    const subs = filters.subcategoryOptions.map((o) => o.value)
-    expect(subs).toEqual(['ammo9x39']) // 只有弹药自己的子类，没有道具的
+    const byValue = Object.fromEntries(filters.groupOptions.map((o) => [o.value, o.count]))
+    expect(byValue['collection']).toBe(2)
+    expect(byValue['ammo']).toBe(0)
 
-    // 计数是"选了这个还有几条" —— 此时只有一个子类，所以就是全部 2 条
-    expect(filters.subcategoryOptions[0]!.count).toBe(2)
-  })
-
-  it('⭐ 数是"去掉自己这一维"的结果（faceted search 的核心）', () => {
-    const filters = useFiltersStore()
-    // 先筛一个和大类无关、但会缩小范围的维度
-    // 品质 6（红）：海洋之泪 + 藏宝图（两条都在池里）
-    filters.grades = [6]
-
-    const byValue = Object.fromEntries(filters.categoryOptions.map((o) => [o.value, o.count]))
-    expect(byValue['props']).toBe(2)
-    expect(byValue['ammo']).toBe(0) // 两条弹药都不是红
-
-    // 现在再筛大类 = props —— 大类自己的计数不该被自己影响，
-    // 所以那一格仍然是 2（而不是变成 0）
-    filters.categories = ['props']
-    const after = Object.fromEntries(filters.categoryOptions.map((o) => [o.value, o.count]))
-    expect(after['props']).toBe(2)
+    // 再筛 collection —— 它自己的计数不该被自己影响（不是变成 0）
+    filters.groups = ['collection']
+    const after = Object.fromEntries(filters.groupOptions.map((o) => [o.value, o.count]))
+    expect(after['collection']).toBe(2)
   })
 
   it('地图选项也带计数，且是多值字段（一条物品能出在多张图上）', () => {
     const filters = useFiltersStore()
     const byValue = Object.fromEntries(filters.mapOptions.map((o) => [o.value, o.count]))
 
-    expect(byValue['长弓溪谷']).toBe(6) // 反应堆在 AZ3；火箭燃料/旧赛季弹不在池里；另有枪械一条
+    expect(byValue['长弓溪谷']).toBe(6)
     expect(byValue['AZ3']).toBe(2) // 反应堆 + 通用物资
   })
 })
 
-/* ══════════════════════ 搜索 ══════════════════════ */
+/* ══════════ ⭐ 子类：每个已选分组一行 ══════════ */
+
+/**
+ * 用户提的方案（实测确认可行）：每选一个大类，就在它下方加一行它的子类。
+ *
+ * 之前把「道具」和「弹药」都选上时，子类清单是两者的并集
+ * （收集品/钥匙/消耗品 + 19 个弹药口径），混在一起分不清谁属于谁。
+ * 分行之后归属关系是**结构性**的。
+ */
+describe('⭐ 子类行（每个已选分组一行）', () => {
+  it('⭐ 只给"已选中且真的有下一级"的分组出行', () => {
+    const filters = useFiltersStore()
+
+    // 没选任何分组 → 一行都没有
+    expect(filters.subOptionsByGroup).toEqual([])
+
+    // 选「收集品」→ 实测它没有细类（349 条全是 null）→ 不该出现空行
+    filters.groups = ['collection']
+    expect(filters.subOptionsByGroup).toEqual([])
+
+    // 选「弹药」→ 它有一个子类 ammo9x39 → 出现一行
+    filters.groups = ['ammo']
+    expect(filters.subOptionsByGroup.map((r) => r.group)).toEqual(['ammo'])
+    expect(filters.subOptionsByGroup[0]!.options.map((o) => o.value)).toEqual(['ammo9x39'])
+  })
+
+  it('⭐ 多个分组 → 每个一行，且顺序与分组标签一致', () => {
+    const filters = useFiltersStore()
+    filters.groups = ['gun', 'ammo']
+
+    const rows = filters.subOptionsByGroup.map((r) => r.group)
+    // 顺序跟 groupOptions（界面显示顺序）走，不是跟选择顺序走
+    expect(rows).toEqual(['ammo', 'gun'])
+  })
+
+  it('子类的计数是"选了这个还有几条"（不带自己这一维）', () => {
+    const filters = useFiltersStore()
+    filters.groups = ['ammo']
+    // 两条弹药都是 ammo9x39，且没有其它筛选 → 计数 2
+    expect(filters.subOptionsByGroup[0]!.options[0]!.count).toBe(2)
+  })
+
+  it('⭐ 每行的「全部」只清自己那一行，不动别的行', () => {
+    const filters = useFiltersStore()
+    filters.groups = ['ammo', 'gun']
+    filters.subs = ['ammo9x39', 'rifle']
+
+    // 清「弹药」那一行
+    filters.clearSubsOf('ammo')
+    expect(filters.subs).toEqual(['rifle']) // 枪械那行的还在
+
+    // 清「枪械」那一行
+    filters.clearSubsOf('gun')
+    expect(filters.subs).toEqual([])
+  })
+
+  it('子类筛选生效（AND 语义：分组内再挑一层）', () => {
+    const filters = useFiltersStore()
+    filters.groups = ['ammo']
+    const all = filters.rows.length
+
+    filters.subs = ['ammo9x39']
+    expect(filters.rows.length).toBe(all)
+
+    filters.subs = ['不存在的子类']
+    expect(filters.rows.length).toBe(0)
+  })
+
+  it('子类行可收起（把空间让给表格）', () => {
+    const filters = useFiltersStore()
+    // 默认展开 —— 否则用户发现不了它能筛子类
+    expect(filters.subsExpanded).toBe(true)
+  })
+})
 
 describe('搜索', () => {
   it('按名字', () => {
@@ -648,7 +716,7 @@ describe('清除筛选', () => {
   it('清掉所有维度，并把筛选计数归零', () => {
     const filters = useFiltersStore()
     filters.search = 'x'
-    filters.categories = ['props']
+    filters.groups = ['collection']
     filters.grades = [6]
     filters.maps = ['AZ3']
     filters.setVerdictFilter('must')
@@ -658,14 +726,14 @@ describe('清除筛选', () => {
 
     expect(filters.activeFilterCount).toBe(0)
     expect(filters.search).toBe('')
-    expect(filters.categories).toEqual([])
+    expect(filters.groups).toEqual([])
     expect(filters.verdictFilter).toBeNull()
   })
 
   it('⚠️ 不清 `includeExcluded` —— 它是"显示偏好"，不是筛选条件', () => {
     const filters = useFiltersStore()
     filters.includeExcluded = true
-    filters.categories = ['props']
+    filters.groups = ['collection']
 
     filters.resetFilters()
     expect(filters.includeExcluded).toBe(true)
@@ -765,15 +833,17 @@ describe('⭐ 只看该图专属（mapOnly）', () => {
  *   ② **localStorage 本身可能抛异常**（隐私模式、配额满）
  */
 describe('筛选持久化（localStorage）', () => {
-  const KEY = 'deltaforce.filters.v1'
+  // ⚠️ 版本号要跟着 store 里走 —— 这一版筛选结构从 category/subcategory
+  // 变成了 group/subs，所以键从 v1 换成了 v2（旧数据读进来会是错的）
+  const KEY = 'deltaforce.filters.v2'
 
   it('⭐ 存过的筛选会被读回来', () => {
     installLocalStorage({
       [KEY]: JSON.stringify({
         search: '海洋',
-        categories: ['props'],
-        subcategories: ['collection'],
-        thirdClasses: [],
+        groups: ['collection'],
+        subs: [],
+        
         grades: [6],
         maps: ['AZ3'],
         verdictFilter: 'must',
@@ -789,7 +859,7 @@ describe('筛选持久化（localStorage）', () => {
     const filters = useFiltersStore()
 
     expect(filters.search).toBe('海洋')
-    expect(filters.categories).toEqual(['props'])
+    expect(filters.groups).toEqual(['collection'])
     expect(filters.grades).toEqual([6])
     expect(filters.maps).toEqual(['AZ3'])
     expect(filters.verdictFilter).toBe('must')
@@ -803,7 +873,7 @@ describe('筛选持久化（localStorage）', () => {
     installLocalStorage({
       [KEY]: JSON.stringify({
         search: 12345, // 应该是字符串
-        categories: 'props', // 应该是数组
+        groups: 'collection', // 应该是数组
         grades: ['gold'], // 应该是 0~6 的整数数组
         verdictFilter: 'nonsense', // 不在四个枚举里
         mapOnly: 'yes', // 应该是布尔
@@ -817,7 +887,7 @@ describe('筛选持久化（localStorage）', () => {
 
     const filters = useFiltersStore()
     expect(filters.search).toBe('')
-    expect(filters.categories).toEqual([])
+    expect(filters.groups).toEqual([])
     expect(filters.grades).toEqual([])
     expect(filters.verdictFilter).toBeNull()
     expect(filters.mapOnly).toBe(false)
@@ -856,12 +926,12 @@ describe('筛选持久化（localStorage）', () => {
     useItemsStore().items = FIXTURE
 
     const filters = useFiltersStore()
-    filters.toggleCategory('ammo')
+    filters.toggleGroup('ammo')
     filters.maps = ['AZ3']
     await nextTick() // watch 默认异步
 
     const saved = JSON.parse(store.get(KEY)!) as Record<string, unknown>
-    expect(saved['categories']).toEqual(['ammo'])
+    expect(saved['groups']).toEqual(['ammo'])
     expect(saved['maps']).toEqual(['AZ3'])
   })
 
@@ -873,11 +943,11 @@ describe('筛选持久化（localStorage）', () => {
     expect(useFiltersStore().grades).toEqual([0, 6])
   })
 
-  it('⭐ categories 不是数组时回退空数组（localStorage 内容不可信）', () => {
-    installLocalStorage({ [KEY]: JSON.stringify({ categories: 'props' }) })
+  it('⭐ groups 不是数组时回退空数组（localStorage 内容不可信）', () => {
+    installLocalStorage({ [KEY]: JSON.stringify({ groups: 'collection' }) })
     setActivePinia(createPinia())
     useItemsStore().items = FIXTURE
-    expect(useFiltersStore().categories).toEqual([])
+    expect(useFiltersStore().groups).toEqual([])
   })
 })
 
@@ -897,19 +967,19 @@ describe('⭐ 多选筛选', () => {
   it('大类多选：道具 + 弹药 是并集', () => {
     const filters = useFiltersStore()
 
-    filters.categories = ['props']
+    filters.groups = ['collection']
     const onlyProps = filters.rows.length
 
-    filters.categories = ['ammo']
+    filters.groups = ['ammo']
     const onlyAmmo = filters.rows.length
 
-    filters.categories = ['props', 'ammo']
+    filters.groups = ['collection', 'ammo']
     expect(filters.rows.length).toBe(onlyProps + onlyAmmo)
   })
 
   it('⭐ 跨维是 AND：大类或 + 品质限定', () => {
     const filters = useFiltersStore()
-    filters.categories = ['props', 'ammo']
+    filters.groups = ['collection', 'ammo']
     const both = filters.rows.length
 
     filters.grades = [6] // 红
@@ -935,8 +1005,9 @@ describe('⭐ 多选筛选', () => {
     filters.grades = [6, 2]
     expect(countNonZero()).toBe(reds + greens)
 
-    // 而品质 0 的（枪械）在三种情况下都在 —— 这正是用户要的行为
-    expect(filters.rows.some((r) => r.item.grade === 0)).toBe(true)
+    // 而品质 0 的（枪械）**不该**出现在这里 —— 见下面「品质 0」那一组，
+    // 这是用户明确要求的：单看某个品质时，无品质的东西不该占位
+    expect(filters.rows.some((r) => r.item.grade === 0)).toBe(false)
   })
 
   it('地图多选：任意一张命中即算', () => {
@@ -956,34 +1027,34 @@ describe('⭐ 多选筛选', () => {
   it('⭐ 点同一个标签两次 = 取消（标签的天然交互）', () => {
     const filters = useFiltersStore()
 
-    filters.toggleCategory('props')
-    expect(filters.categories).toEqual(['props'])
+    filters.toggleGroup('collection')
+    expect(filters.groups).toEqual(['collection'])
 
-    filters.toggleCategory('props')
-    expect(filters.categories).toEqual([])
+    filters.toggleGroup('collection')
+    expect(filters.groups).toEqual([])
   })
 
   it('⚠️ 每次改大类都清空子类与细类（防止出现不存在的组合）', () => {
     const filters = useFiltersStore()
-    filters.toggleCategory('props')
-    filters.subcategories = ['collection']
-    filters.thirdClasses = ['x']
+    filters.toggleGroup('collection')
+    filters.groups = ['collection']
+    filters.subs = ['x']
 
     // 再加一个大类 —— 子类里那个「收集品」只属于道具，
     // 留着会让"（道具或弹药）且收集品"看起来像是用户想要的，而其实不是
-    filters.toggleCategory('ammo')
-    expect(filters.subcategories).toEqual([])
-    expect(filters.thirdClasses).toEqual([])
+    filters.toggleGroup('ammo')
+    expect(filters.subs).toEqual([])
+    expect(filters.subs).toEqual([])
   })
 
   it('「全部」标签清空该维（含下级）', () => {
     const filters = useFiltersStore()
-    filters.categories = ['props']
-    filters.subcategories = ['collection']
+    filters.groups = ['collection']
+    filters.groups = ['collection']
 
-    filters.clearCategories()
-    expect(filters.categories).toEqual([])
-    expect(filters.subcategories).toEqual([])
+    filters.clearGroups()
+    expect(filters.groups).toEqual([])
+    expect(filters.subs).toEqual([])
   })
 
   it('⭐ 多选时交叉计数不随自己这一维的已选状态变化', () => {
@@ -996,75 +1067,89 @@ describe('⭐ 多选筛选', () => {
      */
     const filters = useFiltersStore()
 
-    const before = Object.fromEntries(filters.categoryOptions.map((o) => [o.value, o.count]))
-    filters.categories = ['props']
-    const after = Object.fromEntries(filters.categoryOptions.map((o) => [o.value, o.count]))
+    const before = Object.fromEntries(filters.groupOptions.map((o) => [o.value, o.count]))
+    filters.groups = ['collection']
+    const after = Object.fromEntries(filters.groupOptions.map((o) => [o.value, o.count]))
 
     expect(after['props']).toBe(before['props'])
     expect(after['ammo']).toBe(before['ammo'])
   })
 
-  it('子类/细类的级联清空走 store 动作（所以能测到）', () => {
+  it('级联清空走 store 动作（所以能测到）—— 切分组要清子类', () => {
+    // ⚠️ 这个级联必须在 store 里，不能写在组件的 @change 里 ——
+    //    写在模板里虽然也能跑，但测试碰不到它（模板逻辑没法单测），
+    //    而"改上级要清下级"正是最容易忘、忘了就静默出错的那类规则。
     const filters = useFiltersStore()
-    filters.categories = ['props']
-    filters.subcategories = ['collection']
-    filters.thirdClasses = ['x']
+    filters.groups = ['collection']
+    filters.subs = ['x']
 
-    filters.setSubcategories(['key'])
-    expect(filters.subcategories).toEqual(['key'])
-    expect(filters.thirdClasses).toEqual([])
+    filters.toggleGroup('ammo')
+    expect(filters.subs).toEqual([])
+    expect(filters.groups).toEqual(['collection', 'ammo'])
   })
 })
 
 
-/* ══════════ ⭐ 品质 0（「灰」）不是品质 —— 它只属于枪械 ══════════ */
+/* ══════════ ⭐ 品质 0（「灰」）不是品质 —— 有条件豁免 ══════════ */
 
 /**
- * 用户的原话：
- * 「大类选择枪械就不要再添加一个灰色的品质选项了，
- *   当选择枪械大类时自动选择所有枪械就可以了」
+ * 这一组来自用户**两次**反馈，第一次我做宽了：
  *
- * 实测依据：品质 0 共 68 条，**全是枪械**（枪械没有品质等级）。
- * 所以它是一个"缺失值"，不是一个"品质"。
+ *   第一次：「大类选择枪械就不要再添加一个灰色的品质选项了，
+ *           当选择枪械大类时自动选择所有枪械就可以了」
+ *   → 我实现成"品质 0 永远不受品质筛选"
+ *
+ *   第二次：「存在bug，在只选择单一品质时，枪械这种无品质的物品也会占位」
+ *   → 说明豁免必须**只在显式选了枪械时生效**
+ *
+ * 实测依据：品质 0 共 68 条，**全是枪械**（枪械没有品质等级），
+ * 与「枪械」分组是 1:1 —— 它是"缺失值"，不是"某个品质"。
  */
-describe('⭐ 品质 0（灰）不是品质', () => {
-  it('⭐ 品质筛选**不影响**枪械', () => {
+describe('⭐ 品质 0（灰）不是品质 —— 有条件豁免', () => {
+  it('没筛品质时，枪械照常显示', () => {
     const filters = useFiltersStore()
-
-    // 没筛品质时，枪械在池里
     expect(filters.rows.some((r) => r.item.grade === 0)).toBe(true)
-    const before = filters.rows.filter((r) => r.item.grade === 0).length
+  })
 
-    // 筛「金」之后，枪械**不应该**被一起排掉
+  it('⭐ 只筛品质（没选枪械）→ 枪械**被排掉**（这是用户报的 bug）', () => {
+    const filters = useFiltersStore()
+    filters.grades = [5] // 金
+    expect(filters.rows.some((r) => r.item.grade === 0)).toBe(false)
+  })
+
+  it('⭐ 显式选了「枪械」→ 不受品质筛选影响，全部枪械都在', () => {
+    const filters = useFiltersStore()
+    filters.groups = ['gun']
+    filters.grades = [5] // 一个残留的品质筛选
+
+    const guns = filters.rows.filter((r) => r.item.categoryCode === 'gun')
+    expect(guns.length).toBeGreaterThan(0)
+    // 而且每一个都是品质 0（枪械没有品质）—— 它们是被豁免进来的
+    expect(guns.every((r) => r.item.grade === 0)).toBe(true)
+  })
+
+  it('⭐ 综合场景：收藏品(金) + 全部枪械', () => {
+    const filters = useFiltersStore()
+    filters.groups = ['collection', 'gun']
     filters.grades = [5]
-    const after = filters.rows.filter((r) => r.item.grade === 0).length
-    expect(after).toBe(before)
+
+    const guns = filters.rows.filter((r) => r.item.categoryCode === 'gun')
+    expect(guns.length).toBeGreaterThan(0)
+    // 收集品那边则严格按品质筛
+    const collections = filters.rows.filter((r) => r.item.categoryCode === 'props')
+    expect(collections.every((r) => r.item.grade === 5)).toBe(true)
   })
 
   it('⭐ 品质选项里不列「灰」（它与「枪械」是 1:1，纯属多余）', () => {
     const filters = useFiltersStore()
     expect(filters.gradeOptions.map((o) => o.value)).not.toContain('0')
-    // 但其它品质仍在
     expect(filters.gradeOptions.map((o) => o.value)).toContain('5')
   })
 
-  it('想只看枪械 → 用大类，不用品质', () => {
+  it('想只看枪械 → 用分组，不用品质', () => {
     const filters = useFiltersStore()
-    filters.categories = ['gun']
+    filters.groups = ['gun']
     expect(filters.rows.length).toBeGreaterThan(0)
     expect(filters.rows.every((r) => r.item.categoryCode === 'gun')).toBe(true)
-  })
-
-  it('⭐ 大类=枪械 + 品质=金 时，枪械仍然显示（这是用户的实际场景）', () => {
-    /**
-     * 这正是用户遇到的问题：他想看「收藏品 + 消耗品 + 枪的价格」，
-     * 于是选了多个大类 + 某个品质 —— 结果枪全没了，因为枪的品质是 0。
-     */
-    const filters = useFiltersStore()
-    filters.categories = ['props', 'gun']
-    filters.grades = [5]
-
-    const guns = filters.rows.filter((r) => r.item.categoryCode === 'gun')
-    expect(guns.length).toBeGreaterThan(0)
   })
 })

@@ -63,9 +63,8 @@ const pageSize = ref(50)
 watch(
   () => [
     filters.search,
-    filters.categories,
-    filters.subcategories,
-    filters.thirdClasses,
+    filters.groups,
+    filters.subs,
     filters.grades,
     filters.maps,
     filters.mapOnly,

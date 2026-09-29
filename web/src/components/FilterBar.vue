@@ -1,46 +1,40 @@
 <script setup lang="ts">
 /**
- * 筛选栏 —— **平铺多选标签** + 子类/细类下拉 + 搜索。
+ * 筛选栏 —— 顶层分组标签 + 每个分组一行子类 + 品质 + 出产地图。
  *
  * ═══════════════════════════════════════════════════════════════════════
- * 为什么从下拉框改成平铺标签（这一轮最大的交互变化）
+ * 为什么顶层是 7 个而不是官方的 5 个大类
  * ═══════════════════════════════════════════════════════════════════════
- * 两个理由，一个是你的需求，一个是参照：
- *
- * ① **单选不够用。** 你原话：「我如果想看收藏品和消耗品呢，如果这个时候
- *    我也想看看枪的价格呢」—— 单选框表达不了"这几个一起看"。
- *    所以大类、品质、地图改成**多选标签**（同维 OR，跨维 AND）。
- *
- * ② **四个同类网站全都这么做。** dergame / moligod / shushu / kkrb
- *    里没有一个用下拉框 —— 因为下拉框要"展开→找→点→收起"四步，
- *    而标签一眼就能看到**有多少个选项、当前选了哪些**。
- *
- * 哪些用标签、哪些仍用下拉，是按**选项数量**分的：
- *   · 大类 5 个、品质 7 个、地图 6 个 → 标签平铺（一屏放得下）
- *   · 子类 46 个、细类少数 → 可搜索的多选下拉（平铺会占掉半屏）
+ * 官方把「收集品 / 钥匙 / 消耗品」放在 `props`（道具）的子类里，
+ * 但玩家心里它们是并列的类别 —— moligod 就是一层平铺。
+ * 所以前端把它们提升为顶层（见 stores/filters.ts 的 GROUP_DEFS）。
+ * 这是**展示层的重组**，不改数据。
  *
  * ═══════════════════════════════════════════════════════════════════════
- * 标签上的数字是什么意思
+ * 为什么子类要"每个分组一行"（用户提的方案，实测确认可行）
  * ═══════════════════════════════════════════════════════════════════════
- * 是「**选中它、且满足其它维度筛选**的物品数」。
+ * 用户的原话：
+ *   「别的网站把子类平铺的关键是他们不能自定义选择多个大类，因为大类对应的
+ *     子类是不同的，如果我直接照抄他们会让界面变得很怪，但是下拉条同样无法
+ *     避免过长后寻找困难的问题。我现在想的办法是，每选择一个大类，就在大类的
+ *     下方添加一个独立的行，将对应大类的子类进行平铺」
  *
- * ⚠️ 它**不随自己这一维的已选状态变化** —— 这是 faceted search 的标准行为，
- *    也是唯一不骗人的算法。比如已经选了「道具 + 弹药」，
- *    「配件」上显示的仍是"配件有多少条（在其它筛选下）"，
- *    而不是 0（那会让人以为配件没东西）。
+ * 他诊断的问题是真的：把「道具」和「弹药」都选上时，子类清单是两者的并集
+ * （收集品/钥匙/消耗品 + 19 个弹药口径），混在一起**分不清谁属于谁**。
  *
- * 实现在 `stores/filters.ts` 的 `pass(item, skip)` —— 数某维度时把它自己跳过。
+ * 分行之后归属关系是**结构性**的。实测各分组的子类数量：
+ *   收集品 0 · 消耗品 3 · 钥匙 0 · 配件 9 · 弹药 19 · 防护 4 · 枪械 8
+ * 都只占一行（弹药折两行），而没有子类的分组**不显示空行**。
+ *
+ * 三点补充（防止"分行"本身带来新困惑）：
+ *   ① 每行最左边标出分组名 —— 「收集品」「步枪」这类名字不自带父级信息
+ *   ② 每行的「全部」只清**这一行**，不动别的行
+ *   ③ 整个子类区可折叠 —— 不需要细筛时收起来，把空间让给表格
  */
 
 import { computed } from 'vue'
 import { useFiltersStore } from '@/stores/filters'
 import { useMetaStore } from '@/stores/meta'
-/**
- * 判定档位的中文名 —— **从定义处导入，不在这里再写一份**。
- *
- * 重复写一份的后果很具体：改一处忘了另一处，于是表格里的判定标签
- * 和空结果提示里的说法不一致（一个说"必摸"，一个说"必须摸"）。
- */
 import { VERDICT_LABEL } from '@/stores/rules'
 
 const filters = useFiltersStore()
@@ -51,51 +45,42 @@ function gradeColor(grade: number): string {
   return metaStore.gradeColors[String(grade)] ?? '#8b93a1'
 }
 
-/** 品质标签要按品质顺序排（灰→白→绿→蓝→紫→金→红），而不是按数量 */
-const sortedGrades = computed(() =>
-  [...filters.gradeOptions].sort((a, b) => Number(a.value) - Number(b.value)),
-)
-
-/** 大类标签按固定顺序（与后端清单一致），不按数量跳来跳去 */
-const sortedCategories = computed(() => filters.categoryOptions)
-
-const thirdClassEnabled = computed(() => filters.categories.length > 0)
-
 const isEmpty = computed(() => filters.rows.length === 0)
 
-/** 空结果时给一句引导 —— 最常见的空结果是"阈值把结果全排掉了" */
 const emptyHint = computed(() => {
   if (!isEmpty.value) return ''
   if (filters.verdictFilter !== null) {
     return `注意你正在「只看${VERDICT_LABEL[filters.verdictFilter]}」—— 阈值或组合条件可能把结果全排掉了。`
   }
-  return '当前条件下没有物品。试试去掉几个筛选标签，或者把地图的「只看该图专属」关掉。'
+  return '当前条件下没有物品。试试去掉几个标签，或者把「只看该图专属」关掉。'
 })
 
-
+/** 子类区该不该显示：至少有一个选中的分组带下一级 */
+const showSubRows = computed(() => filters.groupsWithSubs > 0)
 </script>
 
 <template>
-  <!-- 同上：`df-card` 必须写在根节点上，本组件有两个根（筛选栏 + 空结果提示）-->
-  <div class="df-card bar">
-    <!-- ══════════ 第一行：大类标签 + 搜索 + 子类/细类 ══════════ -->
+  <div class="bar">
+    <!-- ══════════ 第一行：分组标签 + 搜索 ══════════ -->
     <div class="row">
       <span class="group-label">大类</span>
+
       <button
         class="chip"
-        :class="{ on: filters.categories.length === 0 }"
+        :class="{ on: filters.groups.length === 0 }"
         type="button"
-        @click="filters.clearCategories()"
+        @click="filters.clearGroups()"
       >
         全部
       </button>
+
       <button
-        v-for="o in sortedCategories"
+        v-for="o in filters.groupOptions"
         :key="o.value"
         class="chip"
-        :class="{ on: filters.categories.includes(o.value), zero: o.count === 0 }"
+        :class="{ on: filters.groups.includes(o.value), zero: o.count === 0 }"
         type="button"
-        @click="filters.toggleCategory(o.value)"
+        @click="filters.toggleGroup(o.value)"
       >
         {{ o.label }}<span class="n">{{ o.count }}</span>
       </button>
@@ -110,61 +95,49 @@ const emptyHint = computed(() => {
         placeholder="搜物品名 / 别名 / 官方ID"
       />
 
-      <!-- 子类 46 个，平铺会占半屏 —— 用可搜索的多选 -->
-      <el-select
-        :model-value="filters.subcategories"
-        class="sel"
-        size="small"
-        multiple
-        collapse-tags
-        collapse-tags-tooltip
-        clearable
-        filterable
-        :disabled="filters.categories.length === 0"
-        :placeholder="filters.categories.length === 0 ? '先选大类' : '子类（可多选）'"
-        @update:model-value="filters.setSubcategories($event)"
+      <!-- 子类区折叠开关：不需要细筛时收起来，把空间让给表格 -->
+      <el-tooltip
+        :content="`展开后每个已选大类各占一行，显示它的${filters.groupsWithSubs}组细分。收起可以把空间让给表格。`"
+        placement="bottom"
+        :show-after="400"
+        :disabled="!showSubRows"
       >
-        <el-option
-          v-for="o in filters.subcategoryOptions"
-          :key="o.value"
-          :value="o.value"
-          :label="o.label"
+        <el-button
+          size="small"
+          text
+          :disabled="!showSubRows"
+          @click="filters.subsExpanded = !filters.subsExpanded"
         >
-          <span class="opt">
-            <span>{{ o.label }}</span>
-            <span class="count">{{ o.count }}</span>
-          </span>
-        </el-option>
-      </el-select>
-
-      <el-select
-        :model-value="filters.thirdClasses"
-        class="sel narrow"
-        size="small"
-        multiple
-        collapse-tags
-        collapse-tags-tooltip
-        clearable
-        filterable
-        :disabled="!thirdClassEnabled"
-        :placeholder="thirdClassEnabled ? '细类' : '先选大类'"
-        @update:model-value="filters.thirdClasses = $event"
-      >
-        <el-option
-          v-for="o in filters.thirdClassOptions"
-          :key="o.value"
-          :value="o.value"
-          :label="o.label"
-        >
-          <span class="opt">
-            <span>{{ o.label }}</span>
-            <span class="count">{{ o.count }}</span>
-          </span>
-        </el-option>
-      </el-select>
+          {{ filters.subsExpanded ? '收起细分 ▴' : '展开细分 ▾' }}
+        </el-button>
+      </el-tooltip>
     </div>
 
-    <!-- ══════════ 第二行：品质标签 + 地图标签 + 开关 ══════════ -->
+    <!-- ══════════ 子类行：每个已选分组一行 ══════════ -->
+    <template v-if="showSubRows && filters.subsExpanded">
+      <div v-for="row in filters.subOptionsByGroup" :key="row.group" class="row sub-row">
+        <!-- ① 标出分组名 —— 否则三行子类并排时分不清谁属于谁 -->
+        <span class="sub-label">{{ row.label }} ·</span>
+
+        <!-- ② 这一行的「全部」只清这一行 -->
+        <button class="chip tiny" type="button" @click="filters.clearSubsOf(row.group)">
+          全部
+        </button>
+
+        <button
+          v-for="o in row.options"
+          :key="o.value"
+          class="chip tiny"
+          :class="{ on: filters.subs.includes(o.value), zero: o.count === 0 }"
+          type="button"
+          @click="filters.toggleSub(o.value)"
+        >
+          {{ o.label }}<span class="n">{{ o.count }}</span>
+        </button>
+      </div>
+    </template>
+
+    <!-- ══════════ 最后一行：品质 + 出产地图 + 开关 ══════════ -->
     <div class="row">
       <span class="group-label">品质</span>
       <button
@@ -176,7 +149,7 @@ const emptyHint = computed(() => {
         全部
       </button>
       <button
-        v-for="o in sortedGrades"
+        v-for="o in filters.gradeOptions"
         :key="o.value"
         class="chip grade-chip"
         :class="{ on: filters.grades.includes(Number(o.value)), zero: o.count === 0 }"
@@ -190,13 +163,10 @@ const emptyHint = computed(() => {
       <span class="divider" />
 
       <!--
-        ── 地图（下拉多选）──
-
-        原来是平铺标签，但地图名较长（「潮汐监狱」「航天基地」）、
-        加上数字一共占了半行 —— 换成下拉节省空间（用户建议）。
-        而大类/品质仍然平铺：它们只有 5 个和 7 个，且**经常切换**，
-        平铺一眼能看到当前选了哪些；地图通常只选一张，不值得占那行空间。
+        ③ 地图前面加「出产地图」标签 —— 用户建议：
+        与「钥匙」这类名称区分开（钥匙也是一种"类"，但地图是出产地，不是分类）。
       -->
+      <span class="group-label wide">出产地图</span>
       <el-tooltip
         content="选地图后只显示**已确认**会在这张图刷出的物资。没标注出产地的（待补，约 225 条）也会被隐藏 —— 因为无法确认它会不会出。"
         placement="bottom"
@@ -210,7 +180,7 @@ const emptyHint = computed(() => {
           collapse-tags
           collapse-tags-tooltip
           clearable
-          placeholder="全部地图"
+          placeholder="不限"
         >
           <el-option
             v-for="o in filters.mapOptions"
@@ -226,10 +196,6 @@ const emptyHint = computed(() => {
         </el-select>
       </el-tooltip>
 
-      <!--
-        「只看该图专属」：隐藏「全地图」的通用物资。
-        没选地图时没有意义，所以禁用（并压暗，而不是默默无效）。
-      -->
       <el-tooltip
         content="隐藏「全地图」的通用物资，只留这张图特有的。不选地图时无效。"
         placement="bottom"
@@ -264,7 +230,6 @@ const emptyHint = computed(() => {
     </div>
   </div>
 
-  <!-- 空结果提示：给下一步，而不只是说"没有数据" -->
   <div v-if="isEmpty" class="empty-hint dim small">{{ emptyHint }}</div>
 </template>
 
@@ -272,23 +237,43 @@ const emptyHint = computed(() => {
 .bar {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 8px 12px;
-  /* 背景与边框交给外层 `.df-card` */
+  gap: 5px;
+  padding: 7px 12px;
+  /* 背景与边框交给外层 `.df-card`（本组件有两个根节点，
+     父级传的 class 无法自动继承，所以 df-card 写在根节点上）*/
 }
 
 .row {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 5px;
+}
+
+/* 子类行缩进 + 左侧一条竖线：视觉上从属于上面的分组标签 */
+.sub-row {
+  padding-left: 10px;
+  border-left: 2px solid var(--df-border);
+  margin-left: 4px;
 }
 
 .group-label {
   flex: none;
-  width: 30px;
+  width: 52px;
   color: var(--df-text-dim);
   font-size: 12px;
+}
+
+.group-label.wide {
+  width: auto;
+  margin-right: 2px;
+}
+
+.sub-label {
+  flex: none;
+  color: var(--df-text-dim);
+  font-size: 12px;
+  min-width: 52px;
 }
 
 /* ── 标签（chip）── */
@@ -310,6 +295,12 @@ const emptyHint = computed(() => {
   user-select: none;
 }
 
+.chip.tiny {
+  padding: 1px 7px;
+  font-size: 11px;
+  line-height: 16px;
+}
+
 .chip:hover {
   color: var(--df-text);
   border-color: var(--df-accent);
@@ -326,7 +317,7 @@ const emptyHint = computed(() => {
   font-weight: 600;
 }
 
-/* 数量为 0 的选项压暗：它仍然可点（可能有别的组合），但不抢注意力 */
+/* 数量为 0 的选项压暗：它仍可点（可能有别的组合），但不抢注意力 */
 .chip.zero {
   opacity: 0.45;
 }
@@ -341,7 +332,7 @@ const emptyHint = computed(() => {
   color: var(--df-text-dim);
 }
 
-/* 品质标签带一个品质色圆点 —— 和表格里的图标描边同一套色 */
+/* 品质标签带一个品质色圆点 —— 和表格里图标描边同一套色 */
 .grade-chip .dot {
   display: inline-block;
   width: 6px;
@@ -363,37 +354,30 @@ const emptyHint = computed(() => {
 }
 
 .search {
-  width: 190px;
+  width: 186px;
 }
 
 .sel {
   width: 168px;
 }
 
-.sel.narrow {
-  width: 120px;
-}
-
 .map-sel {
-  width: 150px;
+  width: 140px;
 }
 
 /*
- * ⭐ 下拉三角的可点区域放大。
+ * 下拉三角的可点区域放大。
  *
  * 用户反馈：「最右边的下拉三角感觉有点难点，更改成点击这一个栏位就能触发展开」。
- *
- * 实测原因：`clearable` 的清除叉（✖）就在三角旁边，鼠标稍微靠左一点
- * 就点到了叉 —— 于是变成"清空"而不是"展开"，感觉很不可预测。
- * 这里把整个控件都变成手型光标（EP 默认已经能点开，只是没有视觉提示），
- * 同时把三角和叉的间距拉开，减少误点。
+ * 实测原因：`clearable` 的清除叉紧挨着三角，鼠标稍偏左就变成了"清空"
+ * 而不是"展开"，感觉不可预测。这里把整个控件变成手型光标，
+ * 并给三角与叉之间留出间距。
  */
 :deep(.el-select__wrapper) {
   cursor: pointer;
 }
 
 :deep(.el-select__caret) {
-  /* 视觉尺寸略大，并且给两侧留出点击余量 */
   font-size: 14px;
   margin: 0 -2px 0 2px;
   padding: 3px 1px;
@@ -404,12 +388,10 @@ const emptyHint = computed(() => {
   margin-right: 2px;
 }
 
-/* 窄下拉里的多选标签别把高度撞开 */
 :deep(.el-select__wrapper.is-small) {
   min-height: 24px;
 }
 
-/* 下拉选项里：左边名字、右边数量 */
 .opt {
   display: flex;
   align-items: center;

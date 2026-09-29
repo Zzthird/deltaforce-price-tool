@@ -25,8 +25,8 @@ const itemsStore = useItemsStore()
 const metaStore = useMetaStore()
 const theme = useThemeStore()
 
-/** 三个主题按钮（顺序就是亮到暗）*/
-const THEMES: ThemeMode[] = ['light', 'dark', 'night']
+/** 两个主题按钮（日间 → 深色）*/
+const THEMES: ThemeMode[] = ['light', 'dark']
 
 /**
  * 两个请求用 `Promise.all` **并发**发出 —— 它们互不依赖，

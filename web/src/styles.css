@@ -5,8 +5,9 @@
  * 三套主题怎么分工
  * ═══════════════════════════════════════════════════════════════════════
  *   `light`  日间 —— 白底，Element Plus 的默认主题（一行不用覆盖）
- *   `dark`   深色（默认）—— 深灰蓝底 + 卡片分层。给"晚上开着灯"用
- *   `night`  深夜 —— 近黑底，给"关灯躺床上"用。就是原来那套，但修掉了白条
+ *   `dark`   深色（默认）—— 深灰蓝底 + 卡片分层
+ *
+ * （原本还有第三套「深夜」= 近黑底。用户实测后说两套就够，已删。）
  *
  * ⚠️ 一套主题**必须两个开关同时切**，少一个就会花：
  *
@@ -82,28 +83,6 @@ html[data-df-theme='dark'] {
   --df-value: #e8a64e;
 }
 
-/* ── 深夜：近黑，就是原来那套（但不再有白条）── */
-html[data-df-theme='night'] {
-  color-scheme: dark;
-
-  --df-bg: #0d0f12;
-  --df-surface: #14161a;
-  --df-surface-2: #1b1e24;
-  --df-border: #2c313a;
-  --df-border-soft: #22262d;
-
-  --df-text: #d6dbe2;
-  --df-text-dim: #858e9c;
-  --df-text-faint: #5c6472;
-
-  --df-accent: #5f8fc8;
-  --df-accent-soft: #1e2733;
-
-  --df-up: #cd5050;
-  --df-down: #3aa065;
-  --df-value: #d99a45;
-}
-
 /* ══════════════════════════════════════════════════════════════════════
  * Element Plus 变量的两处修正
  * ══════════════════════════════════════════════════════════════════════ */
@@ -153,17 +132,8 @@ html[data-df-theme='dark'] {
   --el-table-border-color: #2b313b;
 }
 
-/* 深夜也把表格透明化，否则会盖住卡片的底色 */
-html[data-df-theme='night'] .el-table {
-  --el-table-bg-color: transparent;
-  --el-table-tr-bg-color: transparent;
-  --el-table-row-hover-bg-color: #22262d;
-  --el-table-border-color: #22262d;
-}
-
-/* 两套深色都用透明表格 → 表格跟着卡片的表面色走 ✓ */
-html[data-df-theme='dark'] .el-table,
-html[data-df-theme='night'] .el-table {
+/* 深色主题下表格透明 → 表格跟着卡片的表面色走 */
+html[data-df-theme='dark'] .el-table {
   background: transparent;
 }
 
