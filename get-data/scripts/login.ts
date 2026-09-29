@@ -120,6 +120,36 @@ async function waitEnter(text: string): Promise<void> {
   })
 }
 
+/**
+ * 跟着跳转走，**每一跳都把 cookie 收下来**。
+ *
+ * ⚠️ 这一步本来我以为不用做 ✗（参考实现里写的是 `allow_redirects = false`）——
+ *    但浏览器在 QQ 登录这条链上会接连跳好几跳，
+ *    **登录态 cookie（skey / p_skey 之类）就是在某一跳里下的** ✗。
+ *    不跟的话就拿着半套 cookie 去请求授权 → 腾讯说「你还没登录」✗
+ *    （表现为 Location 里出现 `oauth2.0/show?which=Login`）。
+ */
+async function follow(
+  startUrl: string,
+  jar: CookieJar,
+  maxHops = 6,
+): Promise<{ finalUrl: string; hops: number; statuses: number[] }> {
+  let url = startUrl
+  const statuses: number[] = []
+  for (let i = 0; i <= maxHops; i += 1) {
+    const res = await get(url, jar)
+    statuses.push(res.status)
+    if (res.status >= 300 && res.status < 400) {
+      const next = res.headers.get('location')
+      if (!next) break
+      url = new URL(next, url).toString()
+      continue
+    }
+    break
+  }
+  return { finalUrl: url, hops: statuses.length - 1, statuses }
+}
+
 /* ══════════════════════════ 主流程 ══════════════════════════ */
 
 async function main(): Promise<void> {
@@ -257,13 +287,27 @@ async function main(): Promise<void> {
   }
 
   /* ── ④ 走一遍跳转，把登录态 cookie 收下来 ── */
-  const r4 = await get(redirectUrl, jar)
+  const hop = await follow(redirectUrl, jar)
   const qq = parseQqFromRedirect(redirectUrl)
-  console.log(`④ 登录跳转      HTTP ${r4.status} · QQ = ${qq ?? '（没解析出来）'}`)
+  console.log(
+    `④ 登录跳转      ${hop.statuses.join('→')} · 跳了 ${hop.hops} 跳 · QQ = ${qq ?? '（没解析出来）'}`,
+  )
+  /**
+   * ★ **把 cookie 名字打出来** —— 这是排查“腾讯说我没登录”的唯一线索。
+   *
+   * 第一次失败时我把原因猜成“g_tk 算错”✗，完全猜错 ✗ ——
+   * 真相是登录态 cookie 没带对（Location 里出现了 `which=Login`）✗。
+   * 所以现在**直接把证据打印出来**，不靠猜 ✓
+   */
+  console.log(`   cookie（${jar.names().length} 个）：${jar.names().join(', ')}`)
 
   const pSkey = jar.get('p_skey')
-  if (pSkey === null) {
-    console.log('   ⚠️ cookie 里没有 p_skey —— 下面换 code 那一步很可能失败')
+  const skey = jar.get('skey')
+  if (pSkey === null || skey === null) {
+    console.log(
+      `   ⚠️ 关键 cookie 缺失：${pSkey === null ? 'p_skey ' : ''}${skey === null ? 'skey' : ''}` +
+        ` —— 下面换 code 那步大概会失败`,
+    )
   }
 
   /* ── ⑤ 换 code ── */
@@ -300,10 +344,24 @@ async function main(): Promise<void> {
   console.log(`⑤ 换 code        HTTP ${r5.status} · ${codeMatch ? '拿到 code ✓' : '没拿到 code ✗'}`)
 
   if (!codeMatch?.[1]) {
-    console.log(`   Location: ${location.slice(0, 200) || '（空）'}`)
+    console.log(`   Location: ${location.slice(0, 300) || '（空）'}`)
+    /**
+     * ⚠️ **不要把可能的原因写成结论** —— 第一次我把这里写成
+     *    “最常见的原因是 g_tk 算错”，结果真实原因是登录态 cookie 没带对 ✗。
+     *    报错把人引到错误方向，比不报错还糟 ✗。
+     *    现在只陈述**看到的事实**，并把 cookie 名单一并给出 ✓
+     */
+    if (location.includes('which=Login')) {
+      throw new Error(
+        '腾讯返回“请先登录”（Location 里有 which=Login）—— 说明发授权请求时' +
+          `登录态 cookie 没带对。当前 cookie（${jar.names().length} 个）：${jar.names().join(', ')}`,
+      )
+    }
     throw new Error(
-      '没拿到 code。最常见的原因是 g_tk 算错（必须用 getGtk，初始值 5381）' +
-        '，其次是 cookie 过期或触发了风控。',
+      '没拿到 code（Location 里也不含 code）。可能是：' +
+        '① g_tk 算错（必须用 getGtk，初始值 5381）；' +
+        '② cookie 过期或触发风控。' +
+        `当前 cookie（${jar.names().length} 个）：${jar.names().join(', ')}`,
     )
   }
   const qcCode = decodeURIComponent(codeMatch[1])
