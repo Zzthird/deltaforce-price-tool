@@ -72,16 +72,26 @@ interface GroupDef {
   categoryCode: string
   subcategory?: string
   /**
-   * 这个分组的**下一级**取哪个字段：
-   *   · `subcategory` —— 配件/弹药/防护/枪械 用（它们还没被拆到下一层）
-   *   · `thirdClass`  —— 收集品/消耗品/钥匙 用（它们本身就是 props 的子类，
-   *                       再往下就是官方三级分类的第三层）
+   * 这个分组的**下一级**取哪个字段。
+   *
+   * 三层字段分别是谁在用（都是实测出来的）：
+   *   · `itemSubtype`  —— **收集品**用（9 个：工艺藏品/资料情报/家居物品/
+   *                        电子物品/工具材料/医疗道具/能源燃料/身份牌/生活用品）。
+   *                        实测 586 条收集品全都有值，而且与 moligod 的
+   *                        「二级分类」筛选完全一致 —— 它的值**本身就是中文**，
+   *                        所以不需要再翻译。
+   *   · `thirdClass`   —— **消耗品**用（3 个：维修套件/药品/针剂）。
+   *                        注意全项目只有 30 条带 thirdClass，全在消耗品。
+   *   · `subcategory`  —— 配件/弹药/防护/枪械 用（它们还没被拆到下一层）
+   *
+   * ⚠️ 收集品曾经被我误判成"没有子类"—— 因为我只看了 `thirdClass`，
+   *    而它的细分其实在 `itemSubtype` 里。两者是不同的字段。
    */
-  nextLevel: 'subcategory' | 'thirdClass'
+  nextLevel: 'subcategory' | 'thirdClass' | 'itemSubtype'
 }
 
 const GROUP_DEFS: readonly GroupDef[] = [
-  { value: 'collection', categoryCode: 'props', subcategory: 'collection', nextLevel: 'thirdClass' },
+  { value: 'collection', categoryCode: 'props', subcategory: 'collection', nextLevel: 'itemSubtype' },
   { value: 'consume', categoryCode: 'props', subcategory: 'consume', nextLevel: 'thirdClass' },
   { value: 'key', categoryCode: 'props', subcategory: 'key', nextLevel: 'thirdClass' },
   { value: 'acc', categoryCode: 'acc', nextLevel: 'subcategory' },
@@ -104,15 +114,34 @@ function groupOf(item: Item): string {
   return item.categoryCode
 }
 
-/** 取一个物品的"下一级"标签（子类或细类）*/
+/**
+ * 取一个物品的"下一级"值（用于筛选比较）。
+ *
+ * ⚠️ `itemSubtype` 的值**本身就是中文**（官方接口直接给「工艺藏品」这种），
+ *    所以它既当值又当标签 —— 不像 subcategory 那样还有 `subcategoryCn`。
+ */
 function nextLevelValue(item: Item, level: GroupDef['nextLevel']): string | null {
-  return level === 'subcategory' ? item.subcategory : item.thirdClass
+  switch (level) {
+    case 'subcategory':
+      return item.subcategory
+    case 'thirdClass':
+      return item.thirdClass
+    case 'itemSubtype':
+      return item.itemSubtype
+  }
 }
 
+/** 取一个物品的"下一级"标签（给人看的）*/
 function nextLevelLabel(item: Item, level: GroupDef['nextLevel']): string | null {
-  return level === 'subcategory'
-    ? (item.subcategoryCn ?? item.subcategory)
-    : (item.thirdClassCn ?? item.thirdClass)
+  switch (level) {
+    case 'subcategory':
+      return item.subcategoryCn ?? item.subcategory
+    case 'thirdClass':
+      return item.thirdClassCn ?? item.thirdClass
+    case 'itemSubtype':
+      // 已经是中文，直接用
+      return item.itemSubtype
+  }
 }
 
 /* ══════════════════════════════════════════════════════════════════════ */
@@ -427,14 +456,37 @@ export const useFiltersStore = defineStore('filters', () => {
    */
   const groupOptions = computed<MetaOption[]>(() => {
     const counts = new Map<string, number>()
+    /**
+     * ⭐ 标签**从物品数据本身取**，而不是去 `/api/meta` 里查。
+     *
+     * 为什么：`/api/meta` 的 `subcategories` 只包含**至少有一个可排序物品**
+     * 的子类……更准确地说，一旦 meta 那边缺了某项，回退就会拿到
+     * **大类名**（`props` → 「道具」），于是「收集品」会显示成「道具」，
+     * 还和兜底分组重名 —— 界面上出现两个「道具」标签，完全看不懂。
+     * （这是写测试时真踩到的：fixture 没给 meta.subcategories，
+     *   断言 `label === '收集品'` 就变成了 `'道具'`。）
+     *
+     * 物品数据里的 `subcategoryCn` / `categoryCn` 是后端 normalize 时填的，
+     * 和 meta 同源，但**一定在**（有物品就有标签）✓
+     */
+    const labels = new Map<string, string>()
+
     for (const it of pool.value) {
       if (!pass(it, 'group')) continue
       const g = groupOf(it)
       counts.set(g, (counts.get(g) ?? 0) + 1)
+
+      if (labels.has(g)) continue
+      const def = groupDefOf(g)
+      labels.set(
+        g,
+        def?.subcategory !== undefined
+          ? (it.subcategoryCn ?? it.subcategory)
+          : (it.categoryCn || it.categoryCode),
+      )
     }
 
-    // 标签从 /api/meta 拿（中文只能由后端下发）。
-    // 收集品/消耗品/钥匙 的中文在 subcategories 里；其余在 categories 里。
+    // 池里没有物品的分组（如某些情况下配件为 0 条）→ 从 meta 兜底，再不行用代码
     const bySub = new Map(metaStore.subcategories.map((o) => [o.value, o.label]))
     const byCat = new Map(metaStore.categories.map((o) => [o.value, o.label]))
 
@@ -444,6 +496,7 @@ export const useFiltersStore = defineStore('filters', () => {
       // 兜底分组为 0 时不显示（正常情况下它永远是 0 —— 三个子类都提升了）
       if (def.value === 'props' && count === 0) continue
       const label =
+        labels.get(def.value) ??
         (def.subcategory !== undefined ? bySub.get(def.subcategory) : undefined) ??
         byCat.get(def.categoryCode) ??
         def.value
@@ -456,7 +509,8 @@ export const useFiltersStore = defineStore('filters', () => {
    * 每个分组的**下一级**选项（子类或细类）。
    *
    * 只给"被选中且真的有下一级"的分组算 ——
-   * 收集品/钥匙 实测没有细类（0 条），所以它们**不会出现空行**。
+   * 实测：收集品有 9 个 itemSubtype、消耗品有 3 个 thirdClass、
+   * 钥匙没有下一级（所以它**不会出现空行**）。
    *
    * 返回一个数组（而不是 Record），因为渲染顺序要跟 `groupOptions` 一致。
    */

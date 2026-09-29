@@ -111,7 +111,15 @@ function makeItem(over: Partial<Item> = {}): Item {
 /** 一条典型的物品集，覆盖各种边界 */
 const FIXTURE: Item[] = [
   // 道具 / 收集品，很值钱
-  makeItem({ sourceItemId: '15080050142', name: '海洋之泪', price: 34_000_000, grade: 6 }),
+  makeItem({
+    sourceItemId: '15080050142',
+    name: '海洋之泪',
+    price: 34_000_000,
+    grade: 6,
+    // 收集品的细分在 itemSubtype 里（实测 9 个二级分类），
+    // 不是 thirdClass —— 后者只有消耗品有值
+    itemSubtype: '工艺藏品',
+  }),
   // 道具 / 收集品，中等（品质 3 = 蓝）
   // ⭐ 刻意设成「通用物资」：每张图都能刷到。fixture 里只有两张图，
   //    所以它的 provenanceMaps 就是这两张 —— 对应真实数据里 1297 条「全地图」。
@@ -123,6 +131,7 @@ const FIXTURE: Item[] = [
     gradeCn: '蓝',
     gradeTone: 'blue',
     gradeColor: '#658bce',
+    itemSubtype: '电子物品',
     provenanceMaps: ['长弓溪谷', 'AZ3'],
     provenanceUniversal: true,
   }),
@@ -234,7 +243,13 @@ beforeEach(() => {
     { value: 'props', label: '道具', count: 0 },
     { value: 'ammo', label: '弹药', count: 0 },
     { value: 'acc', label: '配件', count: 0 },
+    { value: 'protect', label: '防护', count: 0 },
     { value: 'gun', label: '枪械', count: 0 },
+  ]
+  meta.subcategories = [
+    { value: 'collection', label: '收集品', count: 0 },
+    { value: 'consume', label: '消耗品', count: 0 },
+    { value: 'key', label: '钥匙', count: 0 },
   ]
 })
 
@@ -428,9 +443,13 @@ describe('⭐ 子类行（每个已选分组一行）', () => {
     // 没选任何分组 → 一行都没有
     expect(filters.subOptionsByGroup).toEqual([])
 
-    // 选「收集品」→ 实测它没有细类（349 条全是 null）→ 不该出现空行
+    // 选「收集品」→ 它的细分来自 itemSubtype（不是 thirdClass）
     filters.groups = ['collection']
-    expect(filters.subOptionsByGroup).toEqual([])
+    expect(filters.subOptionsByGroup.map((r) => r.group)).toEqual(['collection'])
+    // 藏宝图的 itemSubtype 是 null，应被跳过（只出两个有值的）
+    expect(
+      filters.subOptionsByGroup[0]!.options.map((o) => o.value).sort(),
+    ).toEqual(['工艺藏品', '电子物品'])
 
     // 选「弹药」→ 它有一个子类 ammo9x39 → 出现一行
     filters.groups = ['ammo']
@@ -1151,5 +1170,63 @@ describe('⭐ 品质 0（灰）不是品质 —— 有条件豁免', () => {
     filters.groups = ['gun']
     expect(filters.rows.length).toBeGreaterThan(0)
     expect(filters.rows.every((r) => r.item.categoryCode === 'gun')).toBe(true)
+  })
+})
+
+
+/* ══════════ ⭐ 收集品的细分在 itemSubtype，不在 thirdClass ══════════ */
+
+/**
+ * 这一组来自用户的一句纠正：「moligod的网站中，收集品有子类」。
+ *
+ * 我原本断言「收集品没有子类」—— 因为我只看了 `thirdClass`（那层确实是空的）。
+ * 实地查数据发现细分在 **`itemSubtype`** 里：
+ *
+ *   收集品 586 条，itemSubtype 共 9 个值：
+ *   工艺藏品 182 · 资料情报 123 · 家居物品 82 · 电子物品 69 ·
+ *   工具材料 58 · 医疗道具 37 · 能源燃料 32 · 身份牌 2 · 生活用品 1
+ *
+ * 与 moligod 的「二级分类」筛选**完全一致**，而且这些值本身就是中文
+ * （官方接口直接给中文名），所以既当值又当标签、不需要翻译。
+ *
+ * 教训：同一个概念在不同数据源可能落在不同字段上 ——
+ * 「官方三级分类的第三层」和「物品细分类型」是**两个字段**。
+ */
+describe('⭐ 收集品的细分走 itemSubtype', () => {
+  it('⭐ 选「收集品」会出现子类行（来自 itemSubtype）', () => {
+    const filters = useFiltersStore()
+    filters.groups = ['collection']
+
+    expect(filters.subOptionsByGroup).toHaveLength(1)
+    expect(filters.subOptionsByGroup[0]!.label).toBe('收集品')
+    expect(filters.subOptionsByGroup[0]!.options.map((o) => o.value).sort()).toEqual([
+      '停工艺藏品',
+      '电子物品',
+    ].map((x) => x.replace('停', '')))
+  })
+
+  it('itemSubtype 为空的不进选项（藏宝图那条）', () => {
+    const filters = useFiltersStore()
+    filters.groups = ['collection']
+    const values = filters.subOptionsByGroup[0]!.options.map((o) => o.label)
+    expect(values).not.toContain('')
+  })
+
+  it('子类筛选生效', () => {
+    const filters = useFiltersStore()
+    filters.groups = ['collection']
+
+    filters.subs = ['工艺藏品']
+    expect(filters.rows.every((r) => r.item.itemSubtype === '工艺藏品')).toBe(true)
+
+    filters.subs = ['电子物品']
+    expect(filters.rows.every((r) => r.item.itemSubtype === '电子物品')).toBe(true)
+  })
+
+  it('⚠️ 消耗品走的是 thirdClass，不是 itemSubtype（两个字段各管一段）', () => {
+    const filters = useFiltersStore()
+    // fixture 里没有消耗品 → 不该出现行（派生自数据，没数据就没行）
+    filters.groups = ['consume']
+    expect(filters.subOptionsByGroup).toEqual([])
   })
 })
