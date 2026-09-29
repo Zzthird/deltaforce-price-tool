@@ -24,7 +24,8 @@
     "season:rollover": "npm --workspace @deltaforce/get-data run season:rollover --",
     "test": "npm --workspace @deltaforce/get-data run test && npm --workspace @deltaforce/web run test",
     "typecheck": "npm --workspace @deltaforce/shared run typecheck && npm --workspace @deltaforce/get-data run typecheck && npm --workspace @deltaforce/web run typecheck",
-    "build": "npm --workspace @deltaforce/web run build"
+    "build": "npm --workspace @deltaforce/web run build",
+    "fee:probe": "npm --workspace @deltaforce/get-data run fee:probe --"
   },
   "devDependencies": {
     "concurrently": "^9.1.0",

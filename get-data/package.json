@@ -15,7 +15,8 @@
     "season:rollover": "tsx scripts/season-rollover.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "fee:probe": "tsx scripts/fee-probe.ts"
   },
   "dependencies": {
     "@deltaforce/shared": "*",
