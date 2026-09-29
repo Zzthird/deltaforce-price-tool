@@ -189,25 +189,42 @@ const emptyHint = computed(() => {
 
       <span class="divider" />
 
-      <span class="group-label">地图</span>
-      <button
-        class="chip"
-        :class="{ on: filters.maps.length === 0 }"
-        type="button"
-        @click="filters.maps = []"
+      <!--
+        ── 地图（下拉多选）──
+
+        原来是平铺标签，但地图名较长（「潮汐监狱」「航天基地」）、
+        加上数字一共占了半行 —— 换成下拉节省空间（用户建议）。
+        而大类/品质仍然平铺：它们只有 5 个和 7 个，且**经常切换**，
+        平铺一眼能看到当前选了哪些；地图通常只选一张，不值得占那行空间。
+      -->
+      <el-tooltip
+        content="选地图后只显示**已确认**会在这张图刷出的物资。没标注出产地的（待补，约 225 条）也会被隐藏 —— 因为无法确认它会不会出。"
+        placement="bottom"
+        :show-after="500"
       >
-        全部
-      </button>
-      <button
-        v-for="o in filters.mapOptions"
-        :key="o.value"
-        class="chip"
-        :class="{ on: filters.maps.includes(o.value) }"
-        type="button"
-        @click="filters.toggleMap(o.value)"
-      >
-        {{ o.label }}<span class="n">{{ o.count }}</span>
-      </button>
+        <el-select
+          v-model="filters.maps"
+          class="sel map-sel"
+          size="small"
+          multiple
+          collapse-tags
+          collapse-tags-tooltip
+          clearable
+          placeholder="全部地图"
+        >
+          <el-option
+            v-for="o in filters.mapOptions"
+            :key="o.value"
+            :value="o.value"
+            :label="o.label"
+          >
+            <span class="opt">
+              <span>{{ o.label }}</span>
+              <span class="count">{{ o.count }}</span>
+            </span>
+          </el-option>
+        </el-select>
+      </el-tooltip>
 
       <!--
         「只看该图专属」：隐藏「全地图」的通用物资。
@@ -216,7 +233,7 @@ const emptyHint = computed(() => {
       <el-tooltip
         content="隐藏「全地图」的通用物资，只留这张图特有的。不选地图时无效。"
         placement="bottom"
-        :show-after="400"
+        :show-after="500"
       >
         <span class="switch-wrap" :class="{ off: filters.maps.length === 0 }">
           <el-switch v-model="filters.mapOnly" size="small" :disabled="filters.maps.length === 0" />
@@ -227,7 +244,7 @@ const emptyHint = computed(() => {
       <el-tooltip
         content="不可上架（挂不上交易行）与不可摸（限时下架/非战利品）的物品默认不显示，因为它们不参与排序。打开可以查它们的情况 —— 比如“这条能摸到但卖不掉”。"
         placement="bottom"
-        :show-after="400"
+        :show-after="500"
       >
         <span class="switch-wrap">
           <el-switch v-model="filters.includeExcluded" size="small" />
@@ -355,6 +372,41 @@ const emptyHint = computed(() => {
 
 .sel.narrow {
   width: 120px;
+}
+
+.map-sel {
+  width: 150px;
+}
+
+/*
+ * ⭐ 下拉三角的可点区域放大。
+ *
+ * 用户反馈：「最右边的下拉三角感觉有点难点，更改成点击这一个栏位就能触发展开」。
+ *
+ * 实测原因：`clearable` 的清除叉（✖）就在三角旁边，鼠标稍微靠左一点
+ * 就点到了叉 —— 于是变成"清空"而不是"展开"，感觉很不可预测。
+ * 这里把整个控件都变成手型光标（EP 默认已经能点开，只是没有视觉提示），
+ * 同时把三角和叉的间距拉开，减少误点。
+ */
+:deep(.el-select__wrapper) {
+  cursor: pointer;
+}
+
+:deep(.el-select__caret) {
+  /* 视觉尺寸略大，并且给两侧留出点击余量 */
+  font-size: 14px;
+  margin: 0 -2px 0 2px;
+  padding: 3px 1px;
+}
+
+:deep(.el-select__clear) {
+  margin-left: 2px;
+  margin-right: 2px;
+}
+
+/* 窄下拉里的多选标签别把高度撞开 */
+:deep(.el-select__wrapper.is-small) {
+  min-height: 24px;
 }
 
 /* 下拉选项里：左边名字、右边数量 */

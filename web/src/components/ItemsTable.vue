@@ -187,256 +187,271 @@ const CHANGE_CLASS: Readonly<Record<string, string>> = {
     950px 高只能看到 14 行 ✗。而这个工具的核心动作就是"扫一遍看该摸什么"，
     看到的行越多越好。压到 4px 之后一行约 26px，能看到三十多行。
   -->
-  <el-table
-    ref="tableRef"
-    class="tight-table"
-    :data="pagedRows"
-    size="small"
-    row-key="item.key"
-    height="100%"
-    :default-sort="defaultSort"
-    @sort-change="onSortChange"
-  >
-    <!-- 全局序号：跨页连续，而不是每页都从 1 开始 -->
-    <el-table-column label="#" width="54" align="right">
-      <template #default="{ $index }: { $index: number }">
-        <span class="dim num">{{ (page - 1) * pageSize + $index + 1 }}</span>
-      </template>
-    </el-table-column>
+  <!--
+    ⚠️ 外面两层 div 不是装饰，是修一个真 bug：
 
-    <!-- ── 判定 ── -->
-    <el-table-column label="判定" width="70" align="center">
-      <template #default="{ row }: { row: ItemRow }">
-        <el-tooltip :content="verdictReason(row)" placement="right">
-          <el-tag :type="VERDICT_TAG_TYPE[row.verdict]" size="small" effect="dark">
-            {{ VERDICT_LABEL[row.verdict] }}
-          </el-tag>
-        </el-tooltip>
-      </template>
-    </el-table-column>
+    原来 `el-table` 写的是 `height="100%"`（= 容器高度的 100%），
+    而分页排在它下面 —— 于是「表格 100% + 分页 32px」超出容器 32px，
+    被容器的 `overflow: hidden` **裁掉**，分页整个看不见。
+    用户报告：「为什么只能显示50个，我也没有看见下一页的选项」。
 
-    <!-- ── 物品（图标 + 名字 + 状态徽章）── -->
-    <el-table-column label="物品" min-width="240" sortable="custom" prop="name">
-      <template #default="{ row }: { row: ItemRow }">
-        <!--
-          图标带品质色描边 —— 一个元素同时表达"是什么"和"多稀有"。
+    修法：根节点做成纵向 flex，表格区 `flex:1; min-height:0`，
+    分页 `flex:none` —— 这样表格的 100% 是「分页之外剩余的高度」，
+    分页永远在自己的位置上。
+  -->
+  <div class="table-root">
+    <div class="table-area">
+      <el-table
+        ref="tableRef"
+        class="tight-table"
+        :data="pagedRows"
+        size="small"
+        row-key="item.key"
+        height="100%"
+        :default-sort="defaultSort"
+        @sort-change="onSortChange"
+      >
+        <!-- 全局序号：跨页连续，而不是每页都从 1 开始 -->
+        <el-table-column label="#" width="54" align="right">
+          <template #default="{ $index }: { $index: number }">
+            <span class="dim num">{{ (page - 1) * pageSize + $index + 1 }}</span>
+          </template>
+        </el-table-column>
 
-          ⚠️ 同时绑 `color`，因为 CSS 里色块用的是 `background: currentColor` ✗
-             —— 不绑 `color` 的话 `currentColor` 会取到继承来的文字色（灰），
-             图片加载失败时露出来的就是个灰块，而不是品质色块。
+        <!-- ── 判定 ── -->
+        <el-table-column label="判定" width="70" align="center">
+          <template #default="{ row }: { row: ItemRow }">
+            <el-tooltip :content="verdictReason(row)" placement="right">
+              <el-tag :type="VERDICT_TAG_TYPE[row.verdict]" size="small" effect="dark">
+                {{ VERDICT_LABEL[row.verdict] }}
+              </el-tag>
+            </el-tooltip>
+          </template>
+        </el-table-column>
 
-          加载失败时图片被 `onIconError` 藏掉，露出色块（不出现破图）。
-        -->
-        <span
-          class="icon"
-          :style="{ borderColor: gradeColor(row.item.grade), color: gradeColor(row.item.grade) }"
-          :title="row.item.gradeCn"
-        >
-          <img
-            v-if="row.item.iconUrl"
-            :src="row.item.iconUrl"
-            alt=""
-            loading="lazy"
-            referrerpolicy="no-referrer"
-            @error="onIconError"
-          />
-        </span>
+        <!-- ── 物品（图标 + 名字 + 状态徽章）── -->
+        <el-table-column label="物品" min-width="240" sortable="custom" prop="name">
+          <template #default="{ row }: { row: ItemRow }">
+            <!--
+              图标带品质色描边 —— 一个元素同时表达"是什么"和"多稀有"。
 
-        <span class="name-text">{{ row.item.name }}</span>
+              ⚠️ 同时绑 `color`，因为 CSS 里色块用的是 `background: currentColor` ✗
+                 —— 不绑 `color` 的话 `currentColor` 会取到继承来的文字色（灰），
+                 图片加载失败时露出来的就是个灰块，而不是品质色块。
 
-        <el-tag
-          v-if="row.item.availability !== 'lootable'"
-          size="small"
-          type="info"
-          class="inline"
-        >
-          {{ metaStore.labels?.availability[row.item.availability] ?? row.item.availability }}
-        </el-tag>
-        <el-tag v-if="!row.item.listable" size="small" type="danger" class="inline">
-          不可上架
-        </el-tag>
-        <el-tag
-          v-if="row.item.seasonal"
-          size="small"
-          type="warning"
-          effect="plain"
-          class="inline"
-        >
-          {{ metaStore.labels?.seasonal[row.item.seasonal] ?? row.item.seasonal }}
-        </el-tag>
-      </template>
-    </el-table-column>
-
-    <el-table-column label="品质" width="54" align="center">
-      <template #default="{ row }: { row: ItemRow }">
-        <span :style="{ color: gradeColor(row.item.grade), fontWeight: 600 }">
-          {{ row.item.gradeCn }}
-        </span>
-      </template>
-    </el-table-column>
-
-    <el-table-column label="大类" width="62" prop="item.categoryCn" />
-
-    <el-table-column label="占格" width="54" align="right" sortable="custom" prop="slots">
-      <template #default="{ row }: { row: ItemRow }">
-        <span class="num">{{ row.item.slots }}</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column label="每组" width="54" align="right">
-      <template #default="{ row }: { row: ItemRow }">
-        <!--
-          弹药一个格子放 60 发，而交易行报的是**每发单价**。
-          不显示这一列，用户会奇怪为什么一颗子弹的单格价值是单价的 60 倍。
-          普通物品是 1（压暗，不抢注意力）。
-        -->
-        <span v-if="row.item.unitsPerSlot && row.item.unitsPerSlot !== 1" class="num">
-          {{ row.item.unitsPerSlot }}
-        </span>
-        <span v-else class="dim num">1</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column label="单价" width="92" align="right" sortable="custom" prop="price">
-      <template #default="{ row }: { row: ItemRow }">
-        <el-tooltip
-          v-if="row.item.price !== null"
-          :content="formatExact(row.item.price)"
-          placement="left"
-        >
-          <span class="num" :class="{ active: filters.sortKey === 'price' }">
-            {{ formatMoney(row.item.price) }}
-          </span>
-        </el-tooltip>
-        <span v-else class="dim">—</span>
-      </template>
-    </el-table-column>
-
-    <el-table-column
-      label="单格价值"
-      width="100"
-      align="right"
-      sortable="custom"
-      prop="pricePerSlot"
-    >
-      <template #default="{ row }: { row: ItemRow }">
-        <el-tooltip
-          :content="`${formatExact(row.item.price)} × ${row.item.unitsPerSlot ?? 1} ÷ ${row.item.slots} 格 = ${formatExact(row.item.pricePerSlot)}`"
-          placement="left"
-        >
-          <b class="num value" :class="{ active: filters.sortKey === 'pricePerSlot' }">
-            {{ formatMoney(row.item.pricePerSlot) }}
-          </b>
-        </el-tooltip>
-      </template>
-    </el-table-column>
-
-    <!-- ── 今日涨幅（后端一直在算，之前写死"历史积累中"）── -->
-    <el-table-column
-      label="今日涨幅"
-      width="86"
-      align="right"
-      sortable="custom"
-      prop="todayChangePct"
-    >
-      <template #default="{ row }: { row: ItemRow }">
-        <el-tooltip
-          :content="`现价 ${formatExact(row.item.price)}｜昨日均价 ${formatExact(row.item.yesterdayAvg)}`"
-          placement="left"
-        >
-          <span class="num" :class="CHANGE_CLASS[describeChange(row.item.todayChangePct).tone]">
-            {{ describeChange(row.item.todayChangePct).text }}
-          </span>
-        </el-tooltip>
-      </template>
-    </el-table-column>
-
-    <!-- ── 出产地（三态：通用 / 地图名 / 待补）── -->
-    <el-table-column label="出产地" min-width="150">
-      <template #default="{ row }: { row: ItemRow }">
-        <el-tooltip :content="mapsTooltip(row)" placement="left">
-          <span
-            :class="{
-              dim: describeProvenance(row.item).kind !== 'maps',
-              specialty: describeProvenance(row.item).kind === 'maps',
-            }"
-          >
-            {{ describeProvenance(row.item).text }}
-          </span>
-        </el-tooltip>
-      </template>
-    </el-table-column>
-
-    <!-- ── 展开详情 ── -->
-    <el-table-column type="expand" width="36">
-      <template #default="{ row }: { row: ItemRow }">
-        <div class="detail">
-          <div v-if="row.item.description" class="desc">{{ row.item.description }}</div>
-
-          <el-descriptions :column="4" size="small" border>
-            <el-descriptions-item label="官方ID">{{ row.item.sourceItemId }}</el-descriptions-item>
-            <el-descriptions-item label="重量">{{ row.item.weight ?? '—' }}</el-descriptions-item>
-            <el-descriptions-item label="官方均价">
-              <!-- 官方均价**仅供参考、不参与判定**：官方小程序自己写着"实时价请去游戏内看" -->
-              {{ formatExact(row.item.officialAvgPrice) }}
-            </el-descriptions-item>
-            <el-descriptions-item label="基准价">
-              {{ formatExact(row.item.basePrice) }}
-            </el-descriptions-item>
-
-            <el-descriptions-item label="子类">
-              <!-- 子类列从表格里去掉了（弹药名就含口径，重复），但信息留在这里 -->
-              {{ row.item.subcategoryCn ?? '—' }}
-            </el-descriptions-item>
-            <el-descriptions-item label="细类">{{ row.item.thirdClassCn ?? '—' }}</el-descriptions-item>
-            <el-descriptions-item label="出产地来源">
-              {{
-                row.item.provenanceSource
-                  ? (metaStore.labels?.provenanceSource[row.item.provenanceSource] ??
-                    row.item.provenanceSource)
-                  : '—'
-              }}
-            </el-descriptions-item>
-            <el-descriptions-item label="别名">{{ row.item.alias ?? '—' }}</el-descriptions-item>
-
-            <el-descriptions-item label="昨日均价">
-              {{ formatExact(row.item.yesterdayAvg) }}
-            </el-descriptions-item>
-            <el-descriptions-item label="昨日区间">
-              {{ formatMoney(row.item.yesterdayLow) }} ~ {{ formatMoney(row.item.yesterdayHigh) }}
-            </el-descriptions-item>
-            <el-descriptions-item label="7日区间">
-              {{ formatMoney(row.item.rangeLow) }} ~ {{ formatMoney(row.item.rangeHigh) }}
-            </el-descriptions-item>
-            <el-descriptions-item label="数据时间">
-              {{ row.item.lastUpdate ?? '—' }}
-            </el-descriptions-item>
-          </el-descriptions>
-
-          <!--
-            护甲的耐久度三档。
-            实测发现：护甲的"裸名"价是**基础参考价、不是行情**，
-            实时价在这三档里（详见 docs/source-recon.md §八）。
-            排序用最保守的「破损」档，但三档都摊开给你看 ——
-            同一件甲全新和破损能差 5.7 倍，藏起来就是误导。
-          -->
-          <div v-if="row.item.priceVariants" class="variants">
-            <span class="dim small">耐久度分档：</span>
-            <el-tag
-              v-for="(price, condition) in row.item.priceVariants"
-              :key="condition"
-              size="small"
-              effect="plain"
-              class="variant-tag"
+              加载失败时图片被 `onIconError` 藏掉，露出色块（不出现破图）。
+            -->
+            <span
+              class="icon"
+              :style="{ borderColor: gradeColor(row.item.grade), color: gradeColor(row.item.grade) }"
+              :title="row.item.gradeCn"
             >
-              {{ condition }} {{ formatMoney(price) }}
+              <img
+                v-if="row.item.iconUrl"
+                :src="row.item.iconUrl"
+                alt=""
+                loading="lazy"
+                referrerpolicy="no-referrer"
+                @error="onIconError"
+              />
+            </span>
+
+            <span class="name-text">{{ row.item.name }}</span>
+
+            <el-tag
+              v-if="row.item.availability !== 'lootable'"
+              size="small"
+              type="info"
+              class="inline"
+            >
+              {{ metaStore.labels?.availability[row.item.availability] ?? row.item.availability }}
             </el-tag>
-            <span class="dim small">（排行榜按最保守的「破损」档排序）</span>
-          </div>
-        </div>
-      </template>
-    </el-table-column>
-  </el-table>
+            <el-tag v-if="!row.item.listable" size="small" type="danger" class="inline">
+              不可上架
+            </el-tag>
+            <el-tag
+              v-if="row.item.seasonal"
+              size="small"
+              type="warning"
+              effect="plain"
+              class="inline"
+            >
+              {{ metaStore.labels?.seasonal[row.item.seasonal] ?? row.item.seasonal }}
+            </el-tag>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="品质" width="54" align="center">
+          <template #default="{ row }: { row: ItemRow }">
+            <span :style="{ color: gradeColor(row.item.grade), fontWeight: 600 }">
+              {{ row.item.gradeCn }}
+            </span>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="大类" width="62" prop="item.categoryCn" />
+
+        <el-table-column label="占格" width="54" align="right" sortable="custom" prop="slots">
+          <template #default="{ row }: { row: ItemRow }">
+            <span class="num">{{ row.item.slots }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="每组" width="54" align="right">
+          <template #default="{ row }: { row: ItemRow }">
+            <!--
+              弹药一个格子放 60 发，而交易行报的是**每发单价**。
+              不显示这一列，用户会奇怪为什么一颗子弹的单格价值是单价的 60 倍。
+              普通物品是 1（压暗，不抢注意力）。
+            -->
+            <span v-if="row.item.unitsPerSlot && row.item.unitsPerSlot !== 1" class="num">
+              {{ row.item.unitsPerSlot }}
+            </span>
+            <span v-else class="dim num">1</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="单价" width="92" align="right" sortable="custom" prop="price">
+          <template #default="{ row }: { row: ItemRow }">
+            <el-tooltip
+              v-if="row.item.price !== null"
+              :content="formatExact(row.item.price)"
+              placement="left"
+            >
+              <span class="num" :class="{ active: filters.sortKey === 'price' }">
+                {{ formatMoney(row.item.price) }}
+              </span>
+            </el-tooltip>
+            <span v-else class="dim">—</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          label="单格价值"
+          width="100"
+          align="right"
+          sortable="custom"
+          prop="pricePerSlot"
+        >
+          <template #default="{ row }: { row: ItemRow }">
+            <el-tooltip
+              :content="`${formatExact(row.item.price)} × ${row.item.unitsPerSlot ?? 1} ÷ ${row.item.slots} 格 = ${formatExact(row.item.pricePerSlot)}`"
+              placement="left"
+            >
+              <b class="num value" :class="{ active: filters.sortKey === 'pricePerSlot' }">
+                {{ formatMoney(row.item.pricePerSlot) }}
+              </b>
+            </el-tooltip>
+          </template>
+        </el-table-column>
+
+        <!-- ── 今日涨幅（后端一直在算，之前写死"历史积累中"）── -->
+        <el-table-column
+          label="今日涨幅"
+          width="86"
+          align="right"
+          sortable="custom"
+          prop="todayChangePct"
+        >
+          <template #default="{ row }: { row: ItemRow }">
+            <el-tooltip
+              :content="`现价 ${formatExact(row.item.price)}｜昨日均价 ${formatExact(row.item.yesterdayAvg)}`"
+              placement="left"
+            >
+              <span class="num" :class="CHANGE_CLASS[describeChange(row.item.todayChangePct).tone]">
+                {{ describeChange(row.item.todayChangePct).text }}
+              </span>
+            </el-tooltip>
+          </template>
+        </el-table-column>
+
+        <!-- ── 出产地（三态：通用 / 地图名 / 待补）── -->
+        <el-table-column label="出产地" min-width="150">
+          <template #default="{ row }: { row: ItemRow }">
+            <el-tooltip :content="mapsTooltip(row)" placement="left">
+              <span
+                :class="{
+                  dim: describeProvenance(row.item).kind !== 'maps',
+                  specialty: describeProvenance(row.item).kind === 'maps',
+                }"
+              >
+                {{ describeProvenance(row.item).text }}
+              </span>
+            </el-tooltip>
+          </template>
+        </el-table-column>
+
+        <!-- ── 展开详情 ── -->
+        <el-table-column type="expand" width="36">
+          <template #default="{ row }: { row: ItemRow }">
+            <div class="detail">
+              <div v-if="row.item.description" class="desc">{{ row.item.description }}</div>
+
+              <el-descriptions :column="4" size="small" border>
+                <el-descriptions-item label="官方ID">{{ row.item.sourceItemId }}</el-descriptions-item>
+                <el-descriptions-item label="重量">{{ row.item.weight ?? '—' }}</el-descriptions-item>
+                <el-descriptions-item label="官方均价">
+                  <!-- 官方均价**仅供参考、不参与判定**：官方小程序自己写着"实时价请去游戏内看" -->
+                  {{ formatExact(row.item.officialAvgPrice) }}
+                </el-descriptions-item>
+                <el-descriptions-item label="基准价">
+                  {{ formatExact(row.item.basePrice) }}
+                </el-descriptions-item>
+
+                <el-descriptions-item label="子类">
+                  <!-- 子类列从表格里去掉了（弹药名就含口径，重复），但信息留在这里 -->
+                  {{ row.item.subcategoryCn ?? '—' }}
+                </el-descriptions-item>
+                <el-descriptions-item label="细类">{{ row.item.thirdClassCn ?? '—' }}</el-descriptions-item>
+                <el-descriptions-item label="出产地来源">
+                  {{
+                    row.item.provenanceSource
+                      ? (metaStore.labels?.provenanceSource[row.item.provenanceSource] ??
+                        row.item.provenanceSource)
+                      : '—'
+                  }}
+                </el-descriptions-item>
+                <el-descriptions-item label="别名">{{ row.item.alias ?? '—' }}</el-descriptions-item>
+
+                <el-descriptions-item label="昨日均价">
+                  {{ formatExact(row.item.yesterdayAvg) }}
+                </el-descriptions-item>
+                <el-descriptions-item label="昨日区间">
+                  {{ formatMoney(row.item.yesterdayLow) }} ~ {{ formatMoney(row.item.yesterdayHigh) }}
+                </el-descriptions-item>
+                <el-descriptions-item label="7日区间">
+                  {{ formatMoney(row.item.rangeLow) }} ~ {{ formatMoney(row.item.rangeHigh) }}
+                </el-descriptions-item>
+                <el-descriptions-item label="数据时间">
+                  {{ row.item.lastUpdate ?? '—' }}
+                </el-descriptions-item>
+              </el-descriptions>
+
+              <!--
+                护甲的耐久度三档。
+                实测发现：护甲的"裸名"价是**基础参考价、不是行情**，
+                实时价在这三档里（详见 docs/source-recon.md §八）。
+                排序用最保守的「破损」档，但三档都摊开给你看 ——
+                同一件甲全新和破损能差 5.7 倍，藏起来就是误导。
+              -->
+              <div v-if="row.item.priceVariants" class="variants">
+                <span class="dim small">耐久度分档：</span>
+                <el-tag
+                  v-for="(price, condition) in row.item.priceVariants"
+                  :key="condition"
+                  size="small"
+                  effect="plain"
+                  class="variant-tag"
+                >
+                  {{ condition }} {{ formatMoney(price) }}
+                </el-tag>
+                <span class="dim small">（排行榜按最保守的「破损」档排序）</span>
+              </div>
+            </div>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
 
   <!-- ── 分页 ── -->
   <div class="pager">
@@ -449,6 +464,7 @@ const CHANGE_CLASS: Readonly<Record<string, string>> = {
       layout="total, sizes, prev, pager, next, jumper"
       background
     />
+    </div>
   </div>
 </template>
 
@@ -577,10 +593,28 @@ const CHANGE_CLASS: Readonly<Record<string, string>> = {
   font-variant-numeric: tabular-nums;
 }
 
+/*
+ * 纵向 flex：表格占满剩余高度，分页固定在自己的位置。
+ *
+ * `min-height: 0` 不能省 —— 没有它 flex 子项会被内容撑开而不是收缩，
+ * 表格就会把分页顶出去（那正是原来的 bug）。
+ */
+.table-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.table-area {
+  flex: 1;
+  min-height: 0;
+}
+
 .pager {
+  flex: none;
   display: flex;
   justify-content: flex-end;
-  padding: 8px 0 0;
+  padding: 6px 2px 8px;
 }
 
 .dim {

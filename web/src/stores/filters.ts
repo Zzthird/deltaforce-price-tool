@@ -264,6 +264,20 @@ export const useFiltersStore = defineStore('filters', () => {
   }
 
   function matchGrade(it: Item): boolean {
+    /**
+     * ⭐ **品质 0（「灰」）不受品质筛选影响。**
+     *
+     * 实测：品质 0 共 68 条，**全是枪械** —— 它不是一个"品质"，
+     * 而是"这件东西没有品质"（枪械没有品质等级）。
+     *
+     * 所以拿它当品质筛选是错的：你选了"金"之后枪械会被一并排掉 ✗，
+     * 而你可能正想看枪的价格。用「大类 = 枪械」表达这个意思就够了。
+     *
+     * 这也是用户的原话：
+     * 「大类选择枪械就不要再添加一个灰色的品质选项了，
+     *   当选择枪械大类时自动选择所有枪械就可以了」
+     */
+    if (it.grade === 0) return true
     return grades.value.length === 0 || grades.value.includes(it.grade)
   }
 
@@ -446,12 +460,18 @@ export const useFiltersStore = defineStore('filters', () => {
     ),
   )
 
+  /**
+   * 品质选项。
+   *
+   * ⚠️ **不列「灰」（品质 0）** —— 它与「枪械」大类是 1:1（实测 68 条全是枪），
+   * 列出来只是多一个点击目标。想只看枪械就点「枪械」。
+   */
   const gradeOptions = computed<MetaOption[]>(() =>
     optionsFor(
       'grade',
       (it) => String(it.grade),
       (it) => it.gradeCn,
-    ),
+    ).filter((o) => o.value !== '0'),
   )
 
   /** 地图选项也带计数 —— "这张图能刷出多少条"是很实用的信息 */

@@ -169,6 +169,21 @@ const FIXTURE: Item[] = [
     gradeTone: 'green',
     gradeColor: '#188d14',
   }),
+  // 枪械（品质 0 = 「灰」）。实测 68 条枪械**全部**是品质 0，
+  // 所以 fixture 里也要有一条 —— 这是真实存在的边界。
+  makeItem({
+    sourceItemId: '13440000002',
+    name: 'M4A1突击步枪',
+    categoryCode: 'gun',
+    categoryCn: '枪械',
+    subcategory: 'rifle',
+    subcategoryCn: '步枪',
+    price: 120_000,
+    grade: 0,
+    gradeCn: '灰',
+    gradeTone: 'gray',
+    gradeColor: '#949595',
+  }),
   // 不可上架（有价但挂不上交易行）
   makeItem({ sourceItemId: '15200000999', name: '火箭燃料', listable: false, price: 5_000_000 }),
   // 不可摸（限时下架）
@@ -219,6 +234,7 @@ beforeEach(() => {
     { value: 'props', label: '道具', count: 0 },
     { value: 'ammo', label: '弹药', count: 0 },
     { value: 'acc', label: '配件', count: 0 },
+    { value: 'gun', label: '枪械', count: 0 },
   ]
 })
 
@@ -396,7 +412,7 @@ describe('⭐ 交叉计数 —— 选项后面的数字必须是"选了还剩多
     const filters = useFiltersStore()
     const byValue = Object.fromEntries(filters.mapOptions.map((o) => [o.value, o.count]))
 
-    expect(byValue['长弓溪谷']).toBe(5) // 反应堆在 AZ3；火箭燃料/旧赛季弹不在池里
+    expect(byValue['长弓溪谷']).toBe(6) // 反应堆在 AZ3；火箭燃料/旧赛季弹不在池里；另有枪械一条
     expect(byValue['AZ3']).toBe(2) // 反应堆 + 通用物资
   })
 })
@@ -907,13 +923,20 @@ describe('⭐ 多选筛选', () => {
 
   it('品质多选也是 OR', () => {
     const filters = useFiltersStore()
+    // ⚠️ 数的时候要**排掉品质 0 的**（枪械）—— 按新规则它不受品质筛选影响，
+    //    所以在每一档里都会出现；直接比总数会多算一次。
+    const countNonZero = () => filters.rows.filter((r) => r.item.grade !== 0).length
+
     filters.grades = [6]
-    const reds = filters.rows.length
+    const reds = countNonZero()
     filters.grades = [2]
-    const greens = filters.rows.length
+    const greens = countNonZero()
 
     filters.grades = [6, 2]
-    expect(filters.rows.length).toBe(reds + greens)
+    expect(countNonZero()).toBe(reds + greens)
+
+    // 而品质 0 的（枪械）在三种情况下都在 —— 这正是用户要的行为
+    expect(filters.rows.some((r) => r.item.grade === 0)).toBe(true)
   })
 
   it('地图多选：任意一张命中即算', () => {
@@ -990,5 +1013,58 @@ describe('⭐ 多选筛选', () => {
     filters.setSubcategories(['key'])
     expect(filters.subcategories).toEqual(['key'])
     expect(filters.thirdClasses).toEqual([])
+  })
+})
+
+
+/* ══════════ ⭐ 品质 0（「灰」）不是品质 —— 它只属于枪械 ══════════ */
+
+/**
+ * 用户的原话：
+ * 「大类选择枪械就不要再添加一个灰色的品质选项了，
+ *   当选择枪械大类时自动选择所有枪械就可以了」
+ *
+ * 实测依据：品质 0 共 68 条，**全是枪械**（枪械没有品质等级）。
+ * 所以它是一个"缺失值"，不是一个"品质"。
+ */
+describe('⭐ 品质 0（灰）不是品质', () => {
+  it('⭐ 品质筛选**不影响**枪械', () => {
+    const filters = useFiltersStore()
+
+    // 没筛品质时，枪械在池里
+    expect(filters.rows.some((r) => r.item.grade === 0)).toBe(true)
+    const before = filters.rows.filter((r) => r.item.grade === 0).length
+
+    // 筛「金」之后，枪械**不应该**被一起排掉
+    filters.grades = [5]
+    const after = filters.rows.filter((r) => r.item.grade === 0).length
+    expect(after).toBe(before)
+  })
+
+  it('⭐ 品质选项里不列「灰」（它与「枪械」是 1:1，纯属多余）', () => {
+    const filters = useFiltersStore()
+    expect(filters.gradeOptions.map((o) => o.value)).not.toContain('0')
+    // 但其它品质仍在
+    expect(filters.gradeOptions.map((o) => o.value)).toContain('5')
+  })
+
+  it('想只看枪械 → 用大类，不用品质', () => {
+    const filters = useFiltersStore()
+    filters.categories = ['gun']
+    expect(filters.rows.length).toBeGreaterThan(0)
+    expect(filters.rows.every((r) => r.item.categoryCode === 'gun')).toBe(true)
+  })
+
+  it('⭐ 大类=枪械 + 品质=金 时，枪械仍然显示（这是用户的实际场景）', () => {
+    /**
+     * 这正是用户遇到的问题：他想看「收藏品 + 消耗品 + 枪的价格」，
+     * 于是选了多个大类 + 某个品质 —— 结果枪全没了，因为枪的品质是 0。
+     */
+    const filters = useFiltersStore()
+    filters.categories = ['props', 'gun']
+    filters.grades = [5]
+
+    const guns = filters.rows.filter((r) => r.item.categoryCode === 'gun')
+    expect(guns.length).toBeGreaterThan(0)
   })
 })
