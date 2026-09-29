@@ -70,8 +70,20 @@ export type FeeModelKind =
   | 'tiered'
   /** 比例随价格连续变化（不是跳变）—— 需要拟合公式 */
   | 'continuous'
-  /** 样本太少，下不了结论 */
+  /** 样本太少（少于 2 个），下不了结论 */
   | 'insufficient'
+  /**
+   * ⭐ **样本自相矛盾** —— 同样的挂价出现了不同的手续费。
+   *
+   * 这不是一种"模型"，而是数据有问题的信号。必须单独报出来，
+   * 否则会被误判成"比例随价格连续变化"✗（写测试时真踩到了：
+   * 同样挂 10,000，一个到手 9,000、一个 9,500，工具却说"连续变化"）。
+   *
+   * 两个可能原因，都得让用户看到：
+   *   · 敲错了（`fix` / `del` 改掉）
+   *   · 费率还取决于**别的变量**（比如寄售时长 12 小时 / 24 小时）
+   */
+  | 'inconsistent'
 
 export interface FeeAnalysis {
   kind: FeeModelKind
@@ -158,6 +170,53 @@ export function analyzeFee(samples: readonly FeeSample[]): FeeAnalysis {
       mismatches: [],
       nextProbes: sorted.length === 1 ? [Math.round((sorted[0]?.price ?? 1000) * 10)] : [1000],
       summary: '样本太少（至少 2 个才能判断比例是否恒定）。先多挂几单。',
+    }
+  }
+
+  /* ---------- ⓪ 先查样本自相矛盾 ---------- */
+  /**
+   * ⚠️ 这一步必须在所有模型判断**之前**。
+   *
+   * 同样的挂价给出不同的手续费，说明这些数里至少有一个是错的
+   * （或者费率还取决于别的变量）。此时任何"拟合"都是没有意义的 ——
+   * 而且会给出误导性的结论（比如误判成"连续变化"）。
+   */
+  const byPrice = new Map<number, FeeSample[]>()
+  for (const s of sorted) {
+    const list = byPrice.get(s.price)
+    if (list) list.push(s)
+    else byPrice.set(s.price, [s])
+  }
+  const conflicts: Array<{ price: number; fees: number[]; items: string[] }> = []
+  for (const [price, list] of byPrice) {
+    if (list.length < 2) continue
+    const fees = [...new Set(list.map((x) => feeOf(x)))]
+    if (fees.length > 1) {
+      conflicts.push({ price, fees, items: [...new Set(list.map((x) => x.item))] })
+    }
+  }
+  if (conflicts.length > 0) {
+    const lines = conflicts.map(
+      (c) =>
+        `    ${c.price.toLocaleString('zh-CN')} 这个挂价出现了 ${c.fees.length} 种手续费：` +
+        `${c.fees.map((f) => f.toLocaleString('zh-CN')).join(' / ')}` +
+        `（来自 ${c.items.join('、')}）`,
+    )
+    return {
+      kind: 'inconsistent',
+      tiers: [],
+      fitCount: 0,
+      sampleCount: sorted.length,
+      mismatches: [],
+      nextProbes: [],
+      summary: [
+        '⚠️ **样本里有矛盾** —— 同样的挂价却得到不同的手续费：',
+        ...lines,
+        '  同样价格不该有两种手续费。可能原因：',
+        '    ① 其中一条敲错了 → 用 `list` 看编号，再用 `fix 挂价 到手` 或 `del 编号` 改掉',
+        '    ② 费率还取决于**别的因素**（比如寄售时长 12 小时 / 24 小时不同）→ 请分开记录',
+        '  在查清之前，任何拟合都不靠谱，所以这里不给结论。',
+      ].join('\n'),
     }
   }
 
@@ -426,4 +485,81 @@ export function parseSampleLine(line: string, now: Date = new Date()): FeeSample
   if (net === null) net = price - feeOverride!
 
   return { item, price, net, at: now.toISOString() }
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════
+ * 交互录入（带"当前物品"）
+ * ══════════════════════════════════════════════════════════════════════
+ *
+ * 为什么需要"当前物品"这个概念：
+ * 挂单时你是在**反复改同一个物品的价格**（1000 → 10000 → 100000），
+ * 每行都重打物品名很累。所以：
+ *
+ *   第一行：`海洋之泪 1000 900`   ← 带名字，顺便把"当前物品"设成它
+ *   之后：  `10000 9000`          ← 只敲两个数字 ✓
+ *   换物品：`item D6 战术头盔`     ← 显式切换（不记录样本）
+ *
+ * 判断规则很简单：**两个字段用当前物品，三个以上字段的第一个是物品名**。
+ */
+export type ParsedEntry =
+  | { kind: 'sample'; sample: FeeSample }
+  | { kind: 'switch'; item: string }
+  | { kind: 'error'; message: string }
+
+/** 切换当前物品的两种写法：`item 名字` 或 `@名字` */
+export function parseItemSwitch(line: string): string | null {
+  const t = line.trim()
+  const m = /^(?:item|@)\s*(.+)$/i.exec(t)
+  return m && m[1] ? m[1].trim() : null
+}
+
+/**
+ * 解析一行录入。`currentItem` 是"当前物品"（可空）。
+ *
+ * ⚠️ 返回的是**判别联合**而不是 `FeeSample | null`：
+ *    "切换物品"和"输入有错"是两件完全不同的事，
+ *    都压成 `null` 的话，界面就没法给出有用的提示了。
+ */
+export function parseEntry(
+  line: string,
+  currentItem: string | null,
+  now: Date = new Date(),
+): ParsedEntry {
+  const t = line.trim()
+  if (t === '') return { kind: 'error', message: '空行' }
+
+  const switched = parseItemSwitch(t)
+  if (switched !== null) return { kind: 'switch', item: switched }
+
+  const fields = t.split(/\s+/)
+
+  // 两个字段 → 沿用当前物品
+  if (fields.length === 2) {
+    if (currentItem === null) {
+      return {
+        kind: 'error',
+        message: '还不知道是哪个物品 —— 第一行请带上物品名，例如：海洋之泪 1000 900',
+      }
+    }
+    const s = parseSampleLine(`${currentItem} ${fields[0]} ${fields[1]}`, now)
+    return s === null
+      ? { kind: 'error', message: `看不懂数字：${fields.join(' ')}` }
+      : { kind: 'sample', sample: s }
+  }
+
+  if (fields.length < 2) return { kind: 'error', message: '太短了' }
+
+  // 三个以上字段 → 第一个（可能含空格）是物品名
+  const s = parseSampleLine(t, now)
+  if (s === null) return { kind: 'error', message: `看不懂这一行：${t}` }
+
+  // 防一个常见手误：把两个数字敲成三列，于是"物品名"变成了数字
+  if (parseAmount(s.item) !== null) {
+    return {
+      kind: 'error',
+      message: `物品名看起来是个数字（${s.item}）—— 是不是多敲了一列？`,
+    }
+  }
+  return { kind: 'sample', sample: s }
 }

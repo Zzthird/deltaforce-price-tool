@@ -6,35 +6,38 @@
  * ═══════════════════════════════════════════════════════════════════════
  *   npm run fee:probe
  *
- * 然后在游戏交易行里挂单，每挂一次敲一行：
+ * 在交易行挂单，然后敲。**第一行带物品名，之后只敲两个数字**：
  *
- *   <物品名> <挂价> <预计到手>
+ *   海洋之泪 1000 900        ← 带名字（顺便设成"当前物品"）
+ *   10000 9000               ← 只敲数字，沿用当前物品 ✓
+ *   100000 85000
+ *   item D6 战术头盔          ← 换物品（不记录样本）
+ *   10000 9000               ← 现在是 D6 战术头盔
  *
- * 例：
- *   海洋之泪 1000 900
- *   海洋之泪 10000 9000
- *   海洋之泪 1000000 850000
+ * 每敲一行立刻算出费率，并告诉你**下一个该测什么价格**
+ * （二分逼近档位边界）—— 所以不需要猜，几次就能把公式逼出来。
  *
- * 也支持直接给手续费（如果交易行显示的只有手续费）：
- *   海洋之泪 1000 fee=100
+ * ═══════════════════════════════════════════════════════════════════════
+ * 打错了怎么办
+ * ═══════════════════════════════════════════════════════════════════════
+ *   fix 12000 10800   改掉**最后一条**的价格与到手（刚敲错用这个）
+ *   del 3             删掉第 3 条（list 里有编号）
+ *   undo              等价于删掉最后一条
+ *   list              看所有样本与编号
  *
- * 每敲一行它会立刻算出费率，并告诉你**下一个该测什么价格**
- * （二分逼近档位边界）—— 所以你不需要猜，几十次就能把公式逼出来。
+ * ⚠️ 这里**开着行编辑**（`terminal: true`）—— 所以上下键能翻历史、
+ *    左右键能改字符、Ctrl+C 能退出。第一版把它关掉了，
+ *    结果连"按上键改个数字再回车"都用不了，用起来很别扭。
  *
- * 其它命令：
+ * ═══════════════════════════════════════════════════════════════════════
+ * 其它命令
+ * ═══════════════════════════════════════════════════════════════════════
  *   report   完整分析（模型 + 档位 + 拟合情况）
  *   items    跨物品对比（费率是否还取决于物品本身）
  *   list     列出所有样本
- *   undo     删掉最后一条（敲错了用）
  *   q        退出
  *
- * ═══════════════════════════════════════════════════════════════════════
- * 为什么要有这个工具
- * ═══════════════════════════════════════════════════════════════════════
- * 「最高利润」依赖手续费公式，而公开资料互相矛盾且找不到官方费率表
- * （详见 docs/source-recon.md §九）。猜公式会算出一个"看着合理但错"的数，
- * 所以宁可实测。分析逻辑全在 `src/fee.ts`（纯函数、有单测），
- * 这个脚本只负责**录入与打印**。
+ * 分析逻辑全在 `src/fee.ts`（纯函数、有单测），这里只负责录入与打印。
  */
 
 import { readFile, writeFile, mkdir } from 'node:fs/promises'
@@ -46,7 +49,7 @@ import {
   compareAcrossItems,
   feeOf,
   fmtRate,
-  parseSampleLine,
+  parseEntry,
   rateOf,
   type FeeSample,
 } from '../src/fee'
@@ -127,13 +130,15 @@ async function main(): Promise<void> {
   const samples = await loadSamples(path)
 
   /**
-   * 从本地快照里补物品的品质与大类。
+   * "当前物品" —— 从**最后一条样本**推断，不需要额外存状态。
    *
-   * 为什么要补：搜索资料里有一条说费率可能"按物品参考价区间浮动" ——
-   * 那意味着费率可能取决于**物品**而不只是挂价。带上品质/大类，
-   * 事后才能验证"是不是品质越高费率越高"这类假设。
-   * 找不到就算了（不阻断录入 —— 这是实测工具，不该被数据缺失拦住）。
+   * 为什么这样够用：你挂单时是在反复改**同一个**物品的价格，
+   * 所以"上一条是哪个物品"几乎总是"现在要测哪个物品" ✓
+   * （换物品时敲一句 `item 名字` 就行）
    */
+  let currentItem: string | null = samples.length > 0 ? (samples[samples.length - 1]?.item ?? null) : null
+
+  /** 从本地快照补品质/大类 —— 用于事后验证"费率是否取决于物品" */
   const meta = new Map<string, { grade: number; category: string }>()
   try {
     const snap = await loadSnapshot(resolve(cfg.dataDir, 'snapshot.json'))
@@ -147,17 +152,37 @@ async function main(): Promise<void> {
   console.log(RULE)
   console.log('  三角洲行动 · 交易行手续费实测')
   console.log(`  样本文件 ${path}`)
-  console.log(`  已有 ${samples.length} 个样本${samples.length > 0 ? '（report 看分析）' : ''}`)
+  console.log(`  已有 ${samples.length} 个样本${samples.length > 0 ? '（敲 report 看分析）' : ''}`)
+  if (currentItem !== null) console.log(`  当前物品 ${currentItem}（换物品敲：item 名字）`)
   console.log(RULE)
-  console.log('  在交易行挂单，然后敲：  物品名 挂价 预计到手')
-  console.log('  例：  海洋之泪 1000 900        （也支持 fee=100 或 r=10%）')
-  console.log('  命令： report / items / list / undo / q')
+  console.log('  挂单后敲：  【物品名】 挂价 预计到手')
+  console.log('    · 第一行带物品名：海洋之泪 1000 900')
+  console.log('    · 之后只敲两个数：10000 9000        （沿用当前物品，不用再打名字）')
+  console.log('    · 也可以：fee=100  或  r=10%')
+  console.log('  打错了： fix 12000 10800（改最后一条） / del 3（删第 3 条） / undo / list')
+  console.log('  其它：   report 分析 / items 跨物品对比 / q 退出')
+  console.log('  提示：上下键可以翻历史，左右键可以改字符')
   console.log(RULE)
 
-  const rl = createInterface({ input: process.stdin, output: process.stdout, terminal: false })
+  /**
+   * ⚠️ `terminal` 要按实际情况给。
+   *
+   * `terminal: true` 才有行编辑（左右键改字符）和上下键历史 ——
+   * 而 `terminal: false` 会把它们全关掉，连"按上键改个数字再回车"都用不了 ✗。
+   *
+   * 但管道输入（`echo ... | npm run fee:probe`）时不能开 terminal ✗
+   * （非 TTY 下开 terminal 模式会回显错乱）。所以按 `isTTY` 自动选 ✓
+   */
+  const isTTY = process.stdin.isTTY === true
+  const rl = createInterface({
+    input: process.stdin,
+    output: process.stdout,
+    terminal: isTTY,
+    historySize: 200,
+  })
 
   const prompt = (): void => {
-    process.stdout.write('\n> ')
+    process.stdout.write(currentItem === null ? '\n物品? > ' : `\n${currentItem} > `)
   }
 
   prompt()
@@ -165,7 +190,7 @@ async function main(): Promise<void> {
   for await (const rawLine of rl) {
     const line = rawLine.trim()
 
-    if (line === '' ) {
+    if (line === '') {
       prompt()
       continue
     }
@@ -198,10 +223,7 @@ async function main(): Promise<void> {
       const removed = samples.pop()
       if (removed) {
         await saveSamples(path, samples)
-        console.log(
-          `  已删除：${removed.item} @ ${removed.price.toLocaleString('zh-CN')}` +
-            `（剩 ${samples.length} 个）`,
-        )
+        console.log(`  已删除：${removed.item} @ ${removed.price.toLocaleString('zh-CN')}（剩 ${samples.length} 个）`)
       } else {
         console.log('  （没有可删的）')
       }
@@ -209,13 +231,68 @@ async function main(): Promise<void> {
       continue
     }
 
-    /* ---------- 录入一条样本 ---------- */
-    const sample = parseSampleLine(line)
-    if (sample === null) {
-      console.log('  ✗ 看不懂这一行。格式：物品名 挂价 预计到手       例：海洋之泪 1000 900')
+    /* ---------- del N：删掉指定编号 ---------- */
+    const delMatch = /^del\s+(\d+)$/i.exec(line)
+    if (delMatch) {
+      const n = Number(delMatch[1])
+      if (n < 1 || n > samples.length) {
+        console.log(`  ✗ 没有第 ${n} 条（共 ${samples.length} 条，敲 list 看编号）`)
+      } else {
+        const [removed] = samples.splice(n - 1, 1)
+        await saveSamples(path, samples)
+        console.log(
+          `  已删除第 ${n} 条：${removed?.item} @ ${(removed?.price ?? 0).toLocaleString('zh-CN')}` +
+            `（剩 ${samples.length} 个）`,
+        )
+      }
       prompt()
       continue
     }
+
+    /* ---------- fix 价格 到手：改最后一条 ---------- */
+    const fixMatch = /^fix\s+(\S+)\s+(\S+)$/i.exec(line)
+    if (fixMatch) {
+      if (samples.length === 0) {
+        console.log('  ✗ 还没有样本可改')
+      } else {
+        const last = samples[samples.length - 1]!
+        const fixed = parseEntry(`${currentItem ?? last.item} ${fixMatch[1]} ${fixMatch[2]}`, last.item)
+        if (fixed.kind !== 'sample') {
+          console.log('  ✗ 看不懂，格式：fix 挂价 到手     例：fix 12000 10800')
+        } else {
+          const price = fixed.sample.price
+          const net = fixed.sample.net
+          samples[samples.length - 1] = { ...fixed.sample, item: last.item }
+          await saveSamples(path, samples)
+          console.log(
+            `  已修正最后一条：${last.item}  挂价 ${last.price.toLocaleString('zh-CN')} → ${price.toLocaleString('zh-CN')}` +
+              `  到手 ${last.net.toLocaleString('zh-CN')} → ${net.toLocaleString('zh-CN')}` +
+              `  →  ${fmtRate(net === price ? 0 : (price - net) / price)}`,
+          )
+        }
+      }
+      prompt()
+      continue
+    }
+
+    /* ---------- 录入 / 切换物品 ---------- */
+    const parsed = parseEntry(line, currentItem)
+
+    if (parsed.kind === 'switch') {
+      currentItem = parsed.item
+      console.log(`  已切换当前物品 → ${currentItem}（这条不记入样本）`)
+      prompt()
+      continue
+    }
+
+    if (parsed.kind === 'error') {
+      console.log(`  ✗ ${parsed.message}`)
+      prompt()
+      continue
+    }
+
+    const sample = parsed.sample
+    currentItem = sample.item
 
     const info = meta.get(sample.item)
     if (info) {
@@ -234,15 +311,16 @@ async function main(): Promise<void> {
         (info ? `  [品质 ${info.grade} · ${info.category}]` : ''),
     )
 
-    /** 每录一条就重算一遍 —— 这样你能立刻看到"比例变了"和"下一个测哪" */
-    const a = analyzeFee(samples.filter((s) => s.item === sample.item))
-    console.log(`  ${sample.item} 已有 ${samples.filter((s) => s.item === sample.item).length} 个样本`)
+    /** 每录一条就重算一遍 —— 这样能立刻看到"比例变了"和"下一个测哪" */
+    const mine = samples.filter((s) => s.item === sample.item)
+    const a = analyzeFee(mine)
+    console.log(`  ${sample.item} 已有 ${mine.length} 个样本`)
     if (a.kind === 'insufficient') {
       console.log(`  ${a.summary}`)
     } else if (a.kind === 'flat') {
       console.log(`  目前看是【固定比例 ${fmtRate(a.tiers[0]?.rate ?? 0)}】`)
-      if (samples.filter((s) => s.item === sample.item).length >= 4) {
-        console.log('  → 已测 4 次以上且比例一致，这个物品可以换下一个了（或再测一个很大的价格确认）')
+      if (mine.length >= 4) {
+        console.log('  → 已测 4 次以上且比例一致。可以再测一个很大的价格确认，然后换下一个物品')
       }
     } else {
       console.log(a.summary)

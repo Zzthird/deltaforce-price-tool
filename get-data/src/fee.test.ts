@@ -212,3 +212,43 @@ describe('⭐ compareAcrossItems —— 费率是否还取决于物品', () => {
     expect(out).not.toContain('取决于物品本身')
   })
 })
+
+
+/* ══════════ ⭐ 样本自相矛盾（最容易出现的其实是敲错） ══════════ */
+
+/**
+ * 这一组来自一次真实的踩坑：演示时我故意喂了两条矛盾的样本
+ * （同样挂 10,000，一个到手 9,000、一个 9,500），
+ * 工具却说「比例随价格**连续变化**」✗ —— 诊断是错的。
+ *
+ * 同样价格给出不同手续费，说明数据有问题，而不是有某种"模型"。
+ * 这种检查必须放在所有拟合之前，否则会给出误导性结论。
+ */
+describe('⭐ analyzeFee —— 样本自相矛盾', () => {
+  it('⭐ 同样挂价、不同手续费 → inconsistent（不是"连续变化"）', () => {
+    const a = analyzeFee([
+      { item: 'X', price: 10_000, net: 9_000, at: '' }, // 手续费 1000
+      { item: 'X', price: 10_000, net: 9_500, at: '' }, // 手续费 500 ← 矛盾
+      mk('X', 20_000, 0.1),
+    ])
+    expect(a.kind).toBe('inconsistent')
+    expect(a.summary).toContain('同样的挂价')
+    expect(a.summary).toContain('10,000')
+    // 必须提示两条出路：敲错了 / 还有别的变量
+    expect(a.summary).toContain('敲错')
+    expect(a.summary).toContain('12 小时 / 24 小时')
+  })
+
+  it('同样挂价、同样手续费 → 不算矛盾', () => {
+    const a = analyzeFee([
+      { item: 'X', price: 10_000, net: 9_000, at: '' },
+      { item: 'Y', price: 10_000, net: 9_000, at: '' }, // 不同物品，但手续费一样
+    ])
+    expect(a.kind).not.toBe('inconsistent')
+  })
+
+  it('不同挂价 → 不算矛盾（哪怕费率不同，那是另一个模型的事）', () => {
+    const a = analyzeFee([mk('X', 1_000, 0.1), mk('X', 100_000, 0.15)])
+    expect(a.kind).not.toBe('inconsistent')
+  })
+})
