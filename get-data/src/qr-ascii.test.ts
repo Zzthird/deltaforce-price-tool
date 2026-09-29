@@ -114,8 +114,10 @@ describe('grayToAscii', () => {
   })
 
   it('⭐ 用"块内多数"而不是平均：块里过半为黑就判黑', () => {
-    // 32×32 图缩到 8 列 → 每个字符格覆盖 4×4 = 16 像素
-    // 左上角那个格：9 黑 7 白 → 过半是黑 → 应当判黑
+    // 32×32 图缩到 8 列 → 4 行，每个字符格覆盖 4×4 = 16 像素
+    // 左上角那个字符格的**上下两半**都设成 9 黑 7 白
+    // （一个字符是 4 列 × 4 行像素；但它竖着画两个采样行，
+    //   所以要让整个字符格都过半为黑，才能得到 █）
     const W = 32
     const gray = new Uint8Array(W * W).fill(255)
     for (let y = 0; y < 4; y += 1) {
@@ -123,8 +125,15 @@ describe('grayToAscii', () => {
         if (y * 4 + x < 9) gray[y * W + x] = 0
       }
     }
+    // 下半（y = 4..7）也补成 9 黑
+    for (let y = 4; y < 8; y += 1) {
+      for (let x = 0; x < 4; x += 1) {
+        if ((y - 4) * 4 + x < 9) gray[y * W + x] = 0
+      }
+    }
     const art = grayToAscii({ width: W, height: W, gray }, 8)
-    expect(art.split('\n')[0]!.startsWith('█')).toBe(true)
+    // 两半都是 9/16 黑 → 过半 → █（而不是被平均稀释成灰、判白）
+    expect(art[0]).toBe('█')
   })
 
   it('太宽的图会被缩放（否则终端换行错乱、扫不出来）', () => {
