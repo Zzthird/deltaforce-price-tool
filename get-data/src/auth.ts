@@ -155,6 +155,32 @@ export function hash33(qrsig: string): number {
   return e & 0x7fffffff
 }
 
+/**
+ * 腾讯的 `g_tk` 算法 —— ⚠️ **和 `hash33` 不是同一个函数**！
+ *
+ * | | 初始值 | 用途 |
+ * |---|---|---|
+ * | `hash33` | **0** | `ptqrtoken`（轮询扫码状态）|
+ * | `getGtk` | **5381** | `g_tk`（换 code 那一步）|
+ *
+ * 两者其余部分一样（都是 `e += (e<<5) + 字符` 再取 31 位）。
+ *
+ * ⚠️ **这是个很阴的坑**：用 `hash33` 算 `g_tk` 代码照样能跑，
+ *    但官方会拒绝 → 拿不到 `code` ✗ → 表现为"cookie 过期或触发风控" ✗ ——
+ *    **报错信息和真正的原因完全无关** ✗（官方只会在 Location 里不给 code）。
+ *
+ * 每轮都 `& 0x7fffffff` 是照抄参考实现的（PHP 整数溢出行为）——
+ * 保持一致比"看起来更简洁"重要 ✓
+ */
+export function getGtk(skey: string): number {
+  let e = 5381
+  for (let i = 0; i < skey.length; i += 1) {
+    e += (e << 5) + skey.charCodeAt(i)
+    e &= 0x7fffffff
+  }
+  return e & 0x7fffffff
+}
+
 /** 轮询扫码状态时官方返回的结构 */
 export interface QrPollResult {
   /** 官方状态码：0=成功，65=已过期，66=未扫码，67=已扫码待确认，其他=失败 */
