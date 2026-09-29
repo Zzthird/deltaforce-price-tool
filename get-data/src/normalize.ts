@@ -40,7 +40,7 @@ import type {
   ItemSourceId,
   ProvenanceSource,
 } from '@deltaforce/shared'
-import { CATEGORY_CN, GRADE_CN, GRADE_COLOR, GRADE_TONE } from './constants'
+import { CATEGORY_CN, GRADE_CN, GRADE_COLOR, GRADE_TONE, PROVENANCE_ALL_MAPS } from './constants'
 import type { JoinedItem } from './join'
 import {
   clampGrade,
@@ -192,6 +192,28 @@ export function normalizeFromParts(
   const baseMaps = appliedProv ? appliedProv.maps : parseProvenanceMaps(raw.rawProvenance)
   const provenanceMaps = expandAllMaps(baseMaps, options.allMapNames)
 
+  /**
+   * ⭐ 这份物资是不是**通用物资**（每张图都能刷）。
+   *
+   * 必须在**展开之前**判定。因为 `expandAllMaps` 会把「全地图」哨兵
+   * 换成 6 个具体图名，展开之后就再也分不出
+   * “标了全地图”与“逐个列了 6 张图”了 —— 而这两个在界面上要区别对待
+   * （一个显示「通用」，一个显示 6 个图名）。
+   *
+   * 两个条件取或：
+   *   · 原始标注里含「全地图」哨兵   ← 实际数据就是这样（1297 条）
+   *   · 展开后的地图集合覆盖了全部已知地图 ← 兜住“有人不写哨兵、逐张列”
+   *
+   * `allMapNames` 为空串时（无任何出产地数据）两个条件都不成立，返回 false，
+   * 这是对的 —— 不知道不等于通用。
+   */
+  const provenanceUniversal =
+    baseMaps !== null &&
+    (baseMaps.includes(PROVENANCE_ALL_MAPS) ||
+      (options.allMapNames.length > 0 &&
+        provenanceMaps !== null &&
+        options.allMapNames.every((m) => provenanceMaps.includes(m))))
+
   let provenanceSource: ProvenanceSource | null = null
   if (appliedProv) {
     if (provenanceMaps !== null) {
@@ -239,6 +261,7 @@ export function normalizeFromParts(
     itemSubtype: raw.itemSubtype?.trim() || null,
 
     provenanceMaps,
+    provenanceUniversal,
     provenanceSource,
 
     availability,

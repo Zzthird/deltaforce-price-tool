@@ -20,6 +20,7 @@
 
 import { beforeEach, describe, expect, it } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
+import { nextTick } from 'vue'
 import type { Item } from '@deltaforce/shared'
 
 import { useItemsStore } from './items'
@@ -73,6 +74,7 @@ function makeItem(over: Partial<Item> = {}): Item {
     itemSubtype: null,
     propsDetail: null,
     provenanceMaps: ['长弓溪谷'],
+    provenanceUniversal: over.provenanceUniversal ?? false,
     provenanceSource: 'manual',
     availability: 'lootable',
     availabilityNote: null,
@@ -111,6 +113,8 @@ const FIXTURE: Item[] = [
   // 道具 / 收集品，很值钱
   makeItem({ sourceItemId: '15080050142', name: '海洋之泪', price: 34_000_000, grade: 6 }),
   // 道具 / 收集品，中等（品质 3 = 蓝）
+  // ⭐ 刻意设成「通用物资」：每张图都能刷到。fixture 里只有两张图，
+  //    所以它的 provenanceMaps 就是这两张 —— 对应真实数据里 1297 条「全地图」。
   makeItem({
     sourceItemId: '15200000111',
     name: '普通收集品',
@@ -119,6 +123,8 @@ const FIXTURE: Item[] = [
     gradeCn: '蓝',
     gradeTone: 'blue',
     gradeColor: '#658bce',
+    provenanceMaps: ['长弓溪谷', 'AZ3'],
+    provenanceUniversal: true,
   }),
   // 道具 / 钥匙，只有 AZ3 出（品质 5 = 金）
   makeItem({
@@ -322,11 +328,11 @@ describe('⭐ 交叉计数 —— 选项后面的数字必须是"选了还剩多
 
   it('⭐ 地图筛选生效后，大类计数要跟着变（不是永远显示全部）', () => {
     const filters = useFiltersStore()
-    filters.map = 'AZ3' // 只有「反应堆总控核心」出在 AZ3
+    filters.map = 'AZ3' // 出在 AZ3 的：反应堆（特产）+ 普通收集品（通用）
 
     const byValue = Object.fromEntries(filters.categoryOptions.map((o) => [o.value, o.count]))
-    expect(byValue['props']).toBe(1) // 只剩反应堆
-    expect(byValue['ammo']).toBe(0) // 弹药一张图都不含 AZ3
+    expect(byValue['props']).toBe(2)
+    expect(byValue['ammo']).toBe(0) // 弹药两张图都不含 AZ3
   })
 
   it('⭐ 子类选项受父级大类约束，且计数不带自己', () => {
@@ -362,7 +368,7 @@ describe('⭐ 交叉计数 —— 选项后面的数字必须是"选了还剩多
     const byValue = Object.fromEntries(filters.mapOptions.map((o) => [o.value, o.count]))
 
     expect(byValue['长弓溪谷']).toBe(5) // 反应堆在 AZ3；火箭燃料/旧赛季弹不在池里
-    expect(byValue['AZ3']).toBe(1)
+    expect(byValue['AZ3']).toBe(2) // 反应堆 + 通用物资
   })
 })
 
@@ -392,40 +398,154 @@ describe('搜索', () => {
 /* ══════════════════════ 排序与判定过滤 ══════════════════════ */
 
 describe('排序', () => {
-  it('⭐ 按当前指标降序，算不出来的排最后（不是最前）', () => {
+  it('⭐ 已判定的按指标降序，未判定的恒排最后', () => {
     const filters = useFiltersStore()
-    filters.includeExcluded = true // 把"无价格"的也放进来一起看
+    filters.includeExcluded = true // 把"不可上架/不可摸/无价格"的也放进来
 
-    const metrics = filters.rows.map((r) => r.metric)
+    const rows = filters.rows
+    const known = rows.filter((r) => r.verdict !== 'unknown')
+    const unknown = rows.filter((r) => r.verdict === 'unknown')
 
-    // 前面都不为 null，最后才出现 null
-    const firstNull = metrics.indexOf(null)
-    expect(firstNull).toBeGreaterThan(0)
-    expect(metrics.slice(firstNull).every((m) => m === null)).toBe(true)
+    // 两种都存在（否则这个测试没意义）
+    expect(known.length).toBeGreaterThan(1)
+    expect(unknown.length).toBeGreaterThan(0)
 
-    // 而且前面是降序
-    const nums = metrics.slice(0, firstNull) as number[]
+    // 已判定在前、未判定在后（按数组顺序，不是按 metric 大小）
+    expect(rows.indexOf(unknown[0]!)).toBeGreaterThan(rows.indexOf(known[known.length - 1]!))
+
+    // 已判定那部分指标是降序的
+    const nums = known.map((r) => r.metric).filter((m): m is number => m !== null)
     for (let i = 1; i < nums.length; i += 1) {
       expect(nums[i]!).toBeLessThanOrEqual(nums[i - 1]!)
     }
   })
 
-  it('切换判定依据 → 排序键跟着换', () => {
+  it('⭐ 未判定恒排最后 —— 即使它的数字更大也不行', () => {
+    /**
+     * 这条是真正的痛点：火箭燃料有 500 万的价，但它**挂不上交易行**，
+     * 那个价格你根本拿不到。按 pricePerSlot 降序时它会理直气壮地排到
+     * 榜单最前面，而结论完全错 —— 数字看着对，最危险的那种错。
+     */
+    const filters = useFiltersStore()
+    filters.includeExcluded = true
+
+    const fuelIndex = filters.rows.findIndex((r) => r.item.name === '火箭燃料')
+    const fuel = filters.rows[fuelIndex]!
+
+    expect(fuel.verdict).toBe('unknown')
+    expect(fuel.metric).toBe(5_000_000) // 它确实有很高的价
+    // 但依然在所有已判定行之后
+    const lastKnown = filters.rows.map((r) => r.verdict !== 'unknown').lastIndexOf(true)
+    expect(fuelIndex).toBeGreaterThan(lastKnown)
+  })
+
+  it('⭐ 排序排的是**全量**，不是当前页（分页 bug 的回归测试）', () => {
+    /**
+     * 这一条钉死"表头排序只排当前页"那个 bug。
+     *
+     * 原来的实现是 `el-table` 的 `sortable`（客户端排序）——
+     * 它只排 `:data` 里的行，而分页后 `:data` 只有当前页。
+     * 于是点"单价"排序时，第 2 页的东西根本不会因为
+     * 比第 1 页大而浮上来。
+     *
+     * 现在排序在 store 里对**筛选后的全部行**做，所以：
+     * 排完之后如果我按"页大小"切片，第二页第一条 <= 第一页最后一条。
+     */
+    const filters = useFiltersStore()
+    filters.sortKey = 'pricePerSlot'
+    filters.sortDir = 'desc'
+
+    const all = filters.rows
+    const PAGE_SIZE = 2
+    const page1 = all.slice(0, PAGE_SIZE)
+    const page2 = all.slice(PAGE_SIZE, PAGE_SIZE * 2)
+
+    expect(page1).toHaveLength(2)
+    expect(page2.length).toBeGreaterThan(0)
+
+    const lastOfPage1 = page1[page1.length - 1]!.metric ?? -Infinity
+    const firstOfPage2 = page2[0]!.metric ?? -Infinity
+    expect(firstOfPage2).toBeLessThanOrEqual(lastOfPage1)
+
+    // 而且第一页第一名必须是全局最大（已判定部分）
+    const globalMax = Math.max(
+      ...all.filter((r) => r.metric !== null).map((r) => r.metric as number),
+    )
+    expect(page1[0]!.metric).toBe(globalMax)
+  })
+
+  it('升序 / 降序都能用，且 null 不因为升序就翻到最前', () => {
+    const filters = useFiltersStore()
+    filters.includeExcluded = true
+
+    filters.sortKey = 'pricePerSlot'
+    filters.sortDir = 'asc'
+    // 第一行不应该是 null（null 的语义是"算不出来"，放最前会被误读成"最便宜"）
+    expect(filters.rows[0]!.metric).not.toBeNull()
+
+    const nums = filters.rows
+      .filter((r) => r.verdict !== 'unknown' && r.metric !== null)
+      .map((r) => r.metric as number)
+    for (let i = 1; i < nums.length; i += 1) {
+      expect(nums[i]!).toBeGreaterThanOrEqual(nums[i - 1]!)
+    }
+  })
+
+  it('按名称排序（中文）', () => {
+    const filters = useFiltersStore()
+    filters.sortKey = 'name'
+    filters.sortDir = 'asc'
+
+    const names = filters.rows.filter((r) => r.verdict !== 'unknown').map((r) => r.item.name)
+    expect(names.length).toBeGreaterThan(1)
+    // 只需确认它是排过序的（中文排序规则依赖 ICU，不写死具体顺序）
+    const sorted = [...names].sort((a, b) => a.localeCompare(b, 'zh-CN'))
+    expect(names).toEqual(sorted)
+  })
+
+  it('applySortChange —— 表头事件写回 store', () => {
+    const filters = useFiltersStore()
+
+    filters.applySortChange({ prop: 'todayChangePct', order: 'descending' })
+    expect(filters.sortKey).toBe('todayChangePct')
+    expect(filters.sortDir).toBe('desc')
+
+    filters.applySortChange({ prop: 'slots', order: 'ascending' })
+    expect(filters.sortKey).toBe('slots')
+    expect(filters.sortDir).toBe('asc')
+
+    // 第三下会传 order=null（Element Plus 的三态循环）→ 回到默认
+    filters.applySortChange({ prop: null, order: null })
+    expect(filters.sortKey).toBe('pricePerSlot')
+    expect(filters.sortDir).toBe('desc')
+  })
+
+  it('切换判定依据 → 价格类排序键跟着换（避免"按 A 排、按 B 判"）', async () => {
     const rules = useRulesStore()
     const filters = useFiltersStore()
 
     rules.mode = 'pricePerSlot'
-    const topBySlot = filters.rows[0]!.item.name
+    await nextTick() // ⚠️ Vue 的 watch 默认是**异步**的（下一个 tick 才跑）
+    expect(filters.sortKey).toBe('pricePerSlot')
 
     rules.mode = 'price'
-    const topByPrice = filters.rows[0]!.item.name
+    await nextTick()
+    expect(filters.sortKey).toBe('price')
 
-    // 单格价值最高的和单价最高的不一定是同一个东西
-    expect(topBySlot).toBe('海洋之泪')
-    expect(topByPrice).toBe('海洋之泪')
-    // 但至少排序键换了 —— 用"排序单调性"验证
-    const prices = filters.rows.map((r) => r.metric ?? 0)
-    expect(prices[0]).toBeGreaterThanOrEqual(prices[1] ?? 0)
+    rules.mode = 'pricePerSlot'
+    await nextTick()
+    expect(filters.sortKey).toBe('pricePerSlot')
+  })
+
+  it('⭐ 用户已手动选了非价格列时，切判定依据不插手排序', async () => {
+    const rules = useRulesStore()
+    const filters = useFiltersStore()
+
+    filters.applySortChange({ prop: 'slots', order: 'descending' })
+    rules.mode = 'price'
+    await nextTick()
+
+    expect(filters.sortKey).toBe('slots') // 没被改掉
   })
 })
 
@@ -504,5 +624,231 @@ describe('清除筛选', () => {
 
     filters.resetFilters()
     expect(filters.includeExcluded).toBe(true)
+  })
+})
+
+/* ══════════════════ ⭐ 只看该图专属（mapOnly） ══════════════════ */
+
+/**
+ * 这一组对着一个实测出来的事实：
+ *
+ *   1564 条物品里 **1297 条标注是「全地图」** —— 每张图都能刷到。
+ *   所以只选地图的话，六张图各约 1300 条，跟没筛差不了多少。
+ *   加上这个开关，选长弓溪谷就只剩十几条**地图特产**。
+ */
+describe('⭐ 只看该图专属（mapOnly）', () => {
+  it('没选地图时开关不起作用（它本来就没有意义）', () => {
+    const filters = useFiltersStore()
+    filters.mapOnly = true
+    // 没选地图 → 结果与不开开关一致
+    expect(filters.rows.length).toBe(useFiltersStore().rowsBeforeVerdict.length)
+    expect(filters.rows.some((r) => r.item.provenanceUniversal)).toBe(true)
+  })
+
+  it('⭐ 选地图 + 开开关 → 通用物资被排掉', () => {
+    const filters = useFiltersStore()
+    filters.map = 'AZ3'
+
+    const withUniversal = filters.rows.length
+    expect(filters.rows.some((r) => r.item.provenanceUniversal)).toBe(true)
+
+    filters.mapOnly = true
+    const withoutUniversal = filters.rows.length
+
+    expect(filters.rows.some((r) => r.item.provenanceUniversal)).toBe(false)
+    expect(withoutUniversal).toBeLessThan(withUniversal)
+    // 差的就是那一条通用物资
+    expect(withUniversal - withoutUniversal).toBe(1)
+  })
+
+  it('关掉开关 → 通用物资回来', () => {
+    const filters = useFiltersStore()
+    filters.map = 'AZ3'
+    filters.mapOnly = true
+    const only = filters.rows.length
+
+    filters.mapOnly = false
+    expect(filters.rows.length).toBeGreaterThan(only)
+  })
+
+  it('⭐ 开关算作筛选条件（"清除筛选"要能清掉它）', () => {
+    const filters = useFiltersStore()
+    filters.map = 'AZ3'
+    filters.mapOnly = true
+    expect(filters.activeFilterCount).toBe(2)
+
+    filters.resetFilters()
+    expect(filters.mapOnly).toBe(false)
+    expect(filters.activeFilterCount).toBe(0)
+  })
+
+  it('⚠️ 记录一个已知行为：选地图后"待补"的物品也会被隐藏', () => {
+    /**
+     * `matchMap` 的规则是 `provenanceMaps.includes(地图)` —— 而"待补"的
+     * 物品 `provenanceMaps` 是 `null`，所以**选地图时它会被挡住**。
+     *
+     * 这是刻意的：选地图的语义是"只看**已确认**会在这张图刷出的物资"，
+     * 我们不知道的就不该混进来充数。
+     *
+     * 但它是个容易被误解的行为（"没标注不等于不会出"），
+     * 所以这里把规则钉住，并且在界面上的地图下拉里写明这一点。
+     */
+    const filters = useFiltersStore()
+    filters.map = '长弓溪谷'
+
+    const map = FIXTURE.find((i) => i.name === '藏宝图')!
+    expect(map.provenanceMaps).toEqual(['长弓溪谷']) // fixture 里这条是有数据的
+
+    // 造一条"待补"的（provenanceMaps = null）来验证规则
+    const items = useItemsStore()
+    items.items = [
+      ...FIXTURE,
+      // ⚠️ 必须显式传 null —— makeItem 的默认出产地就是 ['长弓溪谷']
+      makeItem({ sourceItemId: '9999', name: '无出产地物品', provenanceMaps: null }),
+    ]
+    expect(filters.rows.some((r) => r.item.name === '无出产地物品')).toBe(false)
+  })
+})
+
+/* ══════════════════ 筛选持久化 ══════════════════ */
+
+/**
+ * 筛选状态存 localStorage。
+ *
+ * ⚠️ 与 localStorage 打交道有两类坑，都要测：
+ *   ① **读进来的东西不可信** —— 可能是旧版本写的、被手改过、别的网站同源留下的
+ *   ② **localStorage 本身可能抛异常**（隐私模式、配额满）
+ */
+describe('筛选持久化（localStorage）', () => {
+  /** 装一个内存版 localStorage（vitest 默认的 node 环境没有它）*/
+  function installLocalStorage(initial: Record<string, string> = {}): Map<string, string> {
+    const store = new Map(Object.entries(initial))
+    Object.defineProperty(globalThis, 'localStorage', {
+      configurable: true,
+      value: {
+        getItem: (k: string) => store.get(k) ?? null,
+        setItem: (k: string, v: string) => void store.set(k, v),
+        removeItem: (k: string) => void store.delete(k),
+        clear: () => store.clear(),
+      },
+    })
+    return store
+  }
+
+  const KEY = 'deltaforce.filters.v1'
+
+  it('⭐ 存过的筛选会被读回来', () => {
+    installLocalStorage({
+      [KEY]: JSON.stringify({
+        search: '海洋',
+        category: 'props',
+        subcategory: 'collection',
+        thirdClass: null,
+        grade: 6,
+        map: 'AZ3',
+        verdictFilter: 'must',
+        includeExcluded: true,
+        mapOnly: true,
+        sortKey: 'todayChangePct',
+        sortDir: 'asc',
+      }),
+    })
+
+    setActivePinia(createPinia())
+    useItemsStore().items = FIXTURE
+    const filters = useFiltersStore()
+
+    expect(filters.search).toBe('海洋')
+    expect(filters.category).toBe('props')
+    expect(filters.grade).toBe(6)
+    expect(filters.map).toBe('AZ3')
+    expect(filters.verdictFilter).toBe('must')
+    expect(filters.includeExcluded).toBe(true)
+    expect(filters.mapOnly).toBe(true)
+    expect(filters.sortKey).toBe('todayChangePct')
+    expect(filters.sortDir).toBe('asc')
+  })
+
+  it('⭐ 非法内容一律回退默认，而且不抛异常', () => {
+    installLocalStorage({
+      [KEY]: JSON.stringify({
+        search: 12345, // 应该是字符串
+        category: 999, // 应该是字符串或 null
+        grade: 'gold', // 应该是 0~6 的整数
+        verdictFilter: 'nonsense', // 不在四个枚举里
+        mapOnly: 'yes', // 应该是布尔
+        sortKey: 'hack', // 不在允许的列里
+        sortDir: 'sideways',
+      }),
+    })
+
+    setActivePinia(createPinia())
+    useItemsStore().items = FIXTURE
+
+    const filters = useFiltersStore()
+    expect(filters.search).toBe('')
+    expect(filters.category).toBeNull()
+    expect(filters.grade).toBeNull()
+    expect(filters.verdictFilter).toBeNull()
+    expect(filters.mapOnly).toBe(false)
+    expect(filters.sortKey).toBe('pricePerSlot')
+    expect(filters.sortDir).toBe('desc')
+  })
+
+  it('内容根本不是 JSON → 回退默认', () => {
+    installLocalStorage({ [KEY]: '{这不是 JSON' })
+    setActivePinia(createPinia())
+    useItemsStore().items = FIXTURE
+    expect(useFiltersStore().sortKey).toBe('pricePerSlot')
+  })
+
+  it('⭐ localStorage 直接抛异常 → 页面不崩，用默认值', () => {
+    Object.defineProperty(globalThis, 'localStorage', {
+      configurable: true,
+      value: {
+        getItem: () => {
+          throw new Error('隐私模式下不允许访问')
+        },
+        setItem: () => {
+          throw new Error('配额满')
+        },
+      },
+    })
+
+    setActivePinia(createPinia())
+    useItemsStore().items = FIXTURE
+    expect(() => useFiltersStore()).not.toThrow()
+  })
+
+  it('⭐ 改筛选会自动存盘（刷新后还在）', async () => {
+    const store = installLocalStorage()
+    setActivePinia(createPinia())
+    useItemsStore().items = FIXTURE
+
+    const filters = useFiltersStore()
+    filters.setCategory('ammo')
+    filters.map = 'AZ3'
+    await nextTick() // watch 默认异步
+
+    const saved = JSON.parse(store.get(KEY)!) as Record<string, unknown>
+    expect(saved['category']).toBe('ammo')
+    expect(saved['map']).toBe('AZ3')
+  })
+
+  it('grade 边界：0 与 6 合法，越界与小数回退 null', () => {
+    installLocalStorage({ [KEY]: JSON.stringify({ grade: 0 }) })
+    setActivePinia(createPinia())
+    useItemsStore().items = FIXTURE
+    expect(useFiltersStore().grade).toBe(0)
+
+    installLocalStorage({ [KEY]: JSON.stringify({ grade: 9 }) })
+    setActivePinia(createPinia())
+    useItemsStore().items = FIXTURE
+    expect(useFiltersStore().grade).toBeNull()
+
+    installLocalStorage({ [KEY]: JSON.stringify({ grade: 3.5 }) })
+    setActivePinia(createPinia())
+    useItemsStore().items = FIXTURE
+    expect(useFiltersStore().grade).toBeNull()
   })
 })

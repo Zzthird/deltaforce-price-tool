@@ -26,7 +26,7 @@
  * 实现就是下面 `pass(item, skip)` 那个 `skip` 参数。
  */
 
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { defineStore } from 'pinia'
 import type { Item, LootVerdict, MetaOption } from '@deltaforce/shared'
 
@@ -46,6 +46,109 @@ export interface ItemRow {
 /** 可以被"跳过"的筛选维度（交叉计数用） */
 type Dim = 'search' | 'category' | 'subcategory' | 'thirdClass' | 'grade' | 'map'
 
+/**
+ * 排序键 —— 对应表头可以点的那几列。
+ *
+ * ⚠️ 排序**必须在这里做**，不能用 `el-table` 的 `sortable`。
+ * 因为那个是「客户端排序」，它只排 `:data` 里的行 —— 而分页之后
+ * `:data` 只有当前页的 50 行。结果就是你点「单价」排序，
+ * 它把 50 行重排了，其余 1200 条纹丝不动，**而界面看起来"排好了"**。
+ *
+ * 所以表头用 `sortable="custom"`（只发事件、自己不排），
+ * 由这里排全量筛选结果，再交给分页切片。
+ */
+export type SortKey = 'pricePerSlot' | 'price' | 'todayChangePct' | 'slots' | 'name'
+
+export type SortDir = 'asc' | 'desc'
+
+/** localStorage 的键。带版本号 —— 结构变了就换键，不会读到旧格式 */
+const STORAGE_KEY = 'deltaforce.filters.v1'
+
+/** 要持久化的东西 */
+interface PersistedFilters {
+  search: string
+  category: string | null
+  subcategory: string | null
+  thirdClass: string | null
+  grade: number | null
+  map: string | null
+  verdictFilter: LootVerdict | null
+  includeExcluded: boolean
+  mapOnly: boolean
+  sortKey: SortKey
+  sortDir: SortDir
+}
+
+const SORT_KEYS: readonly SortKey[] = ['pricePerSlot', 'price', 'todayChangePct', 'slots', 'name']
+const VERDICTS: readonly LootVerdict[] = ['must', 'maybe', 'skip', 'unknown']
+
+const DEFAULTS: PersistedFilters = {
+  search: '',
+  category: null,
+  subcategory: null,
+  thirdClass: null,
+  grade: null,
+  map: null,
+  verdictFilter: null,
+  includeExcluded: false,
+  mapOnly: false,
+  sortKey: 'pricePerSlot',
+  sortDir: 'desc',
+}
+
+/** 只接受字符串或 null（localStorage 里的东西不可信） */
+function asStringOrNull(v: unknown): string | null {
+  return typeof v === 'string' && v !== '' ? v : null
+}
+
+/**
+ * 从 localStorage 读筛选状态。
+ *
+ * ⚠️ **不能信里面的内容** —— 可能是上一个版本写的、可能被手改过、
+ * 也可能是别的网站同源留下的垃圾。所以逐字段校验类型与取值合法性，
+ * 任何一项不对就退回默认值。
+ *
+ * （和 `stores/rules.ts` 读阈值是同一套做法，同一类问题的同一种防御。）
+ */
+function loadFilters(): PersistedFilters {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (raw === null) return { ...DEFAULTS }
+
+    const parsed: unknown = JSON.parse(raw)
+    if (typeof parsed !== 'object' || parsed === null) return { ...DEFAULTS }
+    const o = parsed as Record<string, unknown>
+
+    const grade = typeof o['grade'] === 'number' && Number.isInteger(o['grade']) && o['grade'] >= 0 && o['grade'] <= 6
+      ? o['grade']
+      : null
+    const verdictFilter = VERDICTS.includes(o['verdictFilter'] as LootVerdict)
+      ? (o['verdictFilter'] as LootVerdict)
+      : null
+    const sortKey = SORT_KEYS.includes(o['sortKey'] as SortKey)
+      ? (o['sortKey'] as SortKey)
+      : DEFAULTS.sortKey
+
+    return {
+      // 搜索串限一下长度：万一被写了 10MB 进去，每次重算都要用
+      search: typeof o['search'] === 'string' ? o['search'].slice(0, 200) : '',
+      category: asStringOrNull(o['category']),
+      subcategory: asStringOrNull(o['subcategory']),
+      thirdClass: asStringOrNull(o['thirdClass']),
+      grade,
+      map: asStringOrNull(o['map']),
+      verdictFilter,
+      includeExcluded: o['includeExcluded'] === true,
+      mapOnly: o['mapOnly'] === true,
+      sortKey,
+      sortDir: o['sortDir'] === 'asc' ? 'asc' : 'desc',
+    }
+  } catch {
+    // localStorage 在某些隐私模式下直接抛异常，不该让页面崩掉
+    return { ...DEFAULTS }
+  }
+}
+
 export const useFiltersStore = defineStore('filters', () => {
   const itemsStore = useItemsStore()
   const metaStore = useMetaStore()
@@ -53,17 +156,29 @@ export const useFiltersStore = defineStore('filters', () => {
 
   /* ══════════════════ 筛选状态 ══════════════════ */
 
-  const search = ref('')
+  const saved = loadFilters()
+
+  const search = ref(saved.search)
   /** 大类 `categoryCode` */
-  const category = ref<string | null>(null)
+  const category = ref<string | null>(saved.category)
   /** 子类 `subcategory` */
-  const subcategory = ref<string | null>(null)
+  const subcategory = ref<string | null>(saved.subcategory)
   /** 细类 `thirdClass` */
-  const thirdClass = ref<string | null>(null)
+  const thirdClass = ref<string | null>(saved.thirdClass)
   /** 品质 0~6 */
-  const grade = ref<number | null>(null)
+  const grade = ref<number | null>(saved.grade)
   /** 地图名（出产地） */
-  const map = ref<string | null>(null)
+  const map = ref<string | null>(saved.map)
+
+  /**
+   * 「只看该图专属」—— 把通用物资（每张图都刷得到的）也排掉。
+   *
+   * 为什么需要它：实测 1564 条里有 **1297 条标注是「全地图」**
+   * （每张图都能刷到，如通用收集品）。所以只选地图的话，
+   * 六张图各约 1300 条 —— 跟没筛差不了多少。
+   * 带上这个开关，选长弓溪谷就只剩十几条**地图特产**了。
+   */
+  const mapOnly = ref(saved.mapOnly)
 
   /**
    * 只看某一档判定。`null` = 全都看。
@@ -71,7 +186,7 @@ export const useFiltersStore = defineStore('filters', () => {
    * 单选而不是多选：实际用起来的需求就是"现在只看必摸"，
    * 点第二下取消。多选会让"我到底在看什么"变得不清楚。
    */
-  const verdictFilter = ref<LootVerdict | null>(null)
+  const verdictFilter = ref<LootVerdict | null>(saved.verdictFilter)
 
   /**
    * 是否把"不可上架 / 不可摸 / 无价格"的物品也显示出来。
@@ -80,7 +195,11 @@ export const useFiltersStore = defineStore('filters', () => {
    * 但它们的信息本身有价值（"这条能摸到但卖不掉"是个结论），
    * 所以给个开关让你能查。
    */
-  const includeExcluded = ref(false)
+  const includeExcluded = ref(saved.includeExcluded)
+
+  /** 排序键与方向（表头点出来的）*/
+  const sortKey = ref<SortKey>(saved.sortKey)
+  const sortDir = ref<SortDir>(saved.sortDir)
 
   /* ══════════════════ 基础池 ══════════════════ */
 
@@ -149,8 +268,16 @@ export const useFiltersStore = defineStore('filters', () => {
 
   /**
    * 这个物品是否通过筛选。`skip` 指定的维度**不参与判断**（交叉计数用）。
+   *
+   * ⚠️ `mapOnly` 与 `includeExcluded` 这类**开关型筛选不参与 skip** ——
+   *    它们没有"选项"需要计数（不像大类/品质那样有下拉列表），
+   *    所以应纳恒定生效。否则一打开"只看专属"，
+   *    下拉里的数字就跟实际结果对不上了。
    */
   function pass(it: Item, skip?: Dim): boolean {
+    // 开关型筛选（恒定生效，不看 skip）
+    if (mapOnly.value && map.value !== null && it.provenanceUniversal) return false
+
     for (const [dim, fn] of PREDICATES) {
       if (dim === skip) continue
       if (!fn(it)) return false
@@ -180,6 +307,38 @@ export const useFiltersStore = defineStore('filters', () => {
     return out
   })
 
+  /**
+   * 数值比较：**`null` 恒排最后**，不随排序方向翻到最前。
+   *
+   * 为什么不让它跟着方向翻：`null` 的语义是"算不出来"，
+   * 把它放到最前面会让人以为"这些最值钱/最便宜"。
+   */
+  function compareNumber(va: number | null, vb: number | null, dir: number): number {
+    if (va === null && vb === null) return 0
+    if (va === null) return 1
+    if (vb === null) return -1
+    return (va - vb) * dir
+  }
+
+  /** 按当前 `sortKey` / `sortDir` 比较两行 */
+  function compareRows(a: ItemRow, b: ItemRow): number {
+    const dir = sortDir.value === 'asc' ? 1 : -1
+
+    switch (sortKey.value) {
+      case 'name':
+        return a.item.name.localeCompare(b.item.name, 'zh-CN') * dir
+      case 'price':
+        return compareNumber(a.item.price, b.item.price, dir)
+      case 'todayChangePct':
+        return compareNumber(a.item.todayChangePct, b.item.todayChangePct, dir)
+      case 'slots':
+        // 占格是数字且必存在，不会为 null
+        return (a.item.slots - b.item.slots) * dir
+      case 'pricePerSlot':
+        return compareNumber(a.item.pricePerSlot, b.item.pricePerSlot, dir)
+    }
+  }
+
   /** 表格最终渲染的行（已按判定过滤 + 排序）*/
   const rows = computed<ItemRow[]>(() => {
     const list =
@@ -188,22 +347,27 @@ export const useFiltersStore = defineStore('filters', () => {
         : rowsBeforeVerdict.value.filter((r) => r.verdict === verdictFilter.value)
 
     /**
-     * 排序：按当前指标降序，`null` 排最后。
+     * 排序分两档，**顺序不能反**：
      *
-     * `null` 排最后而不是排最前：`null` 的含义是"算不出来"，
-     * 把它放在最前面会让人以为"这些最值钱"。
+     *   ① **先分"已判定 / 未判定"** —— 未判定的（不可上架 / 不可摸 / 无价格）
+     *      恒排最后，不管它的数字多大。
      *
-     * 末尾用名字做第二排序键 —— 不然指标相同的物品顺序会在每次重算时
-     * 抖动（`Array.sort` 在 V8 里虽然稳定，但输入顺序本身可能变）。
+     *      不这样分的话，打开"含不可上架/不可摸"之后，
+     *      火箭燃料（500 万但挂不上交易行）会排到榜单最前面 ——
+     *      而那个价格你根本拿不到。数字看着对，结论完全错。
+     *
+     *   ② 再按选中的列排。
+     *
+     * 末尾用名字做稳定键 —— 不然指标相同的物品顺序会在每次重算时拖动。
      */
     return [...list].sort((a, b) => {
-      const va = a.metric
-      const vb = b.metric
-      if (va === null && vb === null) return a.item.name.localeCompare(b.item.name)
-      if (va === null) return 1
-      if (vb === null) return -1
-      if (vb !== va) return vb - va
-      return a.item.name.localeCompare(b.item.name)
+      const au = a.verdict === 'unknown' ? 1 : 0
+      const bu = b.verdict === 'unknown' ? 1 : 0
+      if (au !== bu) return au - bu
+
+      const byKey = compareRows(a, b)
+      if (byKey !== 0) return byKey
+      return a.item.name.localeCompare(b.item.name, 'zh-CN')
     })
   })
 
@@ -290,7 +454,7 @@ export const useFiltersStore = defineStore('filters', () => {
 
   /* ══════════════════ 界面辅助 ══════════════════ */
 
-  /** 当前生效的筛选条件数（给标题旁边的"清除筛选 (3)"用）*/
+  /** 当前生效的筛选条件数（给"清除筛选 (3)"用）*/
   const activeFilterCount = computed(() => {
     let n = 0
     if (search.value.trim() !== '') n += 1
@@ -299,9 +463,41 @@ export const useFiltersStore = defineStore('filters', () => {
     if (thirdClass.value !== null) n += 1
     if (grade.value !== null) n += 1
     if (map.value !== null) n += 1
+    if (mapOnly.value) n += 1
     if (verdictFilter.value !== null) n += 1
     return n
   })
+
+  /**
+   * 表头排序事件 → 写回 store。
+   *
+   * `el-table` 的 `@sort-change` 给的是 `prop`（列标识）与 `order`（方向）。
+   *
+   * 点第三下时 `order` 为 `null`（Element Plus 的三态循环：降→升→取消）
+   * —— 这里把它当作"回到默认排序"，于是你有一个自然的方式回到初始状态。
+   */
+  const PROP_TO_SORT_KEY: Readonly<Record<string, SortKey>> = {
+    pricePerSlot: 'pricePerSlot',
+    price: 'price',
+    todayChangePct: 'todayChangePct',
+    slots: 'slots',
+    name: 'name',
+  }
+
+  function applySortChange(payload: {
+    prop: string | null
+    order: 'ascending' | 'descending' | null
+  }): void {
+    if (payload.order === null || payload.prop === null) {
+      sortKey.value = DEFAULTS.sortKey
+      sortDir.value = DEFAULTS.sortDir
+      return
+    }
+    const key = PROP_TO_SORT_KEY[payload.prop]
+    if (key === undefined) return
+    sortKey.value = key
+    sortDir.value = payload.order === 'ascending' ? 'asc' : 'desc'
+  }
 
   /**
    * 逐级联动：改大类 → 清掉子类和细类。
@@ -334,8 +530,75 @@ export const useFiltersStore = defineStore('filters', () => {
     thirdClass.value = null
     grade.value = null
     map.value = null
+    mapOnly.value = false
     verdictFilter.value = null
+    // 注：`includeExcluded` 与排序**不重置** —— 前者是显示偏好，
+    // 后者是"我在看哪一列"，都不是筛选条件。
   }
+
+  /* ══════════════════ 持久化 ══════════════════ */
+
+  /**
+   * 存盘。
+   *
+   * 为什么筛选要存：这是个反复用的工具。"选好长弓溪谷 + 只看必摸"然后
+   * 刷新页面就回到全部，每次重新选一遍 —— 而拖滑块存了、筛选没存，
+   * 这种不一致本身就很难理解。
+   *
+   * 与 `stores/rules.ts` 的阈值同一个键空间风格（带 `.v1` 版本号）。
+   */
+  watch(
+    [
+      search,
+      category,
+      subcategory,
+      thirdClass,
+      grade,
+      map,
+      mapOnly,
+      verdictFilter,
+      includeExcluded,
+      sortKey,
+      sortDir,
+    ],
+    () => {
+      try {
+        const snapshot: PersistedFilters = {
+          search: search.value,
+          category: category.value,
+          subcategory: subcategory.value,
+          thirdClass: thirdClass.value,
+          grade: grade.value,
+          map: map.value,
+          verdictFilter: verdictFilter.value,
+          includeExcluded: includeExcluded.value,
+          mapOnly: mapOnly.value,
+          sortKey: sortKey.value,
+          sortDir: sortDir.value,
+        }
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot))
+      } catch {
+        // 存不下（隐私模式 / 配额满）不该让界面崩 —— 只是刷新后丢设置
+      }
+    },
+  )
+
+  /**
+   * 判定依据从"单格价值"切到"单价"时，如果当前排的就是这两个之一，
+   * **跟着一起换**。
+   *
+   * 不跟的话会出现这种自相矛盾：按单格价值排序的列表，
+   * 而右侧判定用的是单价 —— 排在前面的被判"跳过"。
+   * 但如果用户已经手动点了别的列（如今日涨幅），就不插手。
+   */
+  watch(
+    () => rules.mode,
+    (mode) => {
+      if (sortKey.value === 'pricePerSlot' || sortKey.value === 'price') {
+        sortKey.value = mode === 'price' ? 'price' : 'pricePerSlot'
+      }
+    },
+  )
 
   return {
     // 状态
@@ -345,8 +608,11 @@ export const useFiltersStore = defineStore('filters', () => {
     thirdClass,
     grade,
     map,
+    mapOnly,
     verdictFilter,
     includeExcluded,
+    sortKey,
+    sortDir,
 
     // 派生
     pool,
@@ -364,6 +630,7 @@ export const useFiltersStore = defineStore('filters', () => {
     setCategory,
     setSubcategory,
     setVerdictFilter,
+    applySortChange,
     resetFilters,
   }
 })

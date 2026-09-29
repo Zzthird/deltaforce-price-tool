@@ -407,6 +407,93 @@ describe('normalizeFromParts —— 出产地', () => {
   })
 })
 
+/* ══════════════════ ⭐ 通用物资（provenanceUniversal） ══════════════════ */
+
+/**
+ * 这一组测的是"这份物资是不是每张图都能刷"。
+ *
+ * 为什么需要后端给这个布尔量：`provenanceMaps` 到网页手里时**已被展开**
+ * —— 「全地图」哨兵变成了 5 个具体图名。前端拿到那个数组后分不清
+ * "标了全地图"与"逐个列了 5 张图"，只能靠"地图数 == 总地图数"去猜。
+ *
+ * 实测数据里 1564 条有 1297 条是通用，所以这个区分在界面上差别巨大
+ * （选长弓溪谷：不区分是 1304 条，区分后只剩十几条）。
+ */
+describe('normalizeFromParts —— 通用物资判定', () => {
+  it('⭐ 标注写「全地图」哨兵 → 通用', () => {
+    const item = normalizeFromParts(
+      makeItem(),
+      makeQuote(),
+      options({ provenance: new Map([['15080050142', provEntry(['全地图'], 'manual')]]) }),
+    )
+    expect(item.provenanceUniversal).toBe(true)
+    // 而且地图名仍然被展开给网页（两件事互不影响）
+    expectMapSet(item.provenanceMaps, ALL_MAPS_SORTED)
+  })
+
+  it('⭐ 只标一张图（特产）→ 不通用', () => {
+    const item = normalizeFromParts(
+      makeItem(),
+      makeQuote(),
+      options({ provenance: new Map([['15080050142', provEntry(['巴克什'], 'manual')]]) }),
+    )
+    expect(item.provenanceUniversal).toBe(false)
+  })
+
+  it('⭐ 官方原始串里的「全地图」是**点位名**，不是哨兵 → 不算通用', () => {
+    /**
+     * 这是最容易搞错的一处：官方 `propsSource` 的格式是「地图名-点位名」，
+     * 而确实存在点位就叫「全地图」。默认 fixture 就是 `'潮汐监狱-全地图'`。
+     *
+     * `parseProvenanceMaps` 取横线**前面**那段作地图名，所以它解析成
+     * `['潮汐监狱']` —— 这是一张图的特产，不是通用物资。
+     * 如果判定写成"原始串里包含「全地图」三个字"，这里就会错判。
+     */
+    const item = normalizeFromParts(makeItem(), makeQuote(), options())
+    expect(item.provenanceMaps).toEqual(['潮汐监狱'])
+    expect(item.provenanceUniversal).toBe(false)
+  })
+
+  it('⭐ 逐张列出全部地图（不写哨兵）→ 也算通用', () => {
+    const item = normalizeFromParts(
+      makeItem(),
+      makeQuote(),
+      options({ provenance: new Map([['15080050142', provEntry([...ALL_MAPS_SORTED], 'manual')]]) }),
+    )
+    expect(item.provenanceUniversal).toBe(true)
+  })
+
+  it('⭐ 没有出产地数据 → 不通用（"不知道"不等于"每张图都出"）', () => {
+    const item = normalizeFromParts(makeItem({ rawProvenance: null }), makeQuote(), options())
+    expect(item.provenanceMaps).toBeNull()
+    expect(item.provenanceUniversal).toBe(false)
+  })
+
+  it('⭐ 显式清空出产地 → 不通用', () => {
+    const item = normalizeFromParts(
+      makeItem(),
+      makeQuote(),
+      options({ provenance: new Map([['15080050142', provEntry(null, 'manual')]]) }),
+    )
+    expect(item.provenanceMaps).toBeNull()
+    expect(item.provenanceUniversal).toBe(false)
+  })
+
+  it('未知地图清单（allMapNames 为空）时，哨兵仍能判定通用', () => {
+    // 「覆盖全部已知地图」那条规则在没有已知地图时会失效，
+    // 所以哨兵那条规则不能省 —— 否则首次启动（地图清单还没算出来）会误判。
+    const item = normalizeFromParts(
+      makeItem(),
+      makeQuote(),
+      options({
+        allMapNames: [],
+        provenance: new Map([['15080050142', provEntry(['全地图'], 'manual')]]),
+      }),
+    )
+    expect(item.provenanceUniversal).toBe(true)
+  })
+})
+
 /* ══════════════════════════ 可获得性 ══════════════════════════ */
 
 describe('normalizeFromParts —— 可获得性', () => {

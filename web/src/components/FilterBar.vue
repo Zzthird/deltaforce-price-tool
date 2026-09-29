@@ -155,21 +155,47 @@ const isEmpty = computed(() => filters.rows.length === 0)
     </el-select>
 
     <!-- ── 地图 ── -->
-    <el-select
-      v-model="filters.map"
-      class="sel"
-      size="small"
-      clearable
-      filterable
-      placeholder="全部地图"
+    <el-tooltip
+      content="选地图后只显示**已确认**会在这张图刷出的物资。没标注出产地的（待补，约 225 条）也会被隐藏 —— 因为无法确认它会不会出，不该混进来充数。"
+      placement="bottom"
+      :show-after="400"
     >
-      <el-option v-for="o in filters.mapOptions" :key="o.value" :value="o.value" :label="o.label">
-        <span class="opt">
-          <span>{{ o.label }}</span>
-          <span class="count">{{ o.count }}</span>
-        </span>
-      </el-option>
-    </el-select>
+      <el-select
+        v-model="filters.map"
+        class="sel"
+        size="small"
+        clearable
+        filterable
+        placeholder="全部地图"
+      >
+        <el-option v-for="o in filters.mapOptions" :key="o.value" :value="o.value" :label="o.label">
+          <span class="opt">
+            <span>{{ o.label }}</span>
+            <span class="count">{{ o.count }}</span>
+          </span>
+        </el-option>
+      </el-select>
+    </el-tooltip>
+
+    <!--
+      ── 「只看该图专属」开关 ──
+
+      为什么需要它：实测 1564 条里有 **1297 条标注是「全地图」**（每张图都能刷）。
+      所以只选地图的话，六张图各约 1300 条，跟没筛差不了多少 ✗。
+      打开这个开关才会把通用物资排掉，只留下**地图特产**。
+
+      没选地图时它没有意义，所以禁用（并带一句提示，而不是默默无效）。
+    -->
+    <el-tooltip
+      content="隐藏「全地图」的通用物资，只留这张图特有的。不选地图时无效。"
+      placement="bottom"
+      :show-after="400"
+    >
+      <span class="switch-wrap" :class="{ off: filters.map === null }">
+        <el-switch v-model="filters.mapOnly" size="small" :disabled="filters.map === null" />
+        <span class="dim small">只看该图专属</span>
+      </span>
+    </el-tooltip>
 
     <span class="spacer" />
 
@@ -278,6 +304,11 @@ const isEmpty = computed(() => filters.rows.length === 0)
   align-items: center;
   gap: 6px;
   cursor: pointer;
+}
+
+/* 禁用状态压暗一点 —— 地图没选时那个开关点是无效的，不该看起来能用 */
+.switch-wrap.off {
+  opacity: 0.55;
 }
 
 .empty-hint {

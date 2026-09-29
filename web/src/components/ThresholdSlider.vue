@@ -120,7 +120,14 @@ const VERDICT_HINT: Readonly<Record<LootVerdict, string>> = {
       <span class="label">
         <el-tag type="danger" size="small" effect="dark">必摸</el-tag>
         ≥
-        <b class="amount">{{ formatMoney(rules.mustThreshold) }}</b>
+        <!--
+          精确值放在悬浮提示里，而不是在右边再列一列。
+          原来右边那个 span 与这里的「2.0万」显示的是同一个字符串，
+          重复一遍既占宽度又容易让人以为两个数不一样。
+        -->
+        <el-tooltip :content="`精确值：${formatExact(rules.mustThreshold)} 哈夫币`" placement="top">
+          <b class="amount">{{ formatMoney(rules.mustThreshold) }}</b>
+        </el-tooltip>
       </span>
       <el-slider
         v-model="mustLog"
@@ -130,9 +137,6 @@ const VERDICT_HINT: Readonly<Record<LootVerdict, string>> = {
         :step="0.02"
         :show-tooltip="false"
       />
-      <el-tooltip :content="`精确值：${formatExact(rules.mustThreshold)} 哈夫币`" placement="top">
-        <span class="dim small num">{{ formatMoney(rules.mustThreshold) }}</span>
-      </el-tooltip>
     </div>
 
     <!-- ── 跳过线 ── -->
@@ -140,7 +144,9 @@ const VERDICT_HINT: Readonly<Record<LootVerdict, string>> = {
       <span class="label">
         <el-tag type="info" size="small" effect="dark">跳过</el-tag>
         &lt;
-        <b class="amount">{{ formatMoney(rules.skipThreshold) }}</b>
+        <el-tooltip :content="`精确值：${formatExact(rules.skipThreshold)} 哈夫币`" placement="top">
+          <b class="amount">{{ formatMoney(rules.skipThreshold) }}</b>
+        </el-tooltip>
       </span>
       <el-slider
         v-model="skipLog"
@@ -150,9 +156,6 @@ const VERDICT_HINT: Readonly<Record<LootVerdict, string>> = {
         :step="0.02"
         :show-tooltip="false"
       />
-      <el-tooltip :content="`精确值：${formatExact(rules.skipThreshold)} 哈夫币`" placement="top">
-        <span class="dim small num">{{ formatMoney(rules.skipThreshold) }}</span>
-      </el-tooltip>
     </div>
 
     <!-- ── 判定命中数（可点击筛选）── -->

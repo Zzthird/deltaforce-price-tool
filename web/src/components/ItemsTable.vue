@@ -3,30 +3,46 @@
  * 排行榜表格。
  *
  * ═══════════════════════════════════════════════════════════════════════
- * 这一版相比 Phase 8 的改动
+ * 本轮的四个改动，每个都对应一个具体问题
  * ═══════════════════════════════════════════════════════════════════════
- *   ① 数据来自 `filtersStore.rows`（已筛选 + 已按当前指标排序），
- *      而不是直接读全部物品
- *   ② 多一列**判定徽章**（必摸 / 可摸 / 跳过 / 未知）
- *   ③ 加**分页** —— 筛完之后可能还是几百条，一次全渲染会卡
  *
- * ═══════════════════════════════════════════════════════════════════════
- * 为什么用分页而不是"只显示前 N 条"
- * ═══════════════════════════════════════════════════════════════════════
- * Phase 8 用"显示前 100 条"是因为那时候还没法筛选 —— 反正只能从头看。
- * 现在能筛了，你会想看"筛出来的**全部**"，而筛完可能是 3 条也可能是 400 条。
- * 分页能同时应付这两种，而且翻页时不用重算筛选。
+ * ① **排序改用 `sortable="custom"`**（原来用 `sortable`）
  *
- * ⚠️ `el-table` 会把每一行变成真实 DOM 节点。所以**绝不能**
- *    把 1268 条一次全塞进去 —— 渲染要好几秒，滚动也卡。
- *    分页的意义不只是"好看"，是性能。
+ *    Element Plus 的普通 `sortable` 是**客户端排序** —— 它只排 `:data` 里的行。
+ *    而分页之后 `:data` 只有当前页的 50 行 ✗。于是你点「单价」排序：
+ *    50 行重排了，其余 1200 条纹丝不动，**而界面看起来"排好了"** ✗。
+ *
+ *    `sortable="custom"` 的意思是"只发事件、你自己排" ✓ ——
+ *    排序交给 `filters` store 对**全量筛选结果**做，分页只负责切片。
+ *
+ * ② **加物品图标**（契约里一直有 `iconUrl`，从没用过）
+ *
+ *    认图比读文字快一个数量级。图标带**品质色描边**，
+ *    于是一个元素同时表达了"这是什么"和"它多稀有" ——
+ *    原来那个独立的小圆点就多余了。
+ *
+ * ③ **今日涨幅列**
+ *
+ *    后端一直在算 `todayChangePct`（用 moligod 的昨日均价），
+ *    但界面写死显示"历史积累中" ✗。现成的数据白白扔了。
+ *
+ * ④ **出产地改三态 + 去掉子类列**
+ *
+ *    实测 1564 条里有 1297 条是"全地图"，铺开就是 6 个同样的图名 ✗ ——
+ *    那一列 14 行里 13 行一模一样，等于没信息。现在通用物资显示「通用」，
+ *    只有**特产**才显示地图名，于是这一列终于能一眼扫出"这张图特有的东西"。
+ *
+ *    子类列去掉是因为弹药名本身就以口径开头（"7.62x51mm M62"），
+ *    完全重复。信息不丢 —— 展开详情里还有，筛选器也照样能用。
  */
 
-import { computed, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
+import type { TableInstance } from 'element-plus'
 import { useFiltersStore, type ItemRow } from '@/stores/filters'
 import { useMetaStore } from '@/stores/meta'
 import { useRulesStore, VERDICT_LABEL, VERDICT_TAG_TYPE } from '@/stores/rules'
 import { formatExact, formatMoney } from '@/utils/format'
+import { describeChange, describeProvenance } from '@/utils/item'
 
 const filters = useFiltersStore()
 const metaStore = useMetaStore()
@@ -38,7 +54,7 @@ const page = ref(1)
 const pageSize = ref(50)
 
 /**
- * 筛选条件变了 → 回到第一页。
+ * 筛选/排序变了 → 回到第一页。
  *
  * ⚠️ 不做这一步会有个很别扭的 bug：你在第 8 页，然后把筛选条件一改，
  *    结果只剩 3 页 → 表格变成空的，而数据其实有 —— 只是你在第 8 页。
@@ -52,6 +68,7 @@ watch(
     filters.thirdClass,
     filters.grade,
     filters.map,
+    filters.mapOnly,
     filters.verdictFilter,
     filters.includeExcluded,
     rules.mustThreshold,
@@ -63,14 +80,65 @@ watch(
   },
 )
 
-/** 当前页要渲染的行 */
+/** 当前页要渲染的行（排序已在 store 里对全量做完，这里只是切片）*/
 const pagedRows = computed<ItemRow[]>(() => {
   const start = (page.value - 1) * pageSize.value
   return filters.rows.slice(start, start + pageSize.value)
 })
 
-/** 分页控件上显示的总数（是筛选后的，不是全部） */
 const total = computed(() => filters.rows.length)
+
+/* ══════════════════ 表头排序 ══════════════════ */
+
+const tableRef = ref<TableInstance>()
+
+/**
+ * 上一次同步给表格的排序标识（`"键:方向"`）。
+ *
+ * ⚠️ 这个变量是**防死循环**用的，不能省：
+ *
+ *   用户点表头 → `sort-change` → 写 store → watch 到 store 变了 → 调 `table.sort()`
+ *   → 表格再发一次 `sort-change` → 又写一次 store → …
+ *
+ * 因为第二次写进去的值和第一次相同（幂等），`watch` 不会重复触发 ——
+ * 但 `table.sort()` 会被白调一次，而且如果哪天 `applySortChange` 变成
+ * 非幂等的（比如带计数），就会真的转起来。所以显式记住"已经同步过了"。
+ */
+const syncedSort = ref('')
+
+/** store 里的排序变了 → 同步表头箭头（比如切判定依据时自动换排序键）*/
+watch(
+  [() => filters.sortKey, () => filters.sortDir],
+  async ([key, dir]) => {
+    const signature = `${key}:${dir}`
+    if (syncedSort.value === signature) return
+
+    await nextTick()
+    const order = dir === 'asc' ? 'ascending' : 'descending'
+    // `sortable="custom"` 下 `table.sort()` 只更新箭头 + 发事件，不会真的排数据
+    tableRef.value?.sort(key, order)
+    syncedSort.value = signature
+  },
+  { immediate: true },
+)
+
+function onSortChange(payload: {
+  prop: string | null
+  order: 'ascending' | 'descending' | null
+}): void {
+  // 先记下"这次是用户点出来的"，避免下面的 watch 再同步一遍
+  const key = payload.order === null || payload.prop === null ? 'pricePerSlot' : payload.prop
+  const dir = payload.order === 'ascending' ? 'asc' : 'desc'
+  syncedSort.value = `${key}:${dir}`
+
+  filters.applySortChange(payload)
+}
+
+/** 表头箭头的初始状态 —— 必须由 store 驱动，否则箭头与真实排序不一致 */
+const defaultSort = computed(() => ({
+  prop: filters.sortKey,
+  order: (filters.sortDir === 'asc' ? 'ascending' : 'descending') as 'ascending' | 'descending',
+}))
 
 /* ══════════════════ 显示辅助 ══════════════════ */
 
@@ -78,43 +146,67 @@ function gradeColor(grade: number): string {
   return metaStore.gradeColors[String(grade)] ?? '#8b93a1'
 }
 
-/** 出产地最多列 2 张图，其余放 hover 提示（否则列会被撑爆） */
-function mapsBrief(maps: string[] | null): string {
-  if (!maps || maps.length === 0) return '待补'
-  if (maps.length <= 2) return maps.join('、')
-  return `${maps.slice(0, 2).join('、')} 等 ${maps.length} 张`
+/**
+ * 图标加载失败时把它藏掉，露出底下的**品质色底块**。
+ *
+ * 为什么不用 `v-if` + 状态位：那需要给每一行存一个"加载失败"标记，
+ * 而表格行是每次翻页重建的。直接改 DOM 更省事，而且效果一样 ——
+ * 外层 `span` 本来就有品质色背景，图片藏掉之后它就是个色块。
+ */
+function onIconError(e: Event): void {
+  const img = e.target as HTMLImageElement | null
+  if (img) img.style.visibility = 'hidden'
 }
 
-/**
- * 为什么"不可上架/不可摸"的物品判定显示成"未知"而不是"跳过"：
- * 它们不是"不值得摸"，是**判不了**（价格没有意义 / 压根摸不到）。
- * 把这两种混为一谈会让用户以为"系统建议跳过"，而实际上是"系统不知道"。
- */
+function mapsTooltip(row: ItemRow): string {
+  return describeProvenance(row.item).full
+}
+
 function verdictReason(row: ItemRow): string {
-  if (!row.item.listable) {
-    return '不可上架交易行 —— 价格没有参考意义，无法判定'
-  }
+  if (!row.item.listable) return '不可上架交易行 —— 价格没有参考意义，无法判定'
   if (row.item.availability !== 'lootable') {
-    return `${metaStore.labels?.availability[row.item.availability] ?? row.item.availability} —— 摸不到，无法判定`
+    const label = metaStore.labels?.availability[row.item.availability] ?? row.item.availability
+    return `${label} —— 摸不到，无法判定`
   }
-  if (row.metric === null) {
-    return '没有价格数据 —— 算不出指标，无法判定'
-  }
+  if (row.metric === null) return '没有价格数据 —— 算不出指标，无法判定'
   return `${rules.metricLabel} ${formatExact(row.metric)}`
+}
+
+/** 涨幅颜色：**中国习惯红涨绿跌**（与 A 股一致），不是国际的绿涨红跌 */
+const CHANGE_CLASS: Readonly<Record<string, string>> = {
+  up: 'change-up',
+  down: 'change-down',
+  flat: 'dim',
+  none: 'dim',
 }
 </script>
 
 <template>
-  <el-table :data="pagedRows" stripe size="small" row-key="item.key" height="100%">
+  <!--
+    行高：`size="small"` 之后单元格上下各有 ~8px 内边距，一行约 34px，
+    950px 高只能看到 14 行 ✗。而这个工具的核心动作就是"扫一遍看该摸什么"，
+    看到的行越多越好。压到 4px 之后一行约 26px，能看到三十多行。
+  -->
+  <el-table
+    ref="tableRef"
+    class="tight-table"
+    :data="pagedRows"
+    stripe
+    size="small"
+    row-key="item.key"
+    height="100%"
+    :default-sort="defaultSort"
+    @sort-change="onSortChange"
+  >
     <!-- 全局序号：跨页连续，而不是每页都从 1 开始 -->
-    <el-table-column label="#" width="62" align="right">
+    <el-table-column label="#" width="54" align="right">
       <template #default="{ $index }: { $index: number }">
         <span class="dim num">{{ (page - 1) * pageSize + $index + 1 }}</span>
       </template>
     </el-table-column>
 
     <!-- ── 判定 ── -->
-    <el-table-column label="判定" width="76" align="center">
+    <el-table-column label="判定" width="70" align="center">
       <template #default="{ row }: { row: ItemRow }">
         <el-tooltip :content="verdictReason(row)" placement="right">
           <el-tag :type="VERDICT_TAG_TYPE[row.verdict]" size="small" effect="dark">
@@ -124,13 +216,35 @@ function verdictReason(row: ItemRow): string {
       </template>
     </el-table-column>
 
-    <!-- ── 物品名 ── -->
-    <el-table-column label="物品" min-width="230" show-overflow-tooltip>
+    <!-- ── 物品（图标 + 名字 + 状态徽章）── -->
+    <el-table-column label="物品" min-width="240" sortable="custom" prop="name">
       <template #default="{ row }: { row: ItemRow }">
-        <span class="name">
-          <i class="dot" :style="{ background: gradeColor(row.item.grade) }" />
-          {{ row.item.name }}
+        <!--
+          图标带品质色描边 —— 一个元素同时表达"是什么"和"多稀有"。
+
+          ⚠️ 同时绑 `color`，因为 CSS 里色块用的是 `background: currentColor` ✗
+             —— 不绑 `color` 的话 `currentColor` 会取到继承来的文字色（灰），
+             图片加载失败时露出来的就是个灰块，而不是品质色块。
+
+          加载失败时图片被 `onIconError` 藏掉，露出色块（不出现破图）。
+        -->
+        <span
+          class="icon"
+          :style="{ borderColor: gradeColor(row.item.grade), color: gradeColor(row.item.grade) }"
+          :title="row.item.gradeCn"
+        >
+          <img
+            v-if="row.item.iconUrl"
+            :src="row.item.iconUrl"
+            alt=""
+            loading="lazy"
+            referrerpolicy="no-referrer"
+            @error="onIconError"
+          />
         </span>
+
+        <span class="name-text">{{ row.item.name }}</span>
+
         <el-tag
           v-if="row.item.availability !== 'lootable'"
           size="small"
@@ -139,11 +253,22 @@ function verdictReason(row: ItemRow): string {
         >
           {{ metaStore.labels?.availability[row.item.availability] ?? row.item.availability }}
         </el-tag>
-        <el-tag v-if="!row.item.listable" size="small" type="danger" class="inline"> 不可上架 </el-tag>
+        <el-tag v-if="!row.item.listable" size="small" type="danger" class="inline">
+          不可上架
+        </el-tag>
+        <el-tag
+          v-if="row.item.seasonal"
+          size="small"
+          type="warning"
+          effect="plain"
+          class="inline"
+        >
+          {{ metaStore.labels?.seasonal[row.item.seasonal] ?? row.item.seasonal }}
+        </el-tag>
       </template>
     </el-table-column>
 
-    <el-table-column label="品质" width="60" align="center">
+    <el-table-column label="品质" width="54" align="center">
       <template #default="{ row }: { row: ItemRow }">
         <span :style="{ color: gradeColor(row.item.grade), fontWeight: 600 }">
           {{ row.item.gradeCn }}
@@ -151,23 +276,20 @@ function verdictReason(row: ItemRow): string {
       </template>
     </el-table-column>
 
-    <el-table-column label="大类" width="68" prop="item.categoryCn" />
-    <el-table-column label="子类" width="96" show-overflow-tooltip>
-      <template #default="{ row }: { row: ItemRow }">{{ row.item.subcategoryCn }}</template>
-    </el-table-column>
+    <el-table-column label="大类" width="62" prop="item.categoryCn" />
 
-    <el-table-column label="占格" width="56" align="right">
+    <el-table-column label="占格" width="54" align="right" sortable="custom" prop="slots">
       <template #default="{ row }: { row: ItemRow }">
         <span class="num">{{ row.item.slots }}</span>
       </template>
     </el-table-column>
 
-    <el-table-column label="每组" width="56" align="right">
+    <el-table-column label="每组" width="54" align="right">
       <template #default="{ row }: { row: ItemRow }">
         <!--
-          弹药的一个格子放 60 发，交易行报的是**每发单价**。
+          弹药一个格子放 60 发，而交易行报的是**每发单价**。
           不显示这一列，用户会奇怪为什么一颗子弹的单格价值是单价的 60 倍。
-          普通物品是 1（压暗显示，不抢注意力）。
+          普通物品是 1（压暗，不抢注意力）。
         -->
         <span v-if="row.item.unitsPerSlot && row.item.unitsPerSlot !== 1" class="num">
           {{ row.item.unitsPerSlot }}
@@ -176,55 +298,85 @@ function verdictReason(row: ItemRow): string {
       </template>
     </el-table-column>
 
-    <el-table-column label="单价" width="96" align="right" sortable prop="item.price">
+    <el-table-column label="单价" width="92" align="right" sortable="custom" prop="price">
       <template #default="{ row }: { row: ItemRow }">
-        <el-tooltip v-if="row.item.price !== null" :content="formatExact(row.item.price)" placement="left">
-          <span class="num">{{ formatMoney(row.item.price) }}</span>
+        <el-tooltip
+          v-if="row.item.price !== null"
+          :content="formatExact(row.item.price)"
+          placement="left"
+        >
+          <span class="num" :class="{ active: filters.sortKey === 'price' }">
+            {{ formatMoney(row.item.price) }}
+          </span>
         </el-tooltip>
-        <span v-else class="dim">暂无价格</span>
+        <span v-else class="dim">—</span>
       </template>
     </el-table-column>
 
-    <!-- ── 单格价值（当前排序依据时高亮）── -->
-    <el-table-column label="单格价值" width="104" align="right" sortable prop="metric">
+    <el-table-column
+      label="单格价值"
+      width="100"
+      align="right"
+      sortable="custom"
+      prop="pricePerSlot"
+    >
       <template #default="{ row }: { row: ItemRow }">
         <el-tooltip
           :content="`${formatExact(row.item.price)} × ${row.item.unitsPerSlot ?? 1} ÷ ${row.item.slots} 格 = ${formatExact(row.item.pricePerSlot)}`"
           placement="left"
         >
-          <b class="num value" :class="{ active: rules.mode === 'pricePerSlot' }">
+          <b class="num value" :class="{ active: filters.sortKey === 'pricePerSlot' }">
             {{ formatMoney(row.item.pricePerSlot) }}
           </b>
         </el-tooltip>
       </template>
     </el-table-column>
 
-    <el-table-column label="出产地" min-width="170" show-overflow-tooltip>
+    <!-- ── 今日涨幅（后端一直在算，之前写死"历史积累中"）── -->
+    <el-table-column
+      label="今日涨幅"
+      width="86"
+      align="right"
+      sortable="custom"
+      prop="todayChangePct"
+    >
       <template #default="{ row }: { row: ItemRow }">
         <el-tooltip
-          v-if="row.item.provenanceMaps && row.item.provenanceMaps.length"
-          :content="row.item.provenanceMaps.join('、')"
+          :content="`现价 ${formatExact(row.item.price)}｜昨日均价 ${formatExact(row.item.yesterdayAvg)}`"
           placement="left"
         >
-          <span>{{ mapsBrief(row.item.provenanceMaps) }}</span>
+          <span class="num" :class="CHANGE_CLASS[describeChange(row.item.todayChangePct).tone]">
+            {{ describeChange(row.item.todayChangePct).text }}
+          </span>
         </el-tooltip>
-        <span v-else class="dim">待补</span>
+      </template>
+    </el-table-column>
+
+    <!-- ── 出产地（三态：通用 / 地图名 / 待补）── -->
+    <el-table-column label="出产地" min-width="150">
+      <template #default="{ row }: { row: ItemRow }">
+        <el-tooltip :content="mapsTooltip(row)" placement="left">
+          <span
+            :class="{
+              dim: describeProvenance(row.item).kind !== 'maps',
+              specialty: describeProvenance(row.item).kind === 'maps',
+            }"
+          >
+            {{ describeProvenance(row.item).text }}
+          </span>
+        </el-tooltip>
       </template>
     </el-table-column>
 
     <!-- ── 展开详情 ── -->
-    <el-table-column type="expand">
+    <el-table-column type="expand" width="36">
       <template #default="{ row }: { row: ItemRow }">
         <div class="detail">
           <div v-if="row.item.description" class="desc">{{ row.item.description }}</div>
 
           <el-descriptions :column="4" size="small" border>
-            <el-descriptions-item label="官方ID">
-              {{ row.item.sourceItemId }}
-            </el-descriptions-item>
-            <el-descriptions-item label="重量">
-              {{ row.item.weight ?? '—' }}
-            </el-descriptions-item>
+            <el-descriptions-item label="官方ID">{{ row.item.sourceItemId }}</el-descriptions-item>
+            <el-descriptions-item label="重量">{{ row.item.weight ?? '—' }}</el-descriptions-item>
             <el-descriptions-item label="官方均价">
               <!-- 官方均价**仅供参考、不参与判定**：官方小程序自己写着"实时价请去游戏内看" -->
               {{ formatExact(row.item.officialAvgPrice) }}
@@ -233,6 +385,11 @@ function verdictReason(row: ItemRow): string {
               {{ formatExact(row.item.basePrice) }}
             </el-descriptions-item>
 
+            <el-descriptions-item label="子类">
+              <!-- 子类列从表格里去掉了（弹药名就含口径，重复），但信息留在这里 -->
+              {{ row.item.subcategoryCn ?? '—' }}
+            </el-descriptions-item>
+            <el-descriptions-item label="细类">{{ row.item.thirdClassCn ?? '—' }}</el-descriptions-item>
             <el-descriptions-item label="出产地来源">
               {{
                 row.item.provenanceSource
@@ -241,25 +398,27 @@ function verdictReason(row: ItemRow): string {
                   : '—'
               }}
             </el-descriptions-item>
-            <el-descriptions-item label="赛季">
-              {{
-                row.item.seasonal
-                  ? (metaStore.labels?.seasonal[row.item.seasonal] ?? row.item.seasonal)
-                  : '—'
-              }}
-            </el-descriptions-item>
-            <el-descriptions-item label="今日涨幅">
-              <!-- v1 的历史是自己一轮轮攒的，刚装上还没有昨天数据 -->
-              <span class="dim">历史积累中</span>
-            </el-descriptions-item>
             <el-descriptions-item label="别名">{{ row.item.alias ?? '—' }}</el-descriptions-item>
+
+            <el-descriptions-item label="昨日均价">
+              {{ formatExact(row.item.yesterdayAvg) }}
+            </el-descriptions-item>
+            <el-descriptions-item label="昨日区间">
+              {{ formatMoney(row.item.yesterdayLow) }} ~ {{ formatMoney(row.item.yesterdayHigh) }}
+            </el-descriptions-item>
+            <el-descriptions-item label="7日区间">
+              {{ formatMoney(row.item.rangeLow) }} ~ {{ formatMoney(row.item.rangeHigh) }}
+            </el-descriptions-item>
+            <el-descriptions-item label="数据时间">
+              {{ row.item.lastUpdate ?? '—' }}
+            </el-descriptions-item>
           </el-descriptions>
 
           <!--
             护甲的耐久度三档。
             实测发现：护甲的"裸名"价是**基础参考价、不是行情**，
             实时价在这三档里（详见 docs/source-recon.md §八）。
-            排序用的是最保守的「破损」档，但三档都摊开给你看 ——
+            排序用最保守的「破损」档，但三档都摊开给你看 ——
             同一件甲全新和破损能差 5.7 倍，藏起来就是误导。
           -->
           <div v-if="row.item.priceVariants" class="variants">
@@ -295,22 +454,52 @@ function verdictReason(row: ItemRow): string {
 </template>
 
 <style scoped>
-.name {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+/*
+ * 行高收紧。用 `:deep()` 是因为目标元素在 el-table 内部，
+ * 而 `<style scoped>` 默认只作用于本组件的元素。
+ */
+.tight-table :deep(td.el-table__cell),
+.tight-table :deep(th.el-table__cell) {
+  padding: 3px 0;
 }
 
-.dot {
+/* 行内文字紧凑一点，避免行高被 line-height 撑开 */
+.tight-table :deep(.cell) {
+  line-height: 1.35;
+}
+
+/* ── 图标 ── */
+.icon {
   display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
+  /* 18px 而不是 22px：行高是内容撑的，图标每大 4px，可视行数就少两行。
+     18px 依然认得出来是什么东西。 */
+  width: 18px;
+  height: 18px;
   flex: none;
+  vertical-align: middle;
+  margin-right: 6px;
+  border-radius: 3px;
+  border: 1px solid var(--df-border);
+  /* 品质色底块 —— 图片加载失败时露出来的就是它。
+     用 currentColor 是因为外层已把 color 绑成了品质色。 */
+  background: currentColor;
+  overflow: hidden;
+}
+
+.icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.name-text {
+  vertical-align: middle;
 }
 
 .inline {
   margin-left: 6px;
+  vertical-align: middle;
 }
 
 .num {
@@ -321,9 +510,24 @@ function verdictReason(row: ItemRow): string {
   color: var(--df-text-dim);
 }
 
-/* 当前排序依据那一列的金色高亮 —— 一眼看出"现在按什么排的" */
-.value.active {
+/* 当前排序依据那一列高亮 —— 一眼看出"现在按什么排的" */
+.value.active,
+.num.active {
   color: #e8a64e;
+}
+
+/* 涨跌：中国习惯红涨绿跌 */
+.change-up {
+  color: #e05a5a;
+}
+
+.change-down {
+  color: #3fae6a;
+}
+
+/* 特产用正常色，一眼能从一片「通用」里跳出来 */
+.specialty {
+  color: var(--df-text);
 }
 
 .detail {

@@ -19,13 +19,20 @@ export function formatMoney(n: number | null | undefined): string {
   const abs = Math.abs(n)
   if (abs >= 1e8) return `${(n / 1e8).toFixed(2)}亿`
   if (abs >= 1e4) return `${(n / 1e4).toFixed(1)}万`
-  return n.toLocaleString('zh-CN')
+  /**
+   * ⚠️ 这里要 `Math.round` —— 哈夫币是整数货币，没有小数。
+   *
+   * 不取整的话会显示成 `7,657.417` 这种怪东西（单格价值是除出来的
+   * 浮点数，如 91900 ÷ 12）。实测在界面上真的出现过，很碍眼。
+   * 而 `toLocaleString` 默认最多保留 3 位小数，不会自动取整。
+   */
+  return Math.round(n).toLocaleString('zh-CN')
 }
 
 /** 精确数字（千分位），用于 tooltip 和展开详情 */
 export function formatExact(n: number | null | undefined): string {
   if (n === null || n === undefined || !Number.isFinite(n)) return '—'
-  return n.toLocaleString('zh-CN')
+  return Math.round(n).toLocaleString('zh-CN')
 }
 
 /**
