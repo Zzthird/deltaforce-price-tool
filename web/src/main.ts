@@ -31,10 +31,30 @@ import { createPinia } from 'pinia'
 
 import ElementPlus from 'element-plus'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
+/*
+ * ⚠️ 两行 CSS 都要引，缺一个就会出现“一半深一半浅”：
+ *   · index.css      —— 组件基础样式
+ *   · dark/css-vars  —— 暗色变量（挂在 `html.dark` 上）
+ *
+ * 之前只引了 index.css，于是分页按钮、下拉弹层、展开行的描述列表
+ * 全是白盒；表格的“斑马纹”更是直接用了浅色主题的 #fafafa，
+ * 在深色底上成了 40% 面积的白条（实测 24/60 个单元格）。
+ */
+import 'element-plus/theme-chalk/dark/css-vars.css'
 import 'element-plus/dist/index.css'
 
 import App from './App.vue'
 import './styles.css'
+import { applyTheme, loadTheme } from './stores/theme'
+
+/**
+ * ⭐ 必须在 `mount()` **之前**把主题写到 DOM 上。
+ *
+ * 不然深色用户会先看到一帧白底再变深色（闪白）。
+ * 这也正是 `loadTheme` / `applyTheme` 做成普通函数、不依赖 Pinia 的原因 ——
+ * 这里还没有 `app.use(createPinia())`。
+ */
+applyTheme(loadTheme())
 
 const app = createApp(App)
 

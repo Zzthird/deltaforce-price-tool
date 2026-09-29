@@ -67,11 +67,11 @@ const STORAGE_KEY = 'deltaforce.filters.v1'
 /** 要持久化的东西 */
 interface PersistedFilters {
   search: string
-  category: string | null
-  subcategory: string | null
-  thirdClass: string | null
-  grade: number | null
-  map: string | null
+  categories: string[]
+  subcategories: string[]
+  thirdClasses: string[]
+  grades: number[]
+  maps: string[]
   verdictFilter: LootVerdict | null
   includeExcluded: boolean
   mapOnly: boolean
@@ -84,11 +84,11 @@ const VERDICTS: readonly LootVerdict[] = ['must', 'maybe', 'skip', 'unknown']
 
 const DEFAULTS: PersistedFilters = {
   search: '',
-  category: null,
-  subcategory: null,
-  thirdClass: null,
-  grade: null,
-  map: null,
+  categories: [],
+  subcategories: [],
+  thirdClasses: [],
+  grades: [],
+  maps: [],
   verdictFilter: null,
   includeExcluded: false,
   mapOnly: false,
@@ -96,9 +96,18 @@ const DEFAULTS: PersistedFilters = {
   sortDir: 'desc',
 }
 
-/** 只接受字符串或 null（localStorage 里的东西不可信） */
-function asStringOrNull(v: unknown): string | null {
-  return typeof v === 'string' && v !== '' ? v : null
+/** 只接受非空字符串数组（localStorage 里的东西不可信）*/
+function asStringArray(v: unknown): string[] {
+  if (!Array.isArray(v)) return []
+  return v.filter((x): x is string => typeof x === 'string' && x !== '').slice(0, 200)
+}
+
+/** 只接受 0~6 的整数数组 */
+function asGradeArray(v: unknown): number[] {
+  if (!Array.isArray(v)) return []
+  return v.filter(
+    (x): x is number => typeof x === 'number' && Number.isInteger(x) && x >= 0 && x <= 6,
+  )
 }
 
 /**
@@ -119,9 +128,6 @@ function loadFilters(): PersistedFilters {
     if (typeof parsed !== 'object' || parsed === null) return { ...DEFAULTS }
     const o = parsed as Record<string, unknown>
 
-    const grade = typeof o['grade'] === 'number' && Number.isInteger(o['grade']) && o['grade'] >= 0 && o['grade'] <= 6
-      ? o['grade']
-      : null
     const verdictFilter = VERDICTS.includes(o['verdictFilter'] as LootVerdict)
       ? (o['verdictFilter'] as LootVerdict)
       : null
@@ -132,11 +138,11 @@ function loadFilters(): PersistedFilters {
     return {
       // 搜索串限一下长度：万一被写了 10MB 进去，每次重算都要用
       search: typeof o['search'] === 'string' ? o['search'].slice(0, 200) : '',
-      category: asStringOrNull(o['category']),
-      subcategory: asStringOrNull(o['subcategory']),
-      thirdClass: asStringOrNull(o['thirdClass']),
-      grade,
-      map: asStringOrNull(o['map']),
+      categories: asStringArray(o['categories']),
+      subcategories: asStringArray(o['subcategories']),
+      thirdClasses: asStringArray(o['thirdClasses']),
+      grades: asGradeArray(o['grades']),
+      maps: asStringArray(o['maps']),
       verdictFilter,
       includeExcluded: o['includeExcluded'] === true,
       mapOnly: o['mapOnly'] === true,
@@ -159,16 +165,26 @@ export const useFiltersStore = defineStore('filters', () => {
   const saved = loadFilters()
 
   const search = ref(saved.search)
-  /** 大类 `categoryCode` */
-  const category = ref<string | null>(saved.category)
-  /** 子类 `subcategory` */
-  const subcategory = ref<string | null>(saved.subcategory)
-  /** 细类 `thirdClass` */
-  const thirdClass = ref<string | null>(saved.thirdClass)
+  /**
+   * ⭐ 分类与品质都是**多选**（数组）。
+   *
+   * 为什么改多选：单选的表达能力不够 —— 想同时看「收藏品 + 消耗品」
+   * 或者再加上「枪械」就不行了。而参考的四个同类网站（dergame /
+   * moligod / shushu / kkrb）**全部**用平铺标签 + 多选。
+   *
+   * 语义：**同一维度内是 OR，不同维度之间是 AND**。
+   * 「大类 = 道具或弹药」且「品质 = 金或红」—— 这是所有人预期的读法。
+   * 空数组 = 不限（而不是"什么都不选"）。
+   */
+  const categories = ref<string[]>(saved.categories)
+  /** 子类（46 个，太多不适合平铺，用可搜索的多选下拉）*/
+  const subcategories = ref<string[]>(saved.subcategories)
+  /** 细类 */
+  const thirdClasses = ref<string[]>(saved.thirdClasses)
   /** 品质 0~6 */
-  const grade = ref<number | null>(saved.grade)
-  /** 地图名（出产地） */
-  const map = ref<string | null>(saved.map)
+  const grades = ref<number[]>(saved.grades)
+  /** 地图名（出产地）*/
+  const maps = ref<string[]>(saved.maps)
 
   /**
    * 「只看该图专属」—— 把通用物资（每张图都刷得到的）也排掉。
@@ -235,26 +251,28 @@ export const useFiltersStore = defineStore('filters', () => {
   }
 
   function matchCategory(it: Item): boolean {
-    return category.value === null || it.categoryCode === category.value
+    return categories.value.length === 0 || categories.value.includes(it.categoryCode)
   }
 
   function matchSubcategory(it: Item): boolean {
     // 父级已经筛过一遍，这里只判断自己 —— 交叉计数的"去掉自己"由 pass 负责
-    if (subcategory.value === null) return true
-    return it.subcategory === subcategory.value
+    return subcategories.value.length === 0 || subcategories.value.includes(it.subcategory)
   }
 
   function matchThirdClass(it: Item): boolean {
-    return thirdClass.value === null || it.thirdClass === thirdClass.value
+    return thirdClasses.value.length === 0 || thirdClasses.value.includes(it.thirdClass ?? '')
   }
 
   function matchGrade(it: Item): boolean {
-    return grade.value === null || it.grade === grade.value
+    return grades.value.length === 0 || grades.value.includes(it.grade)
   }
 
   function matchMap(it: Item): boolean {
-    if (map.value === null) return true
-    return it.provenanceMaps !== null && it.provenanceMaps.includes(map.value)
+    if (maps.value.length === 0) return true
+    const own = it.provenanceMaps
+    if (own === null) return false
+    // 多选地图也是 OR：选中任意一张就算中
+    return maps.value.some((m) => own.includes(m))
   }
 
   const PREDICATES: ReadonlyArray<readonly [Dim, (it: Item) => boolean]> = [
@@ -276,7 +294,7 @@ export const useFiltersStore = defineStore('filters', () => {
    */
   function pass(it: Item, skip?: Dim): boolean {
     // 开关型筛选（恒定生效，不看 skip）
-    if (mapOnly.value && map.value !== null && it.provenanceUniversal) return false
+    if (mapOnly.value && maps.value.length > 0 && it.provenanceUniversal) return false
 
     for (const [dim, fn] of PREDICATES) {
       if (dim === skip) continue
@@ -458,11 +476,11 @@ export const useFiltersStore = defineStore('filters', () => {
   const activeFilterCount = computed(() => {
     let n = 0
     if (search.value.trim() !== '') n += 1
-    if (category.value !== null) n += 1
-    if (subcategory.value !== null) n += 1
-    if (thirdClass.value !== null) n += 1
-    if (grade.value !== null) n += 1
-    if (map.value !== null) n += 1
+    if (categories.value.length > 0) n += 1
+    if (subcategories.value.length > 0) n += 1
+    if (thirdClasses.value.length > 0) n += 1
+    if (grades.value.length > 0) n += 1
+    if (maps.value.length > 0) n += 1
     if (mapOnly.value) n += 1
     if (verdictFilter.value !== null) n += 1
     return n
@@ -502,20 +520,53 @@ export const useFiltersStore = defineStore('filters', () => {
   /**
    * 逐级联动：改大类 → 清掉子类和细类。
    *
-   * ⚠️ 这一步**必须做**，否则会出现这种 bug：
-   *   你本来筛的是「道具 / 收集品」，然后把大类改成「弹药」——
-   *   子类仍然是「收集品」，于是结果 0 条，而且下拉框里显示一个
-   *   不属于弹药的子类，你得一格一格手动清。
+   * ⚠️ 这一步**必须做**。单选时代是因为"选弹药后子类还留着收集品 → 0 条"；
+   * 改成多选后理由变了但结论一样：选了「道具 + 弹药」之后，
+   * 子类里残留的「收集品」只属于道具，而界面上会显示一个
+   * 不属于所有已选大类的选项 —— 得自己一格一格清。
    */
-  function setCategory(value: string | null): void {
-    category.value = value
-    subcategory.value = null
-    thirdClass.value = null
+  function toggleCategory(code: string): void {
+    categories.value = categories.value.includes(code)
+      ? categories.value.filter((c) => c !== code)
+      : [...categories.value, code]
+    subcategories.value = []
+    thirdClasses.value = []
   }
 
-  function setSubcategory(value: string | null): void {
-    subcategory.value = value
-    thirdClass.value = null
+  /** 清空某一维（点「全部」标签）*/
+  function clearCategories(): void {
+    categories.value = []
+    subcategories.value = []
+    thirdClasses.value = []
+  }
+
+  /**
+   * 改子类 → 清掉细类。
+   *
+   * ⚠️ 这个级联**必须放在 store 里**，不能写在组件的 `@change` 里 ——
+   *    写在模板里虽然也能跑，但测试碰不到它（模板逻辑没法单测），
+   *    而“改上级要清下级”正是最容易忘、忘了就静默出错的那类规则。
+   */
+  function setSubcategories(next: string[]): void {
+    subcategories.value = next
+    thirdClasses.value = []
+  }
+
+  /** 清空细类 */
+  function clearThirdClasses(): void {
+    thirdClasses.value = []
+  }
+
+  function toggleGrade(g: number): void {
+    grades.value = grades.value.includes(g)
+      ? grades.value.filter((x) => x !== g)
+      : [...grades.value, g]
+  }
+
+  function toggleMap(name: string): void {
+    maps.value = maps.value.includes(name)
+      ? maps.value.filter((m) => m !== name)
+      : [...maps.value, name]
   }
 
   function setVerdictFilter(value: LootVerdict | null): void {
@@ -525,11 +576,11 @@ export const useFiltersStore = defineStore('filters', () => {
 
   function resetFilters(): void {
     search.value = ''
-    category.value = null
-    subcategory.value = null
-    thirdClass.value = null
-    grade.value = null
-    map.value = null
+    categories.value = []
+    subcategories.value = []
+    thirdClasses.value = []
+    grades.value = []
+    maps.value = []
     mapOnly.value = false
     verdictFilter.value = null
     // 注：`includeExcluded` 与排序**不重置** —— 前者是显示偏好，
@@ -550,11 +601,11 @@ export const useFiltersStore = defineStore('filters', () => {
   watch(
     [
       search,
-      category,
-      subcategory,
-      thirdClass,
-      grade,
-      map,
+      categories,
+      subcategories,
+      thirdClasses,
+      grades,
+      maps,
       mapOnly,
       verdictFilter,
       includeExcluded,
@@ -565,11 +616,11 @@ export const useFiltersStore = defineStore('filters', () => {
       try {
         const snapshot: PersistedFilters = {
           search: search.value,
-          category: category.value,
-          subcategory: subcategory.value,
-          thirdClass: thirdClass.value,
-          grade: grade.value,
-          map: map.value,
+          categories: [...categories.value],
+          subcategories: [...subcategories.value],
+          thirdClasses: [...thirdClasses.value],
+          grades: [...grades.value],
+          maps: [...maps.value],
           verdictFilter: verdictFilter.value,
           includeExcluded: includeExcluded.value,
           mapOnly: mapOnly.value,
@@ -581,6 +632,7 @@ export const useFiltersStore = defineStore('filters', () => {
         // 存不下（隐私模式 / 配额满）不该让界面崩 —— 只是刷新后丢设置
       }
     },
+    { deep: true },
   )
 
   /**
@@ -603,11 +655,11 @@ export const useFiltersStore = defineStore('filters', () => {
   return {
     // 状态
     search,
-    category,
-    subcategory,
-    thirdClass,
-    grade,
-    map,
+    categories,
+    subcategories,
+    thirdClasses,
+    grades,
+    maps,
     mapOnly,
     verdictFilter,
     includeExcluded,
@@ -627,8 +679,12 @@ export const useFiltersStore = defineStore('filters', () => {
     activeFilterCount,
 
     // 动作
-    setCategory,
-    setSubcategory,
+    toggleCategory,
+    clearCategories,
+    setSubcategories,
+    clearThirdClasses,
+    toggleGrade,
+    toggleMap,
     setVerdictFilter,
     applySortChange,
     resetFilters,

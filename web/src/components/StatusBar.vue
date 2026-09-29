@@ -77,7 +77,13 @@ async function onRefresh(): Promise<void> {
 </script>
 
 <template>
-  <div class="bar">
+  <!--
+    ⚠️ `df-card` 写在**这里**，而不是父组件标签上。
+    本组件有多个根节点（状态栏 + 若干告警），Vue 无法把父级传的 class
+    自动继承下来 —— 会打出 "Extraneous non-props attributes" 警告，
+    而且卡片样式根本不生效。
+  -->
+  <div class="df-card bar">
     <!-- ── 数量 ── -->
     <span class="item">
       <b>{{ itemsStore.count }}</b> 条物品
@@ -191,10 +197,12 @@ async function onRefresh(): Promise<void> {
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
-  padding: 8px 12px;
-  background: var(--df-bg-soft);
-  border: 1px solid var(--df-border);
-  border-radius: 6px;
+  padding: 6px 12px;
+  /*
+   * 背景与边框交给外层的 `.df-card` —— 卡片只该在一处定义，
+   * 否则“页面底色 / 内容面 / 控件底色”会变成三层各自定义，
+   * 换主题时就要跟着改三处。
+   */
   font-size: 13px;
 }
 
@@ -234,14 +242,14 @@ async function onRefresh(): Promise<void> {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #4caf50;
+  background: var(--df-down);
 }
 
 .dot.off {
-  background: #6b7280;
+  background: var(--df-text-faint);
 }
 
 .dot.err {
-  background: #cb464a;
+  background: var(--df-up);
 }
 </style>

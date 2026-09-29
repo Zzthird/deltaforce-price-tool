@@ -1,25 +1,175 @@
 /**
- * 全局样式。
+ * 全局样式与**三套主题**。
  *
- * 只放"跨组件"的东西：页面底色、字体、滚动条、以及少数几个
- * 必须覆盖 Element Plus 默认值的地方。
- * 组件的样式写在各自 `.vue` 文件里（`<style scoped>`）。
+ * ═══════════════════════════════════════════════════════════════════════
+ * 三套主题怎么分工
+ * ═══════════════════════════════════════════════════════════════════════
+ *   `light`  日间 —— 白底，Element Plus 的默认主题（一行不用覆盖）
+ *   `dark`   深色（默认）—— 深灰蓝底 + 卡片分层。给"晚上开着灯"用
+ *   `night`  深夜 —— 近黑底，给"关灯躺床上"用。就是原来那套，但修掉了白条
+ *
+ * ⚠️ 一套主题**必须两个开关同时切**，少一个就会花：
+ *
+ *   ① `<html data-df-theme="...">` —— 我自己的 `--df-*` 变量
+ *   ② `<html class="dark">`        —— Element Plus 的 `--el-*` 变量
+ *      （EP 的暗色变量全部挂在 `html.dark` 上，实测确认）
+ *
+ * 只切 ① 的话，表格是深色而分页、下拉、输入框还是白的 ✗ ——
+ * 那正是这一轮要修的 bug（实测 40% 的单元格是 #fafafa 白条）。
+ *
+ * ═══════════════════════════════════════════════════════════════════════
+ * 为什么不再用斑马纹（stripe）
+ * ═══════════════════════════════════════════════════════════════════════
+ * 实测：Element Plus 用 `--el-fill-color-lighter`（浅色主题下是 #fafafa）
+ * 给条纹行上色，而它在深色底上就是**一条近白色的横带** ——
+ * 一屏 14 行里有 7 条白带在跳，看久了很累。
+ *
+ * 参考的四个同类网站（dergame / moligod / shushu / kkrb）**全都没有斑马纹**，
+ * 靠的是细线分隔 + 留白。所以这里也改成细线，并且把"表面"做成卡片。
  */
 
-:root {
-  /*
-   * 深色底是刻意的选择：这个工具长时间盯着看，而游戏本身也是深色界面。
-   * 另外品质色（金/紫/蓝）在深色底上对比度明显更好。
-   */
-  --df-bg: #14161a;
-  --df-bg-soft: #1b1e24;
-  --df-border: #2c313a;
-  --df-text: #dfe3e8;
-  --df-text-dim: #8b93a1;
+/* ══════════════════════════════════════════════════════════════════════
+ * 主题变量
+ * ══════════════════════════════════════════════════════════════════════
+ *
+ * 所有自定义样式都只用这些 `--df-*` 变量，不写死颜色颜色 ——
+ * 这样加一套主题只需要再写一个块，不用去各组件里找。
+ */
 
-  font-family: 'Microsoft YaHei', 'PingFang SC', 'Segoe UI', system-ui, sans-serif;
-  color-scheme: dark;
+/* ── 日间 ── */
+html[data-df-theme='light'] {
+  color-scheme: light;
+
+  --df-bg: #f4f5f7; /* 页面底色 */
+  --df-surface: #ffffff; /* 卡片面（内容区）*/
+  --df-surface-2: #f0f2f5; /* 次级面（表头、嵌套块）*/
+  --df-border: #e2e5ea; /* 明显边框（卡片外框）*/
+  --df-border-soft: #edeff3; /* 细线（行分隔）*/
+
+  --df-text: #1f2430;
+  --df-text-dim: #6b7280;
+  --df-text-faint: #a3aab5;
+
+  --df-accent: #3b6fc4;
+  --df-accent-soft: #e8eefb;
+
+  /* 涨跌：**中国习惯红涨绿跌**（与 A 股一致）*/
+  --df-up: #cf3f3f;
+  --df-down: #2a9364;
+  /* 单格价值的高亮色 —— 这是全表最重要的一个数，要能一眼找到 */
+  --df-value: #b0762a;
 }
+
+/* ── 深色（默认）：深灰蓝，不是纯黑 ── */
+html[data-df-theme='dark'] {
+  color-scheme: dark;
+
+  --df-bg: #191c23;
+  --df-surface: #21252e;
+  --df-surface-2: #272c37;
+  --df-border: #343a46;
+  --df-border-soft: #2b313b;
+
+  --df-text: #e3e7ee;
+  --df-text-dim: #9aa3b2;
+  --df-text-faint: #6d7686;
+
+  --df-accent: #6f9fd8;
+  --df-accent-soft: #24303f;
+
+  --df-up: #e0615f;
+  --df-down: #45ae74;
+  --df-value: #e8a64e;
+}
+
+/* ── 深夜：近黑，就是原来那套（但不再有白条）── */
+html[data-df-theme='night'] {
+  color-scheme: dark;
+
+  --df-bg: #0d0f12;
+  --df-surface: #14161a;
+  --df-surface-2: #1b1e24;
+  --df-border: #2c313a;
+  --df-border-soft: #22262d;
+
+  --df-text: #d6dbe2;
+  --df-text-dim: #858e9c;
+  --df-text-faint: #5c6472;
+
+  --df-accent: #5f8fc8;
+  --df-accent-soft: #1e2733;
+
+  --df-up: #cd5050;
+  --df-down: #3aa065;
+  --df-value: #d99a45;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+ * Element Plus 变量的两处修正
+ * ══════════════════════════════════════════════════════════════════════ */
+
+/*
+ * ① **浅色主题下 `--el-fill-color-lighter` 别用来当条纹**
+ *
+ *    我们不再用 `stripe`，所以这一条现在是保险：万一将来哪里用到
+ *    `--el-fill-color-lighter` 做底色，也不会突然出现白带。
+ */
+html[data-df-theme='light'] .el-table {
+  --el-table-header-bg-color: var(--df-surface-2);
+  --el-table-border-color: var(--df-border-soft);
+}
+
+/*
+ * ② **两套深色主题各自覆盖 EP 的底色**
+ *
+ *    EP 的 `html.dark` 给的是近黑（#141414 一带）—— 那正是"深夜"。
+ *    所以：
+ *      · night → 什么都不用改，直接用 EP 的默认暗色 ✓
+ *      · dark  → 把底色抬亮一档，变成深灰蓝（软化，不刺眼）
+ *
+ *    这一条是"深色"与"深夜"**唯一的分界**，也是原来那个
+ *    "白条刺眼"问题的根治处。
+ */
+html[data-df-theme='dark'] {
+  --el-bg-color: #21252e;
+  --el-bg-color-page: #191c23;
+  --el-bg-color-overlay: #272c37;
+  --el-fill-color-blank: #21252e;
+  --el-fill-color-light: #272c37;
+  --el-fill-color-lighter: #2b313b;
+  --el-fill-color-dark: #343a46;
+  --el-border-color: #3a414e;
+  --el-border-color-light: #343a46;
+  --el-border-color-lighter: #2b313b;
+  --el-border-color-extra-light: #262b35;
+  --el-text-color-primary: #e3e7ee;
+  --el-text-color-regular: #c3cad6;
+  --el-text-color-secondary: #9aa3b2;
+  --el-text-color-placeholder: #6d7686;
+  --el-table-bg-color: transparent;
+  --el-table-tr-bg-color: transparent;
+  --el-table-header-bg-color: #272c37;
+  --el-table-row-hover-bg-color: #2c323d;
+  --el-table-border-color: #2b313b;
+}
+
+/* 深夜也把表格透明化，否则会盖住卡片的底色 */
+html[data-df-theme='night'] .el-table {
+  --el-table-bg-color: transparent;
+  --el-table-tr-bg-color: transparent;
+  --el-table-row-hover-bg-color: #22262d;
+  --el-table-border-color: #22262d;
+}
+
+/* 两套深色都用透明表格 → 表格跟着卡片的表面色走 ✓ */
+html[data-df-theme='dark'] .el-table,
+html[data-df-theme='night'] .el-table {
+  background: transparent;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+ * 基础
+ * ══════════════════════════════════════════════════════════════════════ */
 
 * {
   box-sizing: border-box;
@@ -31,38 +181,36 @@ body {
   padding: 0;
   background: var(--df-bg);
   color: var(--df-text);
+  font-family: 'Microsoft YaHei', 'PingFang SC', 'Segoe UI', system-ui, sans-serif;
 }
 
 #app {
   min-height: 100vh;
 }
 
-/*
- * Element Plus 的表头默认是浅灰底，在深色下很突兀。
- * 本地工具不做主题定制，只把这两处压暗就够了。
+/* ══════════════════════════════════════════════════════════════════════
+ * 卡片 —— 把"页面底色"与"内容面"分开
+ * ══════════════════════════════════════════════════════════════════════
+ *
+ * 参考的四个网站都这么做：页面一个底色，内容装在一块略亮的面上。
+ * 好处是眼睛能分清"这是界面"和"这是内容"，而不是一整片同色。
+ *
+ * 深夜主题下面与底的差别很小（#14161a vs #0d0f12）—— 这是刻意的：
+ * 躺床上看的时候，整屏越均匀越舒服，靠边框而不是亮度差分层。
  */
-.el-table {
-  --el-table-border-color: var(--df-border);
-  --el-table-header-bg-color: var(--df-bg-soft);
-  --el-table-row-hover-bg-color: #23272f;
-  background: transparent;
+.df-card {
+  background: var(--df-surface);
+  border: 1px solid var(--df-border);
+  border-radius: 8px;
 }
 
-.el-table tr,
-.el-table th.el-table__cell {
-  background: transparent;
-}
-
-/* 长物品名不要撑破列宽 */
-.df-name-cell {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* 数字列统一右对齐、等宽字体 —— 不然一列数字参差不齐没法比大小 */
+/* 数字列统一等宽 —— 不然一列数字参差不齐没法比大小 */
 .df-num {
   font-variant-numeric: tabular-nums;
-  text-align: right;
   font-feature-settings: 'tnum';
+}
+
+/* 细线分隔（取代斑马纹）*/
+.df-row-line {
+  border-bottom: 1px solid var(--df-border-soft);
 }

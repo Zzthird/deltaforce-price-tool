@@ -63,11 +63,11 @@ const pageSize = ref(50)
 watch(
   () => [
     filters.search,
-    filters.category,
-    filters.subcategory,
-    filters.thirdClass,
-    filters.grade,
-    filters.map,
+    filters.categories,
+    filters.subcategories,
+    filters.thirdClasses,
+    filters.grades,
+    filters.maps,
     filters.mapOnly,
     filters.verdictFilter,
     filters.includeExcluded,
@@ -191,7 +191,6 @@ const CHANGE_CLASS: Readonly<Record<string, string>> = {
     ref="tableRef"
     class="tight-table"
     :data="pagedRows"
-    stripe
     size="small"
     row-key="item.key"
     height="100%"
@@ -460,12 +459,37 @@ const CHANGE_CLASS: Readonly<Record<string, string>> = {
  */
 .tight-table :deep(td.el-table__cell),
 .tight-table :deep(th.el-table__cell) {
-  padding: 3px 0;
+  padding: 2px 0;
 }
 
 /* 行内文字紧凑一点，避免行高被 line-height 撑开 */
 .tight-table :deep(.cell) {
-  line-height: 1.35;
+  line-height: 1.3;
+}
+
+/*
+ * ⭐ **取消斑马纹，改用细线**（这一轮的重要修正）
+ *
+ * 原来用 `stripe`，而 Element Plus 给条纹行上的颜色在浅色主题下是
+ * `--el-fill-color-lighter = #fafafa` —— 在深色底上就是一条**近白色横带**。
+ * 实测 60 个单元格里有 24 个是白的（40%），一屏 14 行就有 7 条白带在跳，
+ * 看久了很累。
+ *
+ * 参考的四个同类网站（dergame / moligod / shushu / kkrb）**全都没有斑马纹**，
+ * 靠细线 + 留白分隔。这里改成它们那样。
+ *
+ * 注意用 `--df-border-soft`（半透明感的极淡线）而不是 `--df-border`：
+ * 行分隔线不该和卡片外框一样重，否则表格会看起来像牢笼。
+ */
+.tight-table :deep(td.el-table__cell) {
+  border-bottom: 1px solid var(--df-border-soft);
+}
+
+/* 表头下沿一条稍重的线 —— 把标题行与数据行分开 */
+.tight-table :deep(th.el-table__cell) {
+  border-bottom: 1px solid var(--df-border);
+  color: var(--df-text-dim);
+  font-weight: 500;
 }
 
 /* ── 图标 ── */
@@ -513,16 +537,16 @@ const CHANGE_CLASS: Readonly<Record<string, string>> = {
 /* 当前排序依据那一列高亮 —— 一眼看出"现在按什么排的" */
 .value.active,
 .num.active {
-  color: #e8a64e;
+  color: var(--df-value);
 }
 
 /* 涨跌：中国习惯红涨绿跌 */
 .change-up {
-  color: #e05a5a;
+  color: var(--df-up);
 }
 
 .change-down {
-  color: #3fae6a;
+  color: var(--df-down);
 }
 
 /* 特产用正常色，一眼能从一片「通用」里跳出来 */

@@ -177,9 +177,38 @@ const FIXTURE: Item[] = [
   makeItem({ sourceItemId: '15200000228', name: '藏宝图', price: null, pricePerSlot: null }),
 ]
 
+
+/**
+ * 装一个内存版 localStorage。
+ *
+ * ⚠️ vitest 默认的 node 环境**没有** localStorage，而 `loadFilters()` 会读它。
+ *   所以这个桩必须**每个用例都装一次新的空版本** —— 否则上一个用例存进去的
+ *   筛选会被下一个用例读出来，测试之间就不独立了。
+ *
+ *   实测踩到：持久化那几个用例装了桩之后，后面的用例 `loadFilters()`
+ *   读到了上一次保存的 `categories: ['props','ammo']`，
+ *   于是"点两次取消"的用例一开始就有两个大类 —— 症状是
+ *   `expected [ 'ammo' ] to deeply equal [ 'props' ]`，看着完全不知所云。
+ */
+function installLocalStorage(initial: Record<string, string> = {}): Map<string, string> {
+  const store = new Map(Object.entries(initial))
+  Object.defineProperty(globalThis, 'localStorage', {
+    configurable: true,
+    value: {
+      getItem: (k: string) => store.get(k) ?? null,
+      setItem: (k: string, v: string) => void store.set(k, v),
+      removeItem: (k: string) => void store.delete(k),
+      clear: () => store.clear(),
+    },
+  })
+  return store
+}
+
 beforeEach(() => {
   // 每个用例一套全新的 Pinia —— 否则上一个用例改的筛选会漏到下一个
   setActivePinia(createPinia())
+  // localStorage 也要重置：`loadFilters()` 会读它，不重置就会跨用例串
+  installLocalStorage()
 
   const items = useItemsStore()
   items.items = FIXTURE
@@ -292,24 +321,24 @@ describe('三级联动', () => {
     // 不做这一步会出现：筛「道具/收集品」→ 改成「弹药」→ 子类还是「收集品」
     // → 结果 0 条，而且下拉里显示一个不属于弹药的选项
     const filters = useFiltersStore()
-    filters.setCategory('props')
-    filters.setSubcategory('collection')
+    filters.categories = ['props']
+    filters.subcategories = ['collection']
 
-    expect(filters.subcategory).toBe('collection')
+    expect(filters.subcategories).toEqual(['collection'])
 
-    filters.setCategory('ammo')
-    expect(filters.subcategory).toBeNull()
-    expect(filters.thirdClass).toBeNull()
+    filters.toggleCategory('ammo')
+    expect(filters.subcategories).toEqual([])
+    expect(filters.thirdClasses).toEqual([])
   })
 
   it('⭐ 改子类要清空细类', () => {
     const filters = useFiltersStore()
-    filters.setCategory('props')
-    filters.setSubcategory('collection')
-    filters.thirdClass = 'something'
+    filters.categories = ['props']
+    filters.subcategories = ['collection']
+    filters.thirdClasses = ['something']
 
-    filters.setSubcategory('key')
-    expect(filters.thirdClass).toBeNull()
+    filters.setSubcategories(['key'])
+    expect(filters.thirdClasses).toEqual([])
   })
 })
 
@@ -328,7 +357,7 @@ describe('⭐ 交叉计数 —— 选项后面的数字必须是"选了还剩多
 
   it('⭐ 地图筛选生效后，大类计数要跟着变（不是永远显示全部）', () => {
     const filters = useFiltersStore()
-    filters.map = 'AZ3' // 出在 AZ3 的：反应堆（特产）+ 普通收集品（通用）
+    filters.maps = ['AZ3'] // 出在 AZ3 的：反应堆（特产）+ 普通收集品（通用）
 
     const byValue = Object.fromEntries(filters.categoryOptions.map((o) => [o.value, o.count]))
     expect(byValue['props']).toBe(2)
@@ -337,7 +366,7 @@ describe('⭐ 交叉计数 —— 选项后面的数字必须是"选了还剩多
 
   it('⭐ 子类选项受父级大类约束，且计数不带自己', () => {
     const filters = useFiltersStore()
-    filters.setCategory('ammo')
+    filters.toggleCategory('ammo')
 
     const subs = filters.subcategoryOptions.map((o) => o.value)
     expect(subs).toEqual(['ammo9x39']) // 只有弹药自己的子类，没有道具的
@@ -350,7 +379,7 @@ describe('⭐ 交叉计数 —— 选项后面的数字必须是"选了还剩多
     const filters = useFiltersStore()
     // 先筛一个和大类无关、但会缩小范围的维度
     // 品质 6（红）：海洋之泪 + 藏宝图（两条都在池里）
-    filters.grade = 6
+    filters.grades = [6]
 
     const byValue = Object.fromEntries(filters.categoryOptions.map((o) => [o.value, o.count]))
     expect(byValue['props']).toBe(2)
@@ -358,7 +387,7 @@ describe('⭐ 交叉计数 —— 选项后面的数字必须是"选了还剩多
 
     // 现在再筛大类 = props —— 大类自己的计数不该被自己影响，
     // 所以那一格仍然是 2（而不是变成 0）
-    filters.setCategory('props')
+    filters.categories = ['props']
     const after = Object.fromEntries(filters.categoryOptions.map((o) => [o.value, o.count]))
     expect(after['props']).toBe(2)
   })
@@ -603,9 +632,9 @@ describe('清除筛选', () => {
   it('清掉所有维度，并把筛选计数归零', () => {
     const filters = useFiltersStore()
     filters.search = 'x'
-    filters.setCategory('props')
-    filters.grade = 6
-    filters.map = 'AZ3'
+    filters.categories = ['props']
+    filters.grades = [6]
+    filters.maps = ['AZ3']
     filters.setVerdictFilter('must')
     expect(filters.activeFilterCount).toBe(5)
 
@@ -613,14 +642,14 @@ describe('清除筛选', () => {
 
     expect(filters.activeFilterCount).toBe(0)
     expect(filters.search).toBe('')
-    expect(filters.category).toBeNull()
+    expect(filters.categories).toEqual([])
     expect(filters.verdictFilter).toBeNull()
   })
 
   it('⚠️ 不清 `includeExcluded` —— 它是"显示偏好"，不是筛选条件', () => {
     const filters = useFiltersStore()
     filters.includeExcluded = true
-    filters.setCategory('props')
+    filters.categories = ['props']
 
     filters.resetFilters()
     expect(filters.includeExcluded).toBe(true)
@@ -647,7 +676,7 @@ describe('⭐ 只看该图专属（mapOnly）', () => {
 
   it('⭐ 选地图 + 开开关 → 通用物资被排掉', () => {
     const filters = useFiltersStore()
-    filters.map = 'AZ3'
+    filters.maps = ['AZ3']
 
     const withUniversal = filters.rows.length
     expect(filters.rows.some((r) => r.item.provenanceUniversal)).toBe(true)
@@ -663,7 +692,7 @@ describe('⭐ 只看该图专属（mapOnly）', () => {
 
   it('关掉开关 → 通用物资回来', () => {
     const filters = useFiltersStore()
-    filters.map = 'AZ3'
+    filters.maps = ['AZ3']
     filters.mapOnly = true
     const only = filters.rows.length
 
@@ -673,7 +702,7 @@ describe('⭐ 只看该图专属（mapOnly）', () => {
 
   it('⭐ 开关算作筛选条件（"清除筛选"要能清掉它）', () => {
     const filters = useFiltersStore()
-    filters.map = 'AZ3'
+    filters.maps = ['AZ3']
     filters.mapOnly = true
     expect(filters.activeFilterCount).toBe(2)
 
@@ -694,7 +723,7 @@ describe('⭐ 只看该图专属（mapOnly）', () => {
      * 所以这里把规则钉住，并且在界面上的地图下拉里写明这一点。
      */
     const filters = useFiltersStore()
-    filters.map = '长弓溪谷'
+    filters.maps = ['长弓溪谷']
 
     const map = FIXTURE.find((i) => i.name === '藏宝图')!
     expect(map.provenanceMaps).toEqual(['长弓溪谷']) // fixture 里这条是有数据的
@@ -720,32 +749,17 @@ describe('⭐ 只看该图专属（mapOnly）', () => {
  *   ② **localStorage 本身可能抛异常**（隐私模式、配额满）
  */
 describe('筛选持久化（localStorage）', () => {
-  /** 装一个内存版 localStorage（vitest 默认的 node 环境没有它）*/
-  function installLocalStorage(initial: Record<string, string> = {}): Map<string, string> {
-    const store = new Map(Object.entries(initial))
-    Object.defineProperty(globalThis, 'localStorage', {
-      configurable: true,
-      value: {
-        getItem: (k: string) => store.get(k) ?? null,
-        setItem: (k: string, v: string) => void store.set(k, v),
-        removeItem: (k: string) => void store.delete(k),
-        clear: () => store.clear(),
-      },
-    })
-    return store
-  }
-
   const KEY = 'deltaforce.filters.v1'
 
   it('⭐ 存过的筛选会被读回来', () => {
     installLocalStorage({
       [KEY]: JSON.stringify({
         search: '海洋',
-        category: 'props',
-        subcategory: 'collection',
-        thirdClass: null,
-        grade: 6,
-        map: 'AZ3',
+        categories: ['props'],
+        subcategories: ['collection'],
+        thirdClasses: [],
+        grades: [6],
+        maps: ['AZ3'],
         verdictFilter: 'must',
         includeExcluded: true,
         mapOnly: true,
@@ -759,9 +773,9 @@ describe('筛选持久化（localStorage）', () => {
     const filters = useFiltersStore()
 
     expect(filters.search).toBe('海洋')
-    expect(filters.category).toBe('props')
-    expect(filters.grade).toBe(6)
-    expect(filters.map).toBe('AZ3')
+    expect(filters.categories).toEqual(['props'])
+    expect(filters.grades).toEqual([6])
+    expect(filters.maps).toEqual(['AZ3'])
     expect(filters.verdictFilter).toBe('must')
     expect(filters.includeExcluded).toBe(true)
     expect(filters.mapOnly).toBe(true)
@@ -773,8 +787,8 @@ describe('筛选持久化（localStorage）', () => {
     installLocalStorage({
       [KEY]: JSON.stringify({
         search: 12345, // 应该是字符串
-        category: 999, // 应该是字符串或 null
-        grade: 'gold', // 应该是 0~6 的整数
+        categories: 'props', // 应该是数组
+        grades: ['gold'], // 应该是 0~6 的整数数组
         verdictFilter: 'nonsense', // 不在四个枚举里
         mapOnly: 'yes', // 应该是布尔
         sortKey: 'hack', // 不在允许的列里
@@ -787,8 +801,8 @@ describe('筛选持久化（localStorage）', () => {
 
     const filters = useFiltersStore()
     expect(filters.search).toBe('')
-    expect(filters.category).toBeNull()
-    expect(filters.grade).toBeNull()
+    expect(filters.categories).toEqual([])
+    expect(filters.grades).toEqual([])
     expect(filters.verdictFilter).toBeNull()
     expect(filters.mapOnly).toBe(false)
     expect(filters.sortKey).toBe('pricePerSlot')
@@ -826,29 +840,155 @@ describe('筛选持久化（localStorage）', () => {
     useItemsStore().items = FIXTURE
 
     const filters = useFiltersStore()
-    filters.setCategory('ammo')
-    filters.map = 'AZ3'
+    filters.toggleCategory('ammo')
+    filters.maps = ['AZ3']
     await nextTick() // watch 默认异步
 
     const saved = JSON.parse(store.get(KEY)!) as Record<string, unknown>
-    expect(saved['category']).toBe('ammo')
-    expect(saved['map']).toBe('AZ3')
+    expect(saved['categories']).toEqual(['ammo'])
+    expect(saved['maps']).toEqual(['AZ3'])
   })
 
-  it('grade 边界：0 与 6 合法，越界与小数回退 null', () => {
-    installLocalStorage({ [KEY]: JSON.stringify({ grade: 0 }) })
+  it('⭐ grade 是数组：0 与 6 合法，越界与小数被丢掉', () => {
+    installLocalStorage({ [KEY]: JSON.stringify({ grades: [0, 6, 9, 3.5] }) })
     setActivePinia(createPinia())
     useItemsStore().items = FIXTURE
-    expect(useFiltersStore().grade).toBe(0)
+    // 9 与 3.5 不是合法品质，应在读取时被过滤掉；0 与 6 保留
+    expect(useFiltersStore().grades).toEqual([0, 6])
+  })
 
-    installLocalStorage({ [KEY]: JSON.stringify({ grade: 9 }) })
+  it('⭐ categories 不是数组时回退空数组（localStorage 内容不可信）', () => {
+    installLocalStorage({ [KEY]: JSON.stringify({ categories: 'props' }) })
     setActivePinia(createPinia())
     useItemsStore().items = FIXTURE
-    expect(useFiltersStore().grade).toBeNull()
+    expect(useFiltersStore().categories).toEqual([])
+  })
+})
 
-    installLocalStorage({ [KEY]: JSON.stringify({ grade: 3.5 }) })
-    setActivePinia(createPinia())
-    useItemsStore().items = FIXTURE
-    expect(useFiltersStore().grade).toBeNull()
+/* ══════════════════ ⭐ 多选筛选（同维 OR、跨维 AND） ══════════════════ */
+
+/**
+ * 这一组对应用户的原话：
+ * 「我可能有的时候只想看收藏品，这是可以的，但是我如果想看收藏品和消耗品呢，
+ *   如果这个时候我也想看看枪的价格呢，我觉得这就无法满足的」
+ *
+ * 所以大类/品质/地图从单选改成多选。语义必须钉死：
+ *   · **同一维内是 OR** —— 选了道具和弹药，就是"道具**或**弹药"
+ *   · **不同维之间是 AND** —— 再加品质=金，就是"（道具或弹药）**且**金"
+ * 这是所有人的预期读法，也是 faceted search 的标准。
+ */
+describe('⭐ 多选筛选', () => {
+  it('大类多选：道具 + 弹药 是并集', () => {
+    const filters = useFiltersStore()
+
+    filters.categories = ['props']
+    const onlyProps = filters.rows.length
+
+    filters.categories = ['ammo']
+    const onlyAmmo = filters.rows.length
+
+    filters.categories = ['props', 'ammo']
+    expect(filters.rows.length).toBe(onlyProps + onlyAmmo)
+  })
+
+  it('⭐ 跨维是 AND：大类或 + 品质限定', () => {
+    const filters = useFiltersStore()
+    filters.categories = ['props', 'ammo']
+    const both = filters.rows.length
+
+    filters.grades = [6] // 红
+    const narrowed = filters.rows.length
+
+    expect(narrowed).toBeLessThan(both)
+    expect(
+      filters.rows.every((r) => r.item.grade === 6 && ['props', 'ammo'].includes(r.item.categoryCode)),
+    ).toBe(true)
+  })
+
+  it('品质多选也是 OR', () => {
+    const filters = useFiltersStore()
+    filters.grades = [6]
+    const reds = filters.rows.length
+    filters.grades = [2]
+    const greens = filters.rows.length
+
+    filters.grades = [6, 2]
+    expect(filters.rows.length).toBe(reds + greens)
+  })
+
+  it('地图多选：任意一张命中即算', () => {
+    const filters = useFiltersStore()
+    filters.maps = ['AZ3']
+    const az3 = filters.rows.map((r) => r.item.name)
+
+    filters.maps = ['长弓溪谷']
+    const lg = filters.rows.map((r) => r.item.name)
+
+    filters.maps = ['AZ3', '长弓溪谷']
+    const union = filters.rows.map((r) => r.item.name)
+
+    expect(new Set(union)).toEqual(new Set([...az3, ...lg]))
+  })
+
+  it('⭐ 点同一个标签两次 = 取消（标签的天然交互）', () => {
+    const filters = useFiltersStore()
+
+    filters.toggleCategory('props')
+    expect(filters.categories).toEqual(['props'])
+
+    filters.toggleCategory('props')
+    expect(filters.categories).toEqual([])
+  })
+
+  it('⚠️ 每次改大类都清空子类与细类（防止出现不存在的组合）', () => {
+    const filters = useFiltersStore()
+    filters.toggleCategory('props')
+    filters.subcategories = ['collection']
+    filters.thirdClasses = ['x']
+
+    // 再加一个大类 —— 子类里那个「收集品」只属于道具，
+    // 留着会让"（道具或弹药）且收集品"看起来像是用户想要的，而其实不是
+    filters.toggleCategory('ammo')
+    expect(filters.subcategories).toEqual([])
+    expect(filters.thirdClasses).toEqual([])
+  })
+
+  it('「全部」标签清空该维（含下级）', () => {
+    const filters = useFiltersStore()
+    filters.categories = ['props']
+    filters.subcategories = ['collection']
+
+    filters.clearCategories()
+    expect(filters.categories).toEqual([])
+    expect(filters.subcategories).toEqual([])
+  })
+
+  it('⭐ 多选时交叉计数不随自己这一维的已选状态变化', () => {
+    /**
+     * 这是 faceted search 的关键性质，也是唯一不骗人的算法：
+     * 标签上的数字是「选中它、且满足其它维度」的物品数。
+     *
+     * 如果它随自己的选择变化，会出现：选了「道具」之后「弹药」显示 0
+     * —— 你会以为弹药没东西，而其实只是被自己的选择排除了。
+     */
+    const filters = useFiltersStore()
+
+    const before = Object.fromEntries(filters.categoryOptions.map((o) => [o.value, o.count]))
+    filters.categories = ['props']
+    const after = Object.fromEntries(filters.categoryOptions.map((o) => [o.value, o.count]))
+
+    expect(after['props']).toBe(before['props'])
+    expect(after['ammo']).toBe(before['ammo'])
+  })
+
+  it('子类/细类的级联清空走 store 动作（所以能测到）', () => {
+    const filters = useFiltersStore()
+    filters.categories = ['props']
+    filters.subcategories = ['collection']
+    filters.thirdClasses = ['x']
+
+    filters.setSubcategories(['key'])
+    expect(filters.subcategories).toEqual(['key'])
+    expect(filters.thirdClasses).toEqual([])
   })
 })
