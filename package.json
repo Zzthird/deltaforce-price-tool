@@ -28,8 +28,7 @@
     "fee:probe": "npm --workspace @deltaforce/get-data run fee:probe --",
     "login": "npm --workspace @deltaforce/get-data run login --",
     "login:import": "npm --workspace @deltaforce/get-data run login:import --",
-    "market:set": "npm --workspace @deltaforce/get-data run market:set --",
-    "ide": "npm --workspace @deltaforce/get-data run ide --"
+    "market:set": "npm --workspace @deltaforce/get-data run market:set --"
   },
   "devDependencies": {
     "concurrently": "^9.1.0",
