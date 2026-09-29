@@ -26,7 +26,8 @@
     "typecheck": "npm --workspace @deltaforce/shared run typecheck && npm --workspace @deltaforce/get-data run typecheck && npm --workspace @deltaforce/web run typecheck",
     "build": "npm --workspace @deltaforce/web run build",
     "fee:probe": "npm --workspace @deltaforce/get-data run fee:probe --",
-    "login": "npm --workspace @deltaforce/get-data run login --"
+    "login": "npm --workspace @deltaforce/get-data run login --",
+    "login:import": "npm --workspace @deltaforce/get-data run login:import --"
   },
   "devDependencies": {
     "concurrently": "^9.1.0",
