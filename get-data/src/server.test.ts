@@ -50,7 +50,7 @@ afterEach(async () => {
    * 让一个本来通过的用例在收尾时报错 —— 而且只在慢机器上复现，很难查。
    */
   if (current) await current.waitForIdle()
-  await rm(dir, { recursive: true, force: true })
+  await rm(dir, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 })
 })
 
 const advance = (seconds: number): void => {
