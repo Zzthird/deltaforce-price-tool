@@ -506,3 +506,91 @@ Moligod 名称索引      1,722 个键
 剩下的 12 条"找不到"：**10 条皮肤**（本来就没有交易行价）+ **2 条配件**
 （`M249H.A.V.K链锯套件`、`HVK格斗套件` —— 翻遍 moligod 全量条目确认**源里根本没有**，
 属于数据源覆盖缺口，修不了）。
+
+---
+
+## 九、官方接口的第二批发现（优化轮，2026-09-29）
+
+> 线索来源：GitHub 项目 `coolxi-tech/deltaforce`（PHP + ThinkPHP 写的一个自建 API）。
+> **没有抄它的代码** —— 只是从它那里看到了**官方的 iChartId 与 sIdeToken**，
+> 然后我们直接实测官方接口（和 Phase 0 用官方 352143 是同一套做法）。
+
+### 9.1 该项目的结构（供参考）
+
+- `app/controller/Game.php` 里有 `items / price / password / manufacture /
+  quartermaster / config / place / recommendation` 等方法
+- 每个方法都是 POST 到同一个 `https://comm.ams.game.qq.com/ide/`，
+  **靠不同的 `iChartId` + `sIdeToken` 区分功能**
+- 它自己的 `public/df.db` 只有一张空表 `df_access`（存用户 token）——
+  **没有内置游戏数据**；`config/ammo.php` 是作者硬编码的静态弹药表
+- 它的 `robots.txt` 是 `User-agent: *` + 空的 `Disallow:`（允许所有）
+
+### 9.2 ⭐ 实测：哪些接口**不需要登录**
+
+**方法**：带 UA 直接 POST，**不带任何 cookie / openid / access_token**。
+
+| 功能 | iChartId | sIdeToken | 额外参数 | 实测结果 |
+|---|---|---|---|---|
+| 物品列表（我们已在用）| 352143 | `YWRywA` | `method=dfm/object.list&source=2` | ✅ `ret=0` |
+| **每日地图密码** | 352143 | `YWRywA` | `method=dfm/center.day.secret&source=2` | ✅ **`ret=0`** |
+| 配置表 | 352143 | `YWRywA` | `method=dfm/config.list&source=5` | ✅ `ret=0` |
+| 地点/设施 | 352143 | `YWRywA` | `method=dfm/place.list&source=2` | ✅ `ret=0` |
+| **制造** | **365589** | `bQaMCQ` | `source=5` | ❌ **`ret=101`（未授权）** |
+| **军需处** | **530479** | `SwgEeH` | `action=1` 或 `3` | ❌ **`ret=101`（未授权）** |
+| 官方现价 | 352143 | `YWRywA` | `method=dfm/object.price.latest` | ❌ 需要登录（据该项目代码）|
+
+⚠️ **在 `manufacture` / `quartermaster` 上我们猜测过"它传 cookie 只是多此一举"，
+实测证明猜测错了** —— 这两个确实要登录（`ret=101`）。
+而 `center.day.secret` 反过来：该项目传了 cookie，但**其实不需要** ✓
+（教训：凭据要求只能实测，不能从别人代码的调用方式推断。）
+
+### 9.3 每日地图密码（✅ 可用）
+
+`POST /ide/?iChartId=352143&iSubChartId=352143&sIdeToken=YWRywA&method=dfm/center.day.secret&source=2`
+
+返回（2026-09-29 实测）：
+
+```json
+{"ret":0,"jData":{"data":{"data":{"list":[
+  {"mapID":1,"mapName":"零号大坝","secret":"1690"},
+  {"mapID":?, "mapName":"长弓溪谷","secret":"0178"},
+  {"mapName":"巴克什","secret":"9951"},
+  {"mapName":"航天基地","secret":"1471"},
+  {"mapName":"潮汐监狱","secret":"8485"},
+  {"mapName":"AZ3","secret":"2516"}]}}}}
+```
+
+- **6 张图，每天变**，`secret` 是 4 位数字（注意可能是 `"0178"` 这种**带前导零**的字符串，
+  必须按字符串处理，转数字会丢 `0`）
+- 与我们的物品源**同一个 host、同一个 iChartId**，所以对源站的影响特征不变
+- 响应约 500 字节
+
+### 9.4 特勤处设施数据（✅ 可用，但注意它不是"制造"）
+
+`dfm/place.list` 返回 47 个 `place`，每个带 `placeDetail`：
+
+```json
+{"place":"collect","placeDetail":{
+   "hafCount":420000,                      // 升级要花的哈夫币
+   "condition":"解锁等级43",                // 等级条件
+   "required":[{"objectID":15080050099,"count":?}]}}  // 所需材料
+```
+
+- 这是**设施升级需求**（成本 + 材料 + 等级 + 属性加成）
+- ⚠️ **不是**"制造配方" —— 制造在 `iChartId=365589`（要登录）
+- 附带 `relateMap`：379 个物品的详情（名称/品质/重量/avgPrice），
+  是这些设施需求里引用到的物品，**不是"物品↔地点"的出产地映射**（这点曾被我猜错）
+
+### 9.5 结论：与用户三个需求的对应关系
+
+| 用户需求 | 数据来源 | 可行性 |
+|---|---|---|
+| 每日地图密码 | `dfm/center.day.secret` | ✅ **公开可用，可立即实现** |
+| 军需处 / 集市利润 | `iChartId=530479` | ⚠️ 需要**用户账号登录**（`ret=101`）|
+| 特勤处制造推荐 | `iChartId=365589` | ⚠️ 需要**用户账号登录** |
+| （替代方案）利润 | moligod 的现价 − 基准价 | ✅ 公开（我们已有 1276 条可算，其中 932 条为正差额）|
+
+⚠️ **合规边界**：本项目的既定原则是「只读公开接口、不绕过登录」（PLAN §12.12）。
+上面标 ✅ 的接口**无需任何凭据**，与我们在用的物品源同源同权限，属于公开接口 ✓；
+标 ⚠️ 的接口**明确要求登录**，用它们必须由**用户本人**提供其账号凭据 ——
+这是一个涉及账号安全与游戏条款的决定，**由用户知情后自行决定**。
