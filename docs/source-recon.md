@@ -594,3 +594,82 @@ Moligod 名称索引      1,722 个键
 上面标 ✅ 的接口**无需任何凭据**，与我们在用的物品源同源同权限，属于公开接口 ✓；
 标 ⚠️ 的接口**明确要求登录**，用它们必须由**用户本人**提供其账号凭据 ——
 这是一个涉及账号安全与游戏条款的决定，**由用户知情后自行决定**。
+
+---
+
+## 十、登录成功之后：到底多拿到了什么（2026-09-29 实测）
+
+### 10.1 扫码登录：换了一份公开实现才对
+
+原先照一份 PHP 实现写，扫码能成功但拿到的 `p_skey` 是**受限的**
+（cookie 里出现 `p_skey_forbid`，且始终没有 `skey`），
+请求授权时腾讯返回 `oauth2.0/show?which=Login`。
+
+改用 https://blog.sakurasen.cn/post/1769803187575/ 的流程后**一次通过**：
+
+| 项目 | PHP 那份 | blog 那份（采用）|
+|---|---|---|
+| 先请求 `xlogin` 拿 `pt_login_sig` | 是 | **否** |
+| 轮询的 `login_sig` | `pt_login_sig` | **`qrsig`** |
+| 轮询参数 | 多带 `action`/`o1vId`/`pt_uistyle` | 带 `has_onekey=1`、`js_ver=25112611`、`pt_js_version=42f2bcc1`、`h=0` |
+| 轮询 `Referer` | 无 | **xlogin 地址** |
+| `p_skey` 来源 | 从 cookie 罐里翻 | **第 ③ 步响应的 Set-Cookie** |
+| 授权表单 | `form_plogin=1`、`auth_time` 秒 | **`form_ptlogin=1`、`auth_time` 毫秒** |
+
+⚠️ 实测第 ③ 步下发的 cookie 是
+`pt2gguin, p_uin, pt4_token, p_skey, pt_oauth_token, pt_login_type`
+—— **没有 `skey`** ✓ 但流程照样走通 ✓。
+所以"必须要有 skey"是我之前的错误推断。
+
+### 10.2 登录解锁了什么（实测）
+
+| 接口 | 未登录 | 登录后 |
+|---|---|---|
+| 物品列表 `dfm/object.list` | `ret=0` | `ret=0` |
+| 每日密码 `dfm/center.day.secret` | `ret=0` | `ret=0` |
+| **官方现价 `dfm/object.price.latest`** | 参数/鉴权失败 | ✅ **`ret=0`** |
+| **每日价格历史 `dfm/object.price.recent`** | — | ✅ **`ret=0`** |
+| 制造 `iChartId=365589` | `ret=101` | `ret=99998`「**请刷新页面，先绑定大区！**」|
+| 军需处 `iChartId=530479` | `ret=101` | 同上 |
+
+**制造/军需处只差一步「绑定大区」** —— 参考实现里的步骤（`Game.php`）：
+
+1. `iChartId=316964` / `sIdeToken=95ookO` 查绑定状态（`jData.bindarea`）
+2. 未绑定时查角色：`needGopenid=1&sAMSAcctype=qq&sAMSAccessToken=…&sAMSAppOpenId=…`
+   `&sAMSTargetAppId=1110543085&sAMSSourceAppId=101491592&game=dfm`
+   `&sCloudApiName=ams.gameattr.role&area=36&platid=1&partition=36`
+3. 用返回的 `checkparam`/`md5str` 提交绑定：`iChartId=316965` / `sIdeToken=sTzZS2`
+   + `sArea`/`sPlatId`/`sPartition`/`sCheckparam`/`sRoleId`/`md5str`
+
+⚠️ 里面的 `area=36`、`platid=1` 是**写死的一个大区** —— 换个账号要改。
+所以这条要问用户自己在哪个大区，不能替他决定。
+
+### 10.3 ⛔ 「参考价」不在官方开放接口里
+
+参考实现里出现的 method **总共只有 9 个**，已全部列出，
+**没有任何一个是参考价/交易行手续费**：
+
+```
+dfm/center.day.secret      dfm/center.person.resource   dfm/center.recent.detail
+dfm/config.list            dfm/object.list              dfm/object.price.latest
+dfm/object.price.recent    dfm/place.list               dfm/solution.arms.list
+```
+
+实测 `dfm/object.price.latest` 只返回 `{objectID: {avgPrice}}` ✓，
+`dfm/object.price.recent` 返回**最近 7 天的 `{date, avgPrice, count}`** ✓
+—— 即"近期平均交易价格 + 交易量"，**没有参考价** ✗。
+
+> 对「锈迹斑斑的海盗铜币」（官方 ID 15080050007）实测：
+> `avgPrice = 23488`，与之前 Phase 0 量到的 23,340 吻合 ✓，
+> 也与玩家截图里的**参考价格 2,860 相差 8 倍** ✓ ——
+> 再次印证「`avgPrice` 不能当价格源」这条结论 ✓。
+
+**推论**：参考价不在这些接口里。要么在**交易行**那条链（moligod 抓的就是它），
+要么是客户端本地算的。**手续费公式的标定要继续，就得换个地方找参考价**
+（或退一步：用 moligod 基准价 × 实测比例近似 —— 目前只有 1 个样本点，不够）。
+
+### 10.4 新发现：官方有**交易量**数据
+
+`dfm/object.price.recent` 每天带 `count`（成交笔数 ✓）。
+对"这东西到底好不好卖"是有用信号 ✓ —— 比如某物资单格价值高但
+成交量极低，说明挂着卖不掉。可以作为 v2 的排序因子考虑。
