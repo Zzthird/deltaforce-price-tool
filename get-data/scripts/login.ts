@@ -49,6 +49,7 @@ import {
   saveAuth,
   type AuthCredential,
 } from '../src/auth'
+import { CookieJar } from '../src/cookie-jar'
 import { pngToTerminalQr } from '../src/qr-ascii'
 import { createLogger } from '../src/logger'
 
@@ -64,49 +65,31 @@ const REDIRECT_URI =
 /* ══════════════════════════ Cookie 罐 ══════════════════════════ */
 
 /**
- * 极简 cookie 罐 —— 够这个流程用。
+ * CookieJar 已抽到 `../src/cookie-jar.ts`（带 9 个单测 ✓）—— 因为它的
+ * 「按域名隔离」是这条流程里最关键、也最容易错的一点。
  *
- * ⚠️ **不做域名作用域判断**（把所有 cookie 都发给所有 qq.com 的请求）。
- *    严格来说不对 ✗，但参考实现事实上也是这样用的，
- *    而这个流程里所有请求都在 `*.qq.com` / `*.ptlogin2.qq.com` 上
- *    —— 为它写一套完整的 RFC 6265 实现不值得 ✓
+ * 一句话概括为什么：第 ④ 步的 `check_sig` 在 `ssl.ptlogin2.graph.qq.com` 上，
+ * 而扫码阶段的 cookie（`qrsig`、`pt_login_sig` …）属于 `.ptlogin2.qq.com`
+ * —— **一个都不该发过去**。不分域名的话就会把二维码会话 cookie 发给
+ * 登录端点，服务器可能当作「还在扫码流程里」，发个受限的 p_skey
+ * （实测表现为 `p_skey_forbid` 存在而 `skey` 始终不来），
+ * 接下来请求授权时腾讯就说「请先登录」（`which=Login`）。
  */
-class CookieJar {
-  private readonly map = new Map<string, string>()
-
-  absorb(res: Response): void {
-    const raw = res.headers.getSetCookie?.() ?? []
-    for (const line of raw) {
-      const pair = line.split(';')[0] ?? ''
-      const eq = pair.indexOf('=')
-      if (eq <= 0) continue
-      this.map.set(pair.slice(0, eq).trim(), pair.slice(eq + 1).trim())
-    }
-  }
-
-  get(name: string): string | null {
-    return this.map.get(name) ?? null
-  }
-
-  header(): string {
-    return [...this.map].map(([k, v]) => `${k}=${v}`).join('; ')
-  }
-
-  names(): string[] {
-    return [...this.map.keys()]
-  }
-}
-
 /* ══════════════════════════ 小工具 ══════════════════════════ */
 
 const sleep = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms))
 
 async function get(url: string, jar: CookieJar, extra: Record<string, string> = {}): Promise<Response> {
+  const cookie = jar.header(url)
   const res = await fetch(url, {
-    headers: { 'User-Agent': UA, Cookie: jar.header(), ...extra },
+    headers: {
+      'User-Agent': UA,
+      ...(cookie !== '' ? { Cookie: cookie } : {}),
+      ...extra,
+    },
     redirect: 'manual',
   })
-  jar.absorb(res)
+  jar.absorb(res, url)
   return res
 }
 
@@ -133,12 +116,27 @@ async function follow(
   startUrl: string,
   jar: CookieJar,
   maxHops = 6,
-): Promise<{ finalUrl: string; hops: number; statuses: number[] }> {
+): Promise<{ finalUrl: string; hops: number; statuses: number[]; trail: string[] }> {
   let url = startUrl
   const statuses: number[] = []
+  const trail: string[] = []
   for (let i = 0; i <= maxHops; i += 1) {
+    const before = new Set(jar.names())
     const res = await get(url, jar)
     statuses.push(res.status)
+    /**
+     * ★ 每一跳之后：**这个主机发出了哪些 cookie、响应新下了哪些 cookie**。
+     *
+     * 这就是定位「腾讯说我没登录」的关键证据：
+     *   · 发出了什么 → 有没有把 `qrsig` 之类的扫码 cookie 送错地方 ✗
+     *   · 新下了什么 → 登录态（`skey` / `p_skey`）到底是哪一跳给的 ✓
+     */
+    const sent = jar.namesFor(url)
+    const added = jar.names().filter((n) => !before.has(n))
+    trail.push(
+      `   ${new URL(url).host} → ${res.status} · 发出 ${sent.length} 个` +
+        (added.length > 0 ? ` · 新下 [${added.join(', ')}]` : ''),
+    )
     if (res.status >= 300 && res.status < 400) {
       const next = res.headers.get('location')
       if (!next) break
@@ -147,7 +145,7 @@ async function follow(
     }
     break
   }
-  return { finalUrl: url, hops: statuses.length - 1, statuses }
+  return { finalUrl: url, hops: statuses.length - 1, statuses, trail }
 }
 
 /* ══════════════════════════ 主流程 ══════════════════════════ */
@@ -292,6 +290,7 @@ async function main(): Promise<void> {
   console.log(
     `④ 登录跳转      ${hop.statuses.join('→')} · 跳了 ${hop.hops} 跳 · QQ = ${qq ?? '（没解析出来）'}`,
   )
+  for (const line of hop.trail) console.log(line)
   /**
    * ★ **把 cookie 名字打出来** —— 这是排查“腾讯说我没登录”的唯一线索。
    *
@@ -299,7 +298,10 @@ async function main(): Promise<void> {
    * 真相是登录态 cookie 没带对（Location 里出现了 `which=Login`）✗。
    * 所以现在**直接把证据打印出来**，不靠猜 ✓
    */
-  console.log(`   cookie（${jar.names().length} 个）：${jar.names().join(', ')}`)
+  console.log(`   cookie 共 ${jar.names().length} 个：${jar.names().join(', ')}`)
+  console.log(
+    `   发给 graph.qq.com 的：${jar.namesFor('https://graph.qq.com/').join(', ') || '（无）'}`,
+  )
 
   const pSkey = jar.get('p_skey')
   const skey = jar.get('skey')
@@ -332,12 +334,12 @@ async function main(): Promise<void> {
       'User-Agent': UA,
       'Content-Type': 'application/x-www-form-urlencoded',
       Referer: 'https://xui.ptlogin2.qq.com/',
-      Cookie: jar.header(),
+      Cookie: jar.header(authorizeUrl),
     },
     body: form.toString(),
     redirect: 'manual',
   })
-  jar.absorb(r5)
+  jar.absorb(r5, authorizeUrl)
 
   const location = r5.headers.get('location') ?? ''
   const codeMatch = /[?&]code=([^&]+)/.exec(location)
@@ -379,8 +381,9 @@ async function main(): Promise<void> {
     }).toString()
 
   const r6 = await fetch(loginSvrUrl, {
-    headers: { 'User-Agent': UA, Cookie: jar.header(), Referer: 'https://df.qq.com/' },
+    headers: { 'User-Agent': UA, Cookie: jar.header(loginSvrUrl), Referer: 'https://df.qq.com/' },
   })
+  jar.absorb(r6, loginSvrUrl)
   const body6 = await r6.text()
   const jsonp = /deltaforce_priceboard\((.*?)\)/s.exec(body6)
   if (!jsonp?.[1]) {
