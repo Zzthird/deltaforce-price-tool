@@ -109,3 +109,47 @@ describe('authCookieHeader —— 拼成官方接口认的 Cookie', () => {
     expect(authCookieHeader({ ...cred, acctype: 'wx' })).toContain('acctype=wx')
   })
 })
+
+/* ══════════ ⭐ 真实响应形状（用户实测扫成功时抓到的） ══════════ */
+
+/**
+ * ⚠️ 这一条来自**用户的真实输出**，不是我想象的形状。
+ *
+ * 他扫码成功、手机也点了确认，官方返回的是：
+ *   ptuiCB('0','0','https://ssl.ptlogin2.graph.qq.com/check_sig?…&uin=…','0','…')
+ *
+ * ——**字段比我想的少** ✗。而我第一版正则写死了 6 段 `'…'` ✗，
+ * 于是登录已经成功却被判成「不是 ptuiCB 格式」✗，
+ * 而且报错还说「cookie 可能不对」——报错与真实原因完全无关 ✗。
+ *
+ * 教训和登录二维码那个「位深 1」的坑是同一类：
+ * **合成测试数据必须来自真实样本**，否则测的是「我以为的格式」✗。
+ */
+describe('⭐ parsePtuiCb —— 真实响应（字段数不固定）', () => {
+  it('5 个字段（用户实测的登录成功响应）', () => {
+    const real =
+      "ptuiCB('0','0','https://ssl.ptlogin2.graph.qq.com/check_sig?pttype=1&uin=1234567890&service=ptqrlogin&nodirect=0&ptsigx=abc','0','登录成功！', '')"
+    const r = parsePtuiCb(real)
+    expect(r).not.toBeNull()
+    expect(r!.code).toBe('0')
+    expect(r!.redirectUrl).toContain('check_sig')
+    expect(parseQqFromRedirect(r!.redirectUrl!)).toBe('1234567890')
+  })
+
+  it('⭐ 字段更少（昵称都没有）也能解析', () => {
+    const r = parsePtuiCb("ptuiCB('0','0','https://x/y','0','登录成功！')")
+    expect(r?.code).toBe('0')
+    expect(r?.redirectUrl).toBe('https://x/y')
+    expect(r?.nickname).toBeNull()
+  })
+
+  it('6 个字段（带昵称）也照样解析', () => {
+    const r = parsePtuiCb("ptuiCB('0','0','https://x/y','0','登录成功','张三')")
+    expect(r?.nickname).toBe('张三')
+  })
+
+  it('前面有其它内容时仍能解析', () => {
+    const r = parsePtuiCb("\n  ptuiCB('66','0','','0','二维码未失效。','')")
+    expect(r?.code).toBe('66')
+  })
+})

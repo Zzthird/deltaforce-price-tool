@@ -199,14 +199,29 @@ export interface QrPollResult {
  * 或者流程走错了，此时不该继续往下猜 ✗
  */
 export function parsePtuiCb(text: string): QrPollResult | null {
-  const m = /ptuiCB\s*\(\s*'([^']*)'\s*,\s*'([^']*)'\s*,\s*'([^']*)'\s*,\s*'([^']*)'\s*,\s*'([^']*)'\s*,\s*'([^']*)'\s*\)/.exec(
-    text,
-  )
-  if (!m) return null
-  const code = m[1] ?? ''
-  const url = m[3] ?? ''
-  const message = m[5] ?? ''
-  const nickname = m[6] ?? ''
+  /**
+   * ⚠️ **不能写死"恰好 6 个字段"** —— 这里踩过一次真坑：
+   *
+   * 用户实际扫成功时官方返回的是（真实样本）：
+   *   ptuiCB('0','0','https://ssl.ptlogin2.graph.qq.com/check_sig?…&uin=…','0','…')
+   * ——字段更少 ✗。而我第一版的正则写了 6 段 `'…'` ✗，
+   * 于是**登录已经成功却被判成"不是 ptuiCB 格式"** ✗，
+   * 而且报错还说"cookie 可能不对" —— **报错和真实原因完全无关** ✗。
+   *
+   * 所以改成"把引号里的内容全抽出来"，不假设几个 ✓。
+   * （又一个"拿真实样本才能测出来"的例子 ——
+   *   和登录二维码那个位深 1 的坑是同一类。）
+   */
+  if (!text.includes('ptuiCB')) return null
+
+  const args = [...text.matchAll(/'([^']*)'/g)].map((m) => m[1] ?? '')
+  if (args.length < 3) return null
+
+  const code = args[0] ?? ''
+  const url = args[2] ?? ''
+  const message = args[4] ?? ''
+  const nickname = args[5] ?? ''
+
   return {
     code,
     message,
