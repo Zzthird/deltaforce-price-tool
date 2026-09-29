@@ -48,6 +48,7 @@ import {
   analyzeFee,
   compareAcrossItems,
   feeOf,
+  findClosestItem,
   fmtRate,
   parseEntry,
   rateOf,
@@ -138,15 +139,44 @@ async function main(): Promise<void> {
    */
   let currentItem: string | null = samples.length > 0 ? (samples[samples.length - 1]?.item ?? null) : null
 
-  /** 从本地快照补品质/大类 —— 用于事后验证"费率是否取决于物品" */
-  const meta = new Map<string, { grade: number; category: string }>()
+  /**
+   * 从本地快照补物品信息 —— **参考价是关键**。
+   *
+   * 为什么要参考价：搜索结果里说费率可能"按物品**参考价区间**浮动"、
+   * "偏离官方推荐价格 → 费率上涨"。如果真是这样，那么自变量是
+   * 「挂价 ÷ 参考价」而不是挂价本身 —— 而参考价我们本来就有。
+   *
+   * ⚠️ 用**模糊匹配**：用户手填的名字可能和游戏数据差几个字
+   *    （实测：「海盗铜币」vs「锈迹斑斑的海盗铜币」）。
+   */
+  const meta = new Map<string, { grade: number; category: string; ref: number | null }>()
+  const names: string[] = []
   try {
     const snap = await loadSnapshot(resolve(cfg.dataDir, 'snapshot.json'))
     for (const list of Object.values(snap?.partitions ?? {})) {
-      for (const it of list) meta.set(it.name.trim(), { grade: it.grade, category: it.categoryCode })
+      for (const it of list) {
+        const name = it.name.trim()
+        const q = snap?.prices[name]
+        names.push(name)
+        meta.set(name, {
+          grade: it.grade,
+          category: it.categoryCode,
+          // 参考价：优先 moligod 基准价（商店价），回退官方 avgPrice
+          ref:
+            (typeof q?.basePrice === 'number' ? q.basePrice : null) ??
+            (typeof it.officialAvgPrice === 'number' ? it.officialAvgPrice : null),
+        })
+      }
     }
   } catch {
-    // 快照不存在（第一次跑）→ 不带品质也能用
+    // 快照不存在（第一次跑）→ 不带参考价也能用
+  }
+
+  /** 输入的名字 → 数据里的名字（查不到就返回原样，并让调用方提示） */
+  function resolveItem(input: string): { name: string; how: string; ref: number | null } {
+    const hit = findClosestItem(input, names)
+    if (hit.matched === null) return { name: input, how: 'none', ref: null }
+    return { name: hit.matched, how: hit.how, ref: meta.get(hit.matched)?.ref ?? null }
   }
 
   console.log(RULE)
@@ -294,10 +324,18 @@ async function main(): Promise<void> {
     const sample = parsed.sample
     currentItem = sample.item
 
-    const info = meta.get(sample.item)
+    const resolved = resolveItem(sample.item)
+    const info = meta.get(resolved.name)
     if (info) {
       sample.grade = info.grade
       sample.category = info.category
+    }
+    if (resolved.how === 'none') {
+      console.log(`  ⚠️ 数据里找不到「${sample.item}」—— 参考价查不到，跨物品对比会缺这一条`)
+    } else if (resolved.how !== 'exact') {
+      console.log(`  · 名字匹配到「${resolved.name}」（${resolved.how}）· 参考价 ${resolved.ref === null ? '—' : resolved.ref.toLocaleString('zh-CN')}`)
+    } else if (resolved.ref !== null) {
+      console.log(`  · 参考价 ${resolved.ref.toLocaleString('zh-CN')}`)
     }
 
     samples.push(sample)

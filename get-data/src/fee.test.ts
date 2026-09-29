@@ -12,6 +12,7 @@ import {
   analyzeFee,
   compareAcrossItems,
   feeOf,
+  findClosestItem,
   fmtRate,
   parseAmount,
   parseSampleLine,
@@ -250,5 +251,50 @@ describe('⭐ analyzeFee —— 样本自相矛盾', () => {
   it('不同挂价 → 不算矛盾（哪怕费率不同，那是另一个模型的事）', () => {
     const a = analyzeFee([mk('X', 1_000, 0.1), mk('X', 100_000, 0.15)])
     expect(a.kind).not.toBe('inconsistent')
+  })
+})
+
+/* ══════════ ⭐ 物品名模糊匹配（为了查到参考价） ══════════ */
+
+/**
+ * 实测踩到的：用户手填「海盗铜币」，而游戏数据里叫「锈迹斑斑的海盗铜币」
+ * —— 差三个字，于是查不到参考价 ✗，而"费率是否取决于参考价"正是要验证的东西。
+ */
+describe('⭐ findClosestItem —— 手填名字 vs 数据里的名字', () => {
+  const NAMES = ['锈迹斑斑的海盗铜币', '亮闪闪的海盗金币', '古怪的海盗银币', '非洲之心']
+
+  it('完全相等', () => {
+    expect(findClosestItem('非洲之心', NAMES)).toEqual({ matched: '非洲之心', how: 'exact' })
+  })
+
+  it('⭐ 子串匹配（用户的真实用例）', () => {
+    expect(findClosestItem('海盗铜币', NAMES)).toEqual({
+      matched: '锈迹斑斑的海盗铜币',
+      how: 'contained',
+    })
+  })
+
+  it('⭐ 反过来的子串也能匹配（名字打多了）', () => {
+    expect(findClosestItem('锈迹斑斑的海盗铜币（新）', NAMES).matched).toBe('锈迹斑斑的海盗铜币')
+  })
+
+  it('⭐ 多个候选都包含时，挑最短的（描述词最少的）', () => {
+    // 「海盗金币」只被一条包含 → 唯一 ✓
+    expect(findClosestItem('海盗金币', NAMES).matched).toBe('亮闪闪的海盗金币')
+  })
+
+  it('⭐ 分不清时返回 null，不猜', () => {
+    // 「古怪」和「锈迹」都在候选里，但都不是子串关系 →
+    // 输入「古怪」只有一条包含它 ✓；输入一个各条长度相同的模糊词才会 null
+    const ambiguous = ['甲甲X', '乙乙X']
+    expect(findClosestItem('X', ambiguous).matched).toBeNull()
+  })
+
+  it('查不到就返回 null（而不是硬塞一个）', () => {
+    expect(findClosestItem('这个词根本不在', NAMES)).toEqual({ matched: null, how: 'none' })
+  })
+
+  it('标点与大小写差异算同一个（.300BLK vs .300 blk）', () => {
+    expect(findClosestItem('.300 blk', ['.300BLK']).how).toBe('normalized')
   })
 })

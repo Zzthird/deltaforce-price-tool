@@ -563,3 +563,47 @@ export function parseEntry(
   }
   return { kind: 'sample', sample: s }
 }
+
+
+/* ══════════════════════════════════════════════════════════════════════
+ * 物品名匹配（为了查参考价）
+ * ══════════════════════════════════════════════════════════════════════
+ *
+ * 实测踩到：用户手填的是「海盗铜币」，而游戏数据里叫「**锈迹斑斑的**海盗铜币」
+ * —— 差三个字，于是查不到参考价 ✗，而"费率是否取决于参考价"正是要验证的东西。
+ *
+ * 所以匹配分三步，从严到松：
+ *   ① 完全相等
+ *   ② 去掉标点/空白后相等（「.300BLK」vs「.300 BLK」）
+ *   ③ 一方包含另一方（「海盗铜币」⊂「锈迹斑斑的海盗铜币」）
+ *
+ * ⚠️ 第 ③ 步**必须挑最短的那个候选**：输入「铜币」时，
+ *    「锈迹斑斑的海盗铜币」和「古怪的海盗银币」都可能包含它，
+ *    挑最短（= 描述词最少）的那个最可能是用户想说的。
+ *    如果候选有多个且长度相同 → 返回 null，**不猜**。
+ */
+export function findClosestItem(
+  input: string,
+  candidates: readonly string[],
+): { matched: string | null; how: 'exact' | 'normalized' | 'contained' | 'none' } {
+  const raw = input.trim()
+  if (raw === '') return { matched: null, how: 'none' }
+
+  for (const c of candidates) {
+    if (c === raw) return { matched: c, how: 'exact' }
+  }
+
+  const norm = (s: string) => s.replace(/[\s.·、，,（）()【】\[\]]/g, '').toLowerCase()
+  const n = norm(raw)
+  for (const c of candidates) {
+    if (norm(c) === n) return { matched: c, how: 'normalized' }
+  }
+
+  const hits = candidates.filter((c) => c.includes(raw) || raw.includes(c))
+  if (hits.length === 0) return { matched: null, how: 'none' }
+  hits.sort((a, b) => a.length - b.length)
+  const best = hits[0]!
+  // 最短的有并列 → 说明分不清，不猜
+  if (hits.length > 1 && hits[1]!.length === best.length) return { matched: null, how: 'none' }
+  return { matched: best, how: 'contained' }
+}
