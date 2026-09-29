@@ -57,18 +57,6 @@ const marketRows = computed(() => {
     }))
 })
 
-/** 兑换项：把 ID 换成名字（换到的物品可能不在我们主数据里，就显示 ID）*/
-const marketOffers = computed(() => {
-  const byId = new Map(itemsStore.items.map((it) => [it.sourceItemId, it]))
-  const nameOf = (id: string): string => byId.get(id)?.name ?? `物品 ${id}`
-  return metaStore.marketOffers.map((o) => ({
-    key: `${o.itemId}-${o.requires.map((r) => r.itemId).join('_')}`,
-    productName: nameOf(o.itemId),
-    productQty: o.qty,
-    needText: o.requires.map((r) => `${nameOf(r.itemId)}×${r.qty}`).join(' + '),
-  }))
-})
-
 /** 活动倒计时（集市是周级活动，用"还剩几天"就够）*/
 const marketCountdown = computed(() => {
   const end = metaStore.marketEndAt
@@ -187,9 +175,7 @@ onMounted(async () => {
             <tr>
               <th class="left">物品</th>
               <th>现价</th>
-              <th>基准价</th>
-              <th>差额</th>
-              <th class="profit-col">最高利润</th>
+              <th>单格价值</th>
             </tr>
           </thead>
           <tbody>
@@ -199,55 +185,14 @@ onMounted(async () => {
                 {{ r.item.name }}
               </td>
               <td>{{ formatMoney(r.item.price) }}</td>
-              <td class="dim">{{ formatMoney(r.item.basePrice) }}</td>
-              <td :class="r.spread === null ? 'dim' : r.spread > 0 ? 'up' : 'down'">
-                <template v-if="r.spread === null">—</template>
-                <template v-else>
-                  {{ r.spread > 0 ? '+' : '' }}{{ formatMoney(r.spread) }}
-                </template>
-              </td>
-              <!--
-                ⭐ 占位。不是忘了做 —— 是在等手续费公式实测出来。
-                详见文件头的说明：猜一个公式比空着更糟。
-              -->
-              <td class="profit-col">
-                <el-tooltip
-                  content="需要交易行手续费公式才能算。已做好实测工具：npm run fee:probe —— 挂几次单、把 report 发我，就能填上。"
-                  placement="left"
-                >
-                  <span class="todo">待手续费公式</span>
-                </el-tooltip>
+              <td>
+                <template v-if="r.item.pricePerSlot === null">—</template>
+                <template v-else>{{ formatMoney(r.item.pricePerSlot) }}</template>
               </td>
             </tr>
           </tbody>
         </table>
 
-        <!--
-          ⭐ 兑换项："交什么 → 得什么"。
-          官方数据里同一期存在「两件都要」「只要 A」「只要 B」三种，
-          所以上面那张表是**并集**（要摸什么），这里是**具体菜单** ✓
-        -->
-        <div v-if="marketOffers.length > 0" class="offers">
-          <div class="offers-title dim small">
-            当期能换什么（共 {{ marketOffers.length }} 项）：
-          </div>
-          <ul>
-            <li v-for="o in marketOffers" :key="o.key">
-              <span class="need">{{ o.needText }}</span>
-              <span class="arrow">→</span>
-              <span class="got">{{ o.productName }}</span>
-              <span v-if="o.productQty > 1" class="dim">×{{ o.productQty }}</span>
-            </li>
-          </ul>
-        </div>
-
-        <p class="note dim small">
-          「现价」来自 <a href="https://moligod.com/trade" target="_blank" rel="noreferrer noopener">moligod</a>
-          （交易行现价）；「基准价」是它给的源侧基准价 / 商店价。
-          「最高利润」= 挂到某个价格、扣掉手续费之后的净收益最大值 ——
-          它<b>依赖手续费公式</b>，而那个公式公开资料互相矛盾，所以正在用
-          <code>npm run fee:probe</code> 实测。
-        </p>
       </section>
     </div>
   </div>
@@ -291,40 +236,6 @@ h1 {
 
 .card {
   padding: 12px 14px;
-}
-
-/* ── 集市兑换项 ── */
-.offers {
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid var(--df-border);
-}
-.offers-title {
-  margin-bottom: 6px;
-}
-.offers ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 4px 18px;
-}
-.offers li {
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
-  font-size: 13px;
-  padding: 2px 0;
-}
-.offers .need {
-  color: var(--df-text-dim);
-}
-.offers .arrow {
-  color: var(--df-accent);
-}
-.offers .got {
-  font-weight: 600;
 }
 
 /* 集市物品那横跨两列 */
