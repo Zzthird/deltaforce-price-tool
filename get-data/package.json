@@ -18,7 +18,8 @@
     "typecheck": "tsc --noEmit",
     "fee:probe": "tsx scripts/fee-probe.ts",
     "login": "tsx scripts/login.ts",
-    "login:import": "tsx scripts/login-import.ts"
+    "login:import": "tsx scripts/login-import.ts",
+    "market:set": "tsx scripts/market-set.ts"
   },
   "dependencies": {
     "@deltaforce/shared": "*",

@@ -24,37 +24,50 @@
 import { computed, onMounted } from 'vue'
 import { useItemsStore } from '@/stores/items'
 import { useDailyStore } from '@/stores/daily'
+import { useMetaStore } from '@/stores/meta'
 import { formatAge, formatMoney } from '@/utils/format'
 
 const itemsStore = useItemsStore()
 const dailyStore = useDailyStore()
+const metaStore = useMetaStore()
 
 /**
- * 集市物品：按「现价 − 基准价」降序取前 N。
+ * 集市物品：**后端下发的官方指定清单**（人工维护）。
  *
- * ⚠️ 这只是**占位排序** —— 等手续费公式实测出来之后，
- *    排序键要换成"最高利润"（那才是用户要的）。
- *    现在先按差额排，至少是真实数据、方向大体对。
+ * ⚠️ 改成这样是因为原来那版是错的 ✗：
+ *    原来按「现价 − 基准价」降序取前 12 条 —— 那是我自己编的排序 ✗，
+ *    而真实集市**只有官方指定的那几件**（当期为 2 件：腕带、锈迹斑斑的海盗铜币）。
+ *    用价格差排序代替官方清单，等于把猜的东西摆在事实的位置上 ✗。
+ *
+ * 集市是游戏里的**周期性兑换活动**，一期可能一周也可能两周，看官方安排；
+ * 实测排查过：参考项目用到的 9 个官方 method 里没有集市任何一个 ✗，
+ * 所以没有可抓的数据源 → 只能人工维护 ✓。
+ * 更新命令：`npm run market:set 腕带 锈迹斑斑的海盗铜币`
+ *
+ * 顺序保留清单里的顺序（不重排）—— 运营者填的顺序他/她心里有数。
  */
-const MARKET_TOP_N = 12
-
 const marketRows = computed(() => {
-  const rows = itemsStore.items
-    .filter((it) => it.price !== null && it.basePrice !== null && it.basePrice > 0)
-    .map((it) => ({
-      item: it,
-      spread: (it.price as number) - (it.basePrice as number),
+  const byId = new Map(itemsStore.items.map((it) => [it.sourceItemId, it]))
+  return metaStore.marketItemIds
+    .map((id) => byId.get(id))
+    .filter((it): it is NonNullable<typeof it> => it !== undefined)
+    .map((item) => ({
+      item,
+      spread:
+        item.price !== null && item.basePrice !== null ? item.price - item.basePrice : null,
     }))
-    .sort((a, b) => b.spread - a.spread)
-  return rows.slice(0, MARKET_TOP_N)
 })
 
 const hasMarketData = computed(() => itemsStore.items.length > 0)
+/** 清单为空 = 还没维护过（要如实显示，不能拿别的数据顶上）*/
+const marketEmpty = computed(
+  () => hasMarketData.value && marketRows.value.length === 0 && metaStore.marketItemIds.length === 0,
+)
 
 onMounted(async () => {
   // 密码自己一个接口（后端有半小时缓存，打开首页最多打一次源站）
   // 物品列表和"价值榜"页共用同一份 store，所以那边切过去时是瞬间的
-  await Promise.all([dailyStore.load(), itemsStore.load()])
+  await Promise.all([dailyStore.load(), itemsStore.load(), metaStore.load()])
 })
 </script>
 
@@ -126,11 +139,21 @@ onMounted(async () => {
       <section class="df-card card wide">
         <div class="card-head">
           <h2>集市物品</h2>
-          <span class="dim small">按「现价 − 基准价」降序前 {{ MARKET_TOP_N }} 条</span>
+          <span v-if="metaStore.marketUpdatedAt" class="dim small">
+            官方指定的当期兑换物 · 维护于 {{ metaStore.marketUpdatedAt.slice(0, 10) }}
+          </span>
+          <span v-else class="dim small">官方指定的当期兑换物</span>
         </div>
 
         <div v-if="!hasMarketData" class="placeholder">
           还没取到物品数据。等一会儿或去「物资价值榜」页看看状态。
+        </div>
+
+        <!-- 还没维护过：如实说，不拿别的数据顶上 -->
+        <div v-else-if="marketEmpty" class="placeholder dim">
+          待补 —— 集市是游戏内的周期性兑换活动，没有可用的官方接口，只能人工维护。<br />
+          把当期那几件填进去即可：
+          <code>npm run market:set 物品名1 物品名2</code>
         </div>
 
         <table v-else class="market">
@@ -151,8 +174,11 @@ onMounted(async () => {
               </td>
               <td>{{ formatMoney(r.item.price) }}</td>
               <td class="dim">{{ formatMoney(r.item.basePrice) }}</td>
-              <td :class="r.spread > 0 ? 'up' : 'down'">
-                {{ r.spread > 0 ? '+' : '' }}{{ formatMoney(r.spread) }}
+              <td :class="r.spread === null ? 'dim' : r.spread > 0 ? 'up' : 'down'">
+                <template v-if="r.spread === null">—</template>
+                <template v-else>
+                  {{ r.spread > 0 ? '+' : '' }}{{ formatMoney(r.spread) }}
+                </template>
               </td>
               <!--
                 ⭐ 占位。不是忘了做 —— 是在等手续费公式实测出来。

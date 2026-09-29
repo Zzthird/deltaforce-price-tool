@@ -70,6 +70,7 @@ import { listPriceSources } from './prices/registry'
 import type { Refresher } from './refresher'
 import { listItemSources } from './sources/registry'
 import type { Snapshot } from './store'
+import { loadMarket, resolveMarketKeys } from './market'
 
 export interface ServerDeps {
   cfg: AppConfig
@@ -376,6 +377,23 @@ export async function buildServer(deps: ServerDeps): Promise<FastifyInstance> {
       .map(([value, count]) => ({ value, label: value, count }))
       .sort((a, b) => b.count - a.count || a.value.localeCompare(b.value))
 
+    /**
+     * 集市当期物品 —— **人工维护**（没有官方接口）。
+     *
+     * 每次都重新读文件（不缓存）—— 这样运营者跑完 `npm run market:set`
+     * 刷新一下网页就生效 ✓，不用重启服务 ✓。文件很小 ✓。
+     */
+    const marketFile = await loadMarket(`${cfg.overridesDir}/market.json`)
+    const marketResolved = resolveMarketKeys(
+      marketFile.keys,
+      built.items.map((it) => ({ sourceItemId: it.sourceItemId, name: it.name })),
+    )
+    const market: ApiMetaResponse['market'] = {
+      updatedAt: marketFile.updatedAt,
+      itemIds: marketResolved.itemIds,
+      problems: [...marketFile.problems, ...marketResolved.problems],
+    }
+
     const body: ApiMetaResponse = {
       categories: countOptions(
         built.items,
@@ -398,6 +416,7 @@ export async function buildServer(deps: ServerDeps): Promise<FastifyInstance> {
         (it) => GRADE_CN[it.grade] ?? String(it.grade),
       ),
       maps,
+      market,
       sources: describeSources(snapshot),
       priceBasis: snapshot.meta.priceBasis,
       matchRate: built.joinStats.nameMatchRate,

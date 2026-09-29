@@ -573,6 +573,20 @@ export interface GradeStyle {
  * 所有选项都带 count，方便网页显示"道具 (711)"这样的数量提示。
  */
 export interface ApiMetaResponse {
+  /**
+   * ⭐ 集市当期物品 —— **人工维护**（集市没有可用的官方接口，详见 get-data/src/market.ts）。
+   *
+   * 只有 `itemIds`（官方 ID），因为网页已经有全部物品了 ✓ ——
+   * 让它自己按 ID 过滤即可，不用重复传一份物品数据。
+   *
+   * `itemIds` 为空 = 还没维护过（网页要如实显示"待补"，不要拿别的数据顶上）。
+   */
+  market: {
+    updatedAt: string | null
+    itemIds: string[]
+    /** 解析不了 / 同名歧义等问题，直接给用户看 */
+    problems: string[]
+  }
   categories: MetaOption[]
   subcategories: MetaOption[]
   thirdClasses: MetaOption[]

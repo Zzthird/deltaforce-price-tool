@@ -36,6 +36,20 @@ export const useMetaStore = defineStore('meta', () => {
 
   const labels = ref<LabelPalette | null>(null)
 
+  /**
+   * 集市当期物品（官方 ID 列表）—— 后端**人工维护**下发的，
+   * 见 get-data/src/market.ts 里的说明。
+   *
+   * ⚠️ 之前首页这张卡是按「现价 − 基准价」排序前 12 条 —— 那是我自己编的 ✗。
+   *    真实集市**只有官方指定的那几件**（当期为 2 件）。
+   *    用价格差排序代替官方清单，等于把猜的东西摆在事实的位置上 ✗。
+   *
+   * 空数组 = 还没维护过（网页应如实显示"待补"，不要拿别的数据顶上）。
+   */
+  const marketItemIds = ref<string[]>([])
+  const marketUpdatedAt = ref<string | null>(null)
+  const marketProblems = ref<string[]>([])
+
   const loading = ref(false)
   const error = ref<string | null>(null)
   const loaded = ref(false)
@@ -80,6 +94,9 @@ export const useMetaStore = defineStore('meta', () => {
       priceBasis.value = res.priceBasis
       matchRate.value = res.matchRate
       labels.value = res.labels
+      marketItemIds.value = res.market.itemIds
+      marketUpdatedAt.value = res.market.updatedAt
+      marketProblems.value = res.market.problems
       loaded.value = true
 
       // 告警在另一个接口里，顺手拿一下（拿不到不影响主流程）
@@ -107,6 +124,9 @@ export const useMetaStore = defineStore('meta', () => {
     matchRate,
     warnings,
     labels,
+    marketItemIds,
+    marketUpdatedAt,
+    marketProblems,
     loading,
     error,
     loaded,
