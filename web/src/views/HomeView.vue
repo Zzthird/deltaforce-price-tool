@@ -97,7 +97,7 @@ onMounted(async () => {
   <div class="home">
     <header class="head">
       <h1>一图流首页</h1>
-      <p class="sub">每天上线先看这三样：今天的密码 · 哪些值得买 · （制造推荐待接）</p>
+      <p class="sub">每天上线先看这三样：今天的密码 · 哪些值得买 · （制造推荐缺配方）</p>
     </header>
 
     <div class="grid">
@@ -137,23 +137,26 @@ onMounted(async () => {
         </p>
       </section>
 
-      <!-- ══════════ 特勤处制造推荐（占位）══════════ -->
+      <!-- ══════════ 特勤处制造推荐（缺"配方"那一步）══════════ -->
       <section class="df-card card">
         <div class="card-head">
           <h2>特勤处制造推荐</h2>
-          <el-tag size="small" type="info" effect="plain">待接</el-tag>
+          <el-tag size="small" type="info" effect="plain">缺配方</el-tag>
         </div>
 
         <p class="placeholder">
-          这一块需要官方的<b>制造接口</b>，实测它返回 <code>ret=101</code>（未授权）——
-          <b>必须用你的账号登录</b>才能取。
+          目标是像截图那样，按<b>制造台</b>（技术中心 / 工作台 / 制药台 / 防具台）
+          给出<strong>当前利润最高的产物</strong>。
         </p>
         <p class="placeholder dim">
-          另外那个接口给的是<b>配方</b>（材料 → 产物），没有现成的「小时利润 / 总利润」✗ ——
-          要把利润算出来，还得先有手续费公式（和左边"最高利润"是同一个前置条件）。
-        </p>
-        <p class="placeholder dim">
-          是否要用你的 QQ / 微信账号登录，涉及账号安全与游戏条款，由你决定。
+          <b>已完成的部分：</b>账号已登录、大区已绑定，制造接口（<code>365589</code>）
+          已能取到 —— 它返回 4 个制造台的状态，<b>与截图里的 4 个卡片一致</b> ✓。
+          <br />
+          <b>还差的部分：</b><b>配方</b>（材料 → 产物 + 产出数量）✗ ——
+          那个接口里没有；目前最可能在 <code>dfm/config.list</code>（它还差一个参数形状）。
+          <br />
+          有了配方才能算「当前利润 = 产物售价 − 材料成本 − 手续费」——
+          所以它和左边那个「最高利润」卡在等同一个前提（手续费公式）。
         </p>
       </section>
 
