@@ -70,7 +70,9 @@ import { listPriceSources } from './prices/registry'
 import type { Refresher } from './refresher'
 import { listItemSources } from './sources/registry'
 import type { Snapshot } from './store'
+import { authCookieHeader, loadAuth } from './auth'
 import { loadMarket, resolveMarketKeys } from './market'
+import { fetchMarketState as fetchMarket } from './market-api'
 
 export interface ServerDeps {
   cfg: AppConfig
@@ -257,6 +259,62 @@ export async function buildServer(deps: ServerDeps): Promise<FastifyInstance> {
   }
 
   /** 重建 Item 列表；没有快照时返回 null（调用方决定怎么回） */
+  /**
+   * 集市状态 —— **优先抓官方接口，失败才退回人工清单** ✓。
+   *
+   * 官方接口需要登录（军需处 action=3）；没登录时用 overrides/market.json。
+   * 这个降级顺序很重要：抓不到不代表"集市是空的"✗ —— 人工清单至少是
+   * 运营者亲手填的 ✓，比显示"待补"有用 ✓。
+   */
+  async function buildMarket(
+    cfg: AppConfig,
+    logger: Logger,
+    built: BuiltResult,
+  ): Promise<ApiMetaResponse['market']> {
+    const problems: string[] = []
+    const cred = await loadAuth(cfg)
+
+    if (cred) {
+      try {
+        const state = await fetchMarket(cfg, logger, { cookie: authCookieHeader(cred) })
+        return {
+          source: 'official',
+          updatedAt: state.fetchedAt,
+          itemIds: state.requiredItemIds,
+          offers: state.offers.map((o) => ({
+            itemId: o.itemId,
+            qty: o.qty,
+            requires: o.requires,
+            bound: o.bound,
+          })),
+          beginAt: state.beginAt,
+          endAt: state.endAt,
+          problems,
+        }
+      } catch (err) {
+        // 记下来但继续走人工清单 —— 用户要知道"这是退回去的"
+        problems.push(`抓官方集市失败：${err instanceof Error ? err.message : String(err)}`)
+      }
+    } else {
+      problems.push('未登录，集市用的是人工维护清单')
+    }
+
+    const marketFile = await loadMarket(`${cfg.overridesDir}/market.json`)
+    const marketResolved = resolveMarketKeys(
+      marketFile.keys,
+      built.items.map((it) => ({ sourceItemId: it.sourceItemId, name: it.name })),
+    )
+    return {
+      source: 'manual',
+      updatedAt: marketFile.updatedAt,
+      itemIds: marketResolved.itemIds,
+      offers: [],
+      beginAt: null,
+      endAt: null,
+      problems: [...problems, ...marketFile.problems, ...marketResolved.problems],
+    }
+  }
+
   async function builtOrNull(): Promise<{ built: BuiltResult; snapshot: Snapshot } | null> {
     const snapshot = refresher.getSnapshot()
     if (!snapshot) return null
@@ -383,16 +441,7 @@ export async function buildServer(deps: ServerDeps): Promise<FastifyInstance> {
      * 每次都重新读文件（不缓存）—— 这样运营者跑完 `npm run market:set`
      * 刷新一下网页就生效 ✓，不用重启服务 ✓。文件很小 ✓。
      */
-    const marketFile = await loadMarket(`${cfg.overridesDir}/market.json`)
-    const marketResolved = resolveMarketKeys(
-      marketFile.keys,
-      built.items.map((it) => ({ sourceItemId: it.sourceItemId, name: it.name })),
-    )
-    const market: ApiMetaResponse['market'] = {
-      updatedAt: marketFile.updatedAt,
-      itemIds: marketResolved.itemIds,
-      problems: [...marketFile.problems, ...marketResolved.problems],
-    }
+    const market = await buildMarket(cfg, logger, built)
 
     const body: ApiMetaResponse = {
       categories: countOptions(

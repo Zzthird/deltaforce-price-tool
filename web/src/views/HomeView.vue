@@ -32,19 +32,18 @@ const dailyStore = useDailyStore()
 const metaStore = useMetaStore()
 
 /**
- * 集市物品：**后端下发的官方指定清单**（人工维护）。
+ * 集市物品：**官方军需处接口抓的当期兑换需求** ✓
  *
- * ⚠️ 改成这样是因为原来那版是错的 ✗：
- *    原来按「现价 − 基准价」降序取前 12 条 —— 那是我自己编的排序 ✗，
- *    而真实集市**只有官方指定的那几件**（当期为 2 件：腕带、锈迹斑斑的海盗铜币）。
- *    用价格差排序代替官方清单，等于把猜的东西摆在事实的位置上 ✗。
+ * σσ 历史教训（两个，都很典型）：
+ *   ① 我最初做成「按现价−基准价降序前 12 条」—— 那是我自己编的排序 ✗，
+ *      把猜的东西摆在事实的位置上 ✓。
+ *   ② 接着我又写信说「集市没有可用的官方接口」✗ —— 也错了 ✗。
+ *      它就在军需处那个 chartId 里，只是要 `action=3`，而我只试了 `action=1`
+ *      （它返回一句**误导性的**「访问人数太多」）。
  *
- * 集市是游戏里的**周期性兑换活动**，一期可能一周也可能两周，看官方安排；
- * 实测排查过：参考项目用到的 9 个官方 method 里没有集市任何一个 ✗，
- * 所以没有可抓的数据源 → 只能人工维护 ✓。
- * 更新命令：`npm run market:set 腕带 锈迹斑斑的海盗铜币`
- *
- * 顺序保留清单里的顺序（不重排）—— 运营者填的顺序他/她心里有数。
+ * 现在：后端每次重读。有登录就抓官方 ✓，抓不到才退回人工清单 ✓。
+ * 官方数据里 **`itemIds` 是当期需要交的收集品（并集）** —— 那才是
+ * "该去摸什么"的答案；`offers` 是"能换到什么"。
  */
 const marketRows = computed(() => {
   const byId = new Map(itemsStore.items.map((it) => [it.sourceItemId, it]))
@@ -58,8 +57,31 @@ const marketRows = computed(() => {
     }))
 })
 
+/** 兑换项：把 ID 换成名字（换到的物品可能不在我们主数据里，就显示 ID）*/
+const marketOffers = computed(() => {
+  const byId = new Map(itemsStore.items.map((it) => [it.sourceItemId, it]))
+  const nameOf = (id: string): string => byId.get(id)?.name ?? `物品 ${id}`
+  return metaStore.marketOffers.map((o) => ({
+    key: `${o.itemId}-${o.requires.map((r) => r.itemId).join('_')}`,
+    productName: nameOf(o.itemId),
+    productQty: o.qty,
+    needText: o.requires.map((r) => `${nameOf(r.itemId)}×${r.qty}`).join(' + '),
+  }))
+})
+
+/** 活动倒计时（集市是周级活动，用"还剩几天"就够）*/
+const marketCountdown = computed(() => {
+  const end = metaStore.marketEndAt
+  if (end === null) return null
+  const ms = end * 1000 - Date.now()
+  if (ms <= 0) return '已结束'
+  const days = Math.floor(ms / 86400000)
+  const hours = Math.floor((ms % 86400000) / 3600000)
+  return days > 0 ? `还剩 ${days} 天 ${hours} 小时` : `还剩 ${hours} 小时`
+})
+
 const hasMarketData = computed(() => itemsStore.items.length > 0)
-/** 清单为空 = 还没维护过（要如实显示，不能拿别的数据顶上）*/
+/** 清单为空 = 还没拿到数据（要如实显示，不能拿别的数据顶上）*/
 const marketEmpty = computed(
   () => hasMarketData.value && marketRows.value.length === 0 && metaStore.marketItemIds.length === 0,
 )
@@ -139,20 +161,21 @@ onMounted(async () => {
       <section class="df-card card wide">
         <div class="card-head">
           <h2>集市物品</h2>
-          <span v-if="metaStore.marketUpdatedAt" class="dim small">
-            官方指定的当期兑换物 · 维护于 {{ metaStore.marketUpdatedAt.slice(0, 10) }}
+          <span class="dim small">
+            <template v-if="metaStore.marketSource === 'official'">官方军需处 · 当期需要交的收集品</template>
+            <template v-else>当期需要交的收集品（人工维护）</template>
+            <template v-if="marketCountdown"> · {{ marketCountdown }}</template>
           </span>
-          <span v-else class="dim small">官方指定的当期兑换物</span>
         </div>
 
         <div v-if="!hasMarketData" class="placeholder">
           还没取到物品数据。等一会儿或去「物资价值榜」页看看状态。
         </div>
 
-        <!-- 还没维护过：如实说，不拿别的数据顶上 -->
+        <!-- 没拿到清单：如实说 -->
         <div v-else-if="marketEmpty" class="placeholder dim">
-          待补 —— 集市是游戏内的周期性兑换活动，没有可用的官方接口，只能人工维护。<br />
-          把当期那几件填进去即可：
+          待补 —— 没能从官方接口拿到当期清单。<br />
+          集市需要登录才能读（军需处接口），或手工填：
           <code>npm run market:set 物品名1 物品名2</code>
         </div>
 
@@ -195,6 +218,25 @@ onMounted(async () => {
             </tr>
           </tbody>
         </table>
+
+        <!--
+          ⭐ 兑换项："交什么 → 得什么"。
+          官方数据里同一期存在「两件都要」「只要 A」「只要 B」三种，
+          所以上面那张表是**并集**（要摸什么），这里是**具体菜单** ✓
+        -->
+        <div v-if="marketOffers.length > 0" class="offers">
+          <div class="offers-title dim small">
+            当期能换什么（共 {{ marketOffers.length }} 项）：
+          </div>
+          <ul>
+            <li v-for="o in marketOffers" :key="o.key">
+              <span class="need">{{ o.needText }}</span>
+              <span class="arrow">→</span>
+              <span class="got">{{ o.productName }}</span>
+              <span v-if="o.productQty > 1" class="dim">×{{ o.productQty }}</span>
+            </li>
+          </ul>
+        </div>
 
         <p class="note dim small">
           「现价」来自 <a href="https://moligod.com/trade" target="_blank" rel="noreferrer noopener">moligod</a>
@@ -246,6 +288,40 @@ h1 {
 
 .card {
   padding: 12px 14px;
+}
+
+/* ── 集市兑换项 ── */
+.offers {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--df-border);
+}
+.offers-title {
+  margin-bottom: 6px;
+}
+.offers ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 4px 18px;
+}
+.offers li {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 13px;
+  padding: 2px 0;
+}
+.offers .need {
+  color: var(--df-text-dim);
+}
+.offers .arrow {
+  color: var(--df-accent);
+}
+.offers .got {
+  font-weight: 600;
 }
 
 /* 集市物品那横跨两列 */

@@ -17,6 +17,7 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import type {
+  ApiMetaResponse,
   LabelPalette,
   MetaOption,
   SourceStatus,
@@ -49,6 +50,11 @@ export const useMetaStore = defineStore('meta', () => {
   const marketItemIds = ref<string[]>([])
   const marketUpdatedAt = ref<string | null>(null)
   const marketProblems = ref<string[]>([])
+  /** `official` = 官方接口抓的；`manual` = 人工清单 */
+  const marketSource = ref<'official' | 'manual'>('manual')
+  const marketOffers = ref<ApiMetaResponse['market']['offers']>([])
+  const marketBeginAt = ref<number | null>(null)
+  const marketEndAt = ref<number | null>(null)
 
   const loading = ref(false)
   const error = ref<string | null>(null)
@@ -97,6 +103,10 @@ export const useMetaStore = defineStore('meta', () => {
       marketItemIds.value = res.market.itemIds
       marketUpdatedAt.value = res.market.updatedAt
       marketProblems.value = res.market.problems
+      marketSource.value = res.market.source
+      marketOffers.value = res.market.offers
+      marketBeginAt.value = res.market.beginAt
+      marketEndAt.value = res.market.endAt
       loaded.value = true
 
       // 告警在另一个接口里，顺手拿一下（拿不到不影响主流程）
@@ -127,6 +137,10 @@ export const useMetaStore = defineStore('meta', () => {
     marketItemIds,
     marketUpdatedAt,
     marketProblems,
+    marketSource,
+    marketOffers,
+    marketBeginAt,
+    marketEndAt,
     loading,
     error,
     loaded,

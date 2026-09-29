@@ -582,9 +582,31 @@ export interface ApiMetaResponse {
    * `itemIds` 为空 = 还没维护过（网页要如实显示"待补"，不要拿别的数据顶上）。
    */
   market: {
+    /**
+     * `official` = 从官方军需处接口抓的（需登录）；
+     * `manual`   = 退回到人工维护的清单（overrides/market.json）。
+     */
+    source: 'official' | 'manual'
+    /** 抓取时间或人工维护时间 */
     updatedAt: string | null
+    /**
+     * ⭐ **当期需要交的收集品**（并集、去重）—— 这才是"集市物品"。
+     *
+     * ⚠️ 不是某一个兑换项的所需 —— 实测同一期里存在
+     *    「两件都要」「只要 A」「只要 B」三种，所以要给并集。
+     */
     itemIds: string[]
-    /** 解析不了 / 同名歧义等问题，直接给用户看 */
+    /** 兑换项（能换到什么）。`official` 才有；`manual` 时为空数组。 */
+    offers: Array<{
+      itemId: string
+      qty: number
+      requires: Array<{ itemId: string; qty: number }>
+      bound: boolean
+    }>
+    /** 活动起止（Unix 秒）；人工清单没有时间信息时为 null */
+    beginAt: number | null
+    endAt: number | null
+    /** 抓取/解析/键解析的问题，直接给用户看 */
     problems: string[]
   }
   categories: MetaOption[]
