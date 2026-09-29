@@ -20,6 +20,7 @@
  */
 
 import type {
+  ApiDailyResponse,
   ApiErrorCode,
   ApiErrorResponse,
   ApiHealthResponse,
@@ -150,6 +151,14 @@ export const api = {
 
   /** 存活与新鲜度。这个接口**不会**触发抓取，可以放心频繁调 */
   health: (): Promise<ApiHealthResponse> => request<ApiHealthResponse>('/health'),
+
+  /**
+   * 每日地图密码。
+   *
+   * ⚠️ 它和物品/价格是**两套无关的数据** —— 后端刻意让这个接口
+   *    不触发物品抓取（打开首页不该顺带拉 1.4MB 的物品列表）。
+   */
+  daily: (): Promise<ApiDailyResponse> => request<ApiDailyResponse>('/daily'),
 
   /**
    * 手动刷新（网页上的"刷新"按钮）。

@@ -94,6 +94,8 @@ function defaultFetch(items?: SourceItem[]): () => Promise<FetchEverythingResult
 async function setup(options: {
   fetch?: (cfg: AppConfig, logger: ReturnType<typeof createLogger>) => Promise<FetchEverythingResult>
   cfg?: Partial<AppConfig>
+  /** 注入式每日密码 —— 不注入的话 /api/daily 会真的去打官方接口 ✗ */
+  daily?: () => Promise<{ secrets: Array<{ mapId: number | null; mapName: string; secret: string }>; fetchedAt: string }>
 } = {}): Promise<{ app: FastifyInstance; refresher: Refresher; cfg: AppConfig }> {
   const cfg = makeTestConfig(dir, options.cfg)
   const logger = createLogger('silent')
@@ -104,7 +106,19 @@ async function setup(options: {
     fetch: options.fetch ?? defaultFetch(),
   })
   await refresher.init()
-  const app = await buildServer({ cfg, logger, refresher, now: () => nowMs })
+  const app = await buildServer({
+    cfg,
+    logger,
+    refresher,
+    now: () => nowMs,
+    // 默认给一个假实现 —— 保证测试永不打网络
+    daily:
+      options.daily ??
+      (async () => ({
+        secrets: [{ mapId: 1, mapName: '零号大坝', secret: '0178' }],
+        fetchedAt: new Date(nowMs).toISOString(),
+      })),
+  })
   current = refresher
   return { app, refresher, cfg }
 }
@@ -553,5 +567,57 @@ describe('兜底路由', () => {
     const body = res.json<ApiErrorResponse>()
     expect(body.error).toContain('/api/nope')
     expect(body.detail).toContain('/api/items')
+  })
+})
+
+
+/* ══════════════════════ GET /api/daily（每日密码） ══════════════════════ */
+
+describe('GET /api/daily', () => {
+  it('返回密码列表与取数时刻', async () => {
+    const { app } = await setup({
+      daily: async () => ({
+        secrets: [
+          { mapId: 1, mapName: '零号大坝', secret: '1690' },
+          { mapId: 2, mapName: '长弓溪谷', secret: '0178' },
+        ],
+        fetchedAt: '2026-09-29T00:00:00.000Z',
+      }),
+    })
+
+    const res = await app.inject({ method: 'GET', url: '/api/daily' })
+    expect(res.statusCode).toBe(200)
+
+    const body = res.json<{ secrets: unknown[]; fetchedAt: string }>()
+    expect(body.secrets).toHaveLength(2)
+    expect(body.fetchedAt).toBe('2026-09-29T00:00:00.000Z')
+    // ⚠️ 前导零必须原样传下去
+    expect(JSON.stringify(body.secrets)).toContain('0178')
+  })
+
+  it('⭐ 取不到时回 503（而不是一个空列表 —— 那会让人以为今天没密码）', async () => {
+    const { app } = await setup({
+      daily: async () => {
+        throw new Error('官方接口返回 HTTP 500')
+      },
+    })
+
+    const res = await app.inject({ method: 'GET', url: '/api/daily' })
+    expect(res.statusCode).toBe(503)
+    expect(res.json().code).toBe('source_error')
+    expect(res.json().error).toContain('HTTP 500')
+  })
+
+  it('⭐ 取密码**不会**触发物品/价格的抓取（两套数据无关）', async () => {
+    let fetchCalls = 0
+    const { app } = await setup({
+      fetch: async () => {
+        fetchCalls += 1
+        return defaultFetch()()
+      },
+    })
+
+    await app.inject({ method: 'GET', url: '/api/daily' })
+    expect(fetchCalls).toBe(0)
   })
 })

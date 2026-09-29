@@ -633,6 +633,26 @@ export interface ApiHealthResponse {
   consecutiveFailures: number
 }
 
+/**
+ * GET /api/daily —— 每日地图密码。
+ *
+ * ⚠️ 这是**另一类数据**：它每天变一次，不进快照、不进历史、不参与任何判定。
+ *    所以后端用一个独立的轻量缓存（半小时 TTL），不塞进 snapshot.json。
+ *
+ * ⚠️ `secret` 是**字符串**（如 `"0178"`）—— 它可能有前导零，
+ *    转成数字会变成 `178`（少一位，看错）。
+ */
+export interface ApiDailyResponse {
+  secrets: Array<{
+    /** 官方给的地图 id；字段缺失时为 null */
+    mapId: number | null
+    mapName: string
+    secret: string
+  }>
+  /** 这份密码是什么时候取到的（ISO 8601）*/
+  fetchedAt: string
+}
+
 /** POST /api/refresh 的响应 */
 export interface ApiRefreshResponse {
   started: boolean

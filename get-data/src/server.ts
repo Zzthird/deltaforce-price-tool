@@ -43,6 +43,7 @@ import type {
   ApiItemsResponse,
   ApiMetaResponse,
   ApiRefreshResponse,
+  ApiDailyResponse,
   ApiSourcesResponse,
   GradeStyle,
   Item,
@@ -63,6 +64,7 @@ import {
   SEASONAL_CN,
 } from './constants'
 import type { Logger } from './logger'
+import { getDailySecrets, type DailySecrets } from './daily'
 import { buildFromSnapshot, type BuiltResult } from './pipeline'
 import { listPriceSources } from './prices/registry'
 import type { Refresher } from './refresher'
@@ -75,6 +77,14 @@ export interface ServerDeps {
   refresher: Refresher
   /** 注入式时钟（毫秒时间戳）。测试用假时钟，不依赖真实时间。 */
   now?: () => number
+  /**
+   * 注入式的"取每日密码"函数。默认是真的去官方接口取。
+   *
+   * ⭐ 为什么必须可注入：本项目的测试**一律不发网络请求**（快、不依赖外网、
+   *    不打扰源站 —— 对一个"尊重数据源"的项目尤其重要）。
+   *    这和刷新器的注入式抓取是同一个做法。
+   */
+  daily?: () => Promise<DailySecrets>
 }
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -116,6 +126,7 @@ function countOptions(
 export async function buildServer(deps: ServerDeps): Promise<FastifyInstance> {
   const { cfg, logger, refresher } = deps
   const now = deps.now ?? Date.now
+  const loadDaily = deps.daily ?? (() => getDailySecrets(cfg, logger))
   const startedAtMs = now()
 
   const app = Fastify({
@@ -452,6 +463,26 @@ export async function buildServer(deps: ServerDeps): Promise<FastifyInstance> {
       consecutiveFailures: state.consecutiveFailures,
     }
     return reply.code(body.ok ? 200 : 503).send(body)
+  })
+
+  /* ══════════════════════════════════════════════════════════════════
+   * GET /api/daily —— 每日地图密码
+   * ══════════════════════════════════════════════════════════════════
+   *
+   * ⚠️ 刻意**不触发**物品/价格的按需刷新 —— 密码和那套数据没有关系，
+   *    不该因为打开首页就顺带抓一遍 1.4MB 的物品列表。
+   *    （它有自己的半小时缓存，见 daily.ts）
+   */
+  app.get('/api/daily', async (_req, reply) => {
+    try {
+      const data = await loadDaily()
+      const body: ApiDailyResponse = { secrets: data.secrets, fetchedAt: data.fetchedAt }
+      return reply.send(body)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err)
+      // 源站出错 → 503，让前端显示"暂时取不到"，而不是一个空列表
+      return reply.code(503).send(errorBody('source_error', message))
+    }
   })
 
   /* ══════════════════════════════════════════════════════════════════
