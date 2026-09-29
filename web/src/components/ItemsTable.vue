@@ -161,6 +161,25 @@ function mapsTooltip(row: ItemRow): string {
   return describeProvenance(row.item).full
 }
 
+/**
+ * ⭐ 点整行空白处就能展开/收起详情（用户要求）。
+ *
+ * 原来只能点最右边那个小三角 —— 目标太小、离内容又远，
+ * 用户原话：「我想做到的是点击一行的空白处就可以触发详细数据，
+ * 而不是点击右边的小三角」。
+ *
+ * ⚠️ 必须挡住交互元素上的点击，否则会**双重切换**：
+ *    `@row-click` 会冒泡，点小三角时它自己的处理函数先切一次、
+ *    接着行点击又切一次 → 看起来像"点了没反应"。
+ *    （这类 bug 很隐蔽，因为它只在"效果互相抵消"时才显形。）
+ */
+function onRowClick(row: ItemRow, _column: unknown, event: Event): void {
+  const target = event.target as HTMLElement | null
+  // 按钮 / 链接 / 输入框自己会处理点击，不要跟着切换
+  if (target?.closest('button, a, input')) return
+  tableRef.value?.toggleRowExpansion(row)
+}
+
 function verdictReason(row: ItemRow): string {
   if (!row.item.listable) return '不可上架交易行 —— 价格没有参考意义，无法判定'
   if (row.item.availability !== 'lootable') {
@@ -209,6 +228,7 @@ const CHANGE_CLASS: Readonly<Record<string, string>> = {
         height="100%"
         :default-sort="defaultSort"
         @sort-change="onSortChange"
+        @row-click="onRowClick"
       >
         <!-- 全局序号：跨页连续，而不是每页都从 1 开始 -->
         <el-table-column label="#" width="54" align="right">
@@ -387,7 +407,11 @@ const CHANGE_CLASS: Readonly<Record<string, string>> = {
               <div v-if="row.item.description" class="desc">{{ row.item.description }}</div>
 
               <el-descriptions :column="4" size="small" border>
-                <el-descriptions-item label="官方ID">{{ row.item.sourceItemId }}</el-descriptions-item>
+                <!--
+                  ⚠️ 「官方ID」已删（用户说「官方id不重要」）——
+                  它只在排查数据源问题时才需要，不该占详情面板最显眼的位置。
+                  真要用的话，上面搜索框支持按 ID 搜。
+                -->
                 <el-descriptions-item label="重量">{{ row.item.weight ?? '—' }}</el-descriptions-item>
                 <el-descriptions-item label="官方均价">
                   <!-- 官方均价**仅供参考、不参与判定**：官方小程序自己写着"实时价请去游戏内看" -->
@@ -401,7 +425,20 @@ const CHANGE_CLASS: Readonly<Record<string, string>> = {
                   <!-- 子类列从表格里去掉了（弹药名就含口径，重复），但信息留在这里 -->
                   {{ row.item.subcategoryCn ?? '—' }}
                 </el-descriptions-item>
-                <el-descriptions-item label="细类">{{ row.item.thirdClassCn ?? '—' }}</el-descriptions-item>
+                <!--
+                  ⭐ 「细分」优先取 `itemSubtype`，回退 `thirdClass`。
+
+                  用户反馈：「细类显示未更新」—— 原来这里只显示 thirdClass，
+                  而**收集品的细分其实在 `itemSubtype` 里**（实测 9 个二级分类：
+                  工艺藏品/资料情报/家居物品/电子物品/工具材料/医疗道具/
+                  能源燃料/身份牌/生活用品），所以收藏品那一栏永远显示「—」✗。
+
+                  两者在实测数据里互斥（收集品有 itemSubtype 没 thirdClass，
+                  消耗品反之），所以合成一栏就够。
+                -->
+                <el-descriptions-item label="细分">
+                  {{ row.item.itemSubtype ?? row.item.thirdClassCn ?? '—' }}
+                </el-descriptions-item>
                 <el-descriptions-item label="出产地来源">
                   {{
                     row.item.provenanceSource
@@ -410,7 +447,14 @@ const CHANGE_CLASS: Readonly<Record<string, string>> = {
                       : '—'
                   }}
                 </el-descriptions-item>
-                <el-descriptions-item label="别名">{{ row.item.alias ?? '—' }}</el-descriptions-item>
+                <!--
+                  ⚠️ 别名为空时**整项不渲染**（用户要求）。
+                  原来会显示一个「别名 —」，四个字占一格却什么信息都没有 ✗。
+                  用 `v-if` 让这一格彻底消失，后面的项会自动往前占位。
+                -->
+                <el-descriptions-item v-if="row.item.alias" label="别名">
+                  {{ row.item.alias }}
+                </el-descriptions-item>
 
                 <el-descriptions-item label="昨日均价">
                   {{ formatExact(row.item.yesterdayAvg) }}

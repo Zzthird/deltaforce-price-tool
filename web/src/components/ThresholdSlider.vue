@@ -32,7 +32,7 @@ import { computed } from 'vue'
 import type { LootVerdict } from '@deltaforce/shared'
 import { useRulesStore, VERDICT_LABEL, VERDICT_TAG_TYPE } from '@/stores/rules'
 import { useFiltersStore } from '@/stores/filters'
-import { formatExact, formatMoney } from '@/utils/format'
+import { formatMoney } from '@/utils/format'
 
 const rules = useRulesStore()
 const filters = useFiltersStore()
@@ -168,17 +168,22 @@ const VERDICT_HINT: Readonly<Record<LootVerdict, string>> = {
         <el-tag type="danger" size="small" effect="dark">必摸</el-tag>
         ≥
       </span>
-      <el-tooltip :content="`精确值：${formatExact(rules.mustThreshold)} 哈夫币`" placement="top">
-        <el-input-number
-          v-model="mustInput"
-          class="num-input"
-          size="small"
-          :min="INPUT_MIN"
-          :max="INPUT_MAX"
-          :step="1000"
-          :controls="false"
-        />
-      </el-tooltip>
+      <!--
+        ⚠️ 这里**刻意没有 tooltip**。
+        之前给输入框套了一层"精确值：xxx 哈夫币"的悬浮提示 —— 而输入框
+        本身显示的就是精确值，提示内容完全重复 ✗，更糟的是鼠标一移上去
+        就弹出来**盖住输入框**，想点进去改数字时很碍事（用户反馈：
+        「删除鼠标悬停在第一张图的文本，影响操作」）。
+      -->
+      <el-input-number
+        v-model="mustInput"
+        class="num-input"
+        size="small"
+        :min="INPUT_MIN"
+        :max="INPUT_MAX"
+        :step="1000"
+        :controls="false"
+      />
       <span class="unit dim small">{{ formatMoney(rules.mustThreshold) }}</span>
       <el-slider
         v-model="mustLog"
@@ -196,17 +201,16 @@ const VERDICT_HINT: Readonly<Record<LootVerdict, string>> = {
         <el-tag type="info" size="small" effect="dark">跳过</el-tag>
         &lt;
       </span>
-      <el-tooltip :content="`精确值：${formatExact(rules.skipThreshold)} 哈夫币`" placement="top">
-        <el-input-number
-          v-model="skipInput"
-          class="num-input"
-          size="small"
-          :min="INPUT_MIN"
-          :max="INPUT_MAX"
-          :step="500"
-          :controls="false"
-        />
-      </el-tooltip>
+      <!-- 同上：刻意不加 tooltip -->
+      <el-input-number
+        v-model="skipInput"
+        class="num-input"
+        size="small"
+        :min="INPUT_MIN"
+        :max="INPUT_MAX"
+        :step="500"
+        :controls="false"
+      />
       <span class="unit dim small">{{ formatMoney(rules.skipThreshold) }}</span>
       <el-slider
         v-model="skipLog"
