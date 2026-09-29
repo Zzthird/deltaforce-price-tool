@@ -10,6 +10,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   analyzeFee,
+  analyzeRatioModel,
   compareAcrossItems,
   feeOf,
   findClosestItem,
@@ -83,14 +84,23 @@ describe('parseSampleLine —— 一行录入', () => {
     expect(s).toMatchObject({ item: 'D6 战术头盔', price: 10000, net: 9000 })
   })
 
-  it('直接给手续费：fee=100', () => {
-    const s = parseSampleLine('海洋之泪 1000 fee=100')
-    expect(s).toMatchObject({ item: '海洋之泪', price: 1000, net: 900 })
+  it('⭐ 带参考价（推荐写法）—— 参考价是公式的自变量', () => {
+    const s = parseSampleLine('锈迹斑斑的海盗铜币 2350 2013 2860')
+    expect(s).toMatchObject({
+      item: '锈迹斑斑的海盗铜币',
+      price: 2350,
+      net: 2013,
+      ref: 2860,
+    })
   })
 
-  it('直接给比例：r=10%', () => {
-    const s = parseSampleLine('海洋之泪 1,000 r=10%')
-    expect(s).toMatchObject({ item: '海洋之泪', price: 1000, net: 900 })
+  it('带键名也认（net= / ref=）', () => {
+    const s = parseSampleLine('海洋之泪 1000 net=900 ref=800')
+    expect(s).toMatchObject({ item: '海洋之泪', price: 1000, net: 900, ref: 800 })
+  })
+
+  it('不抄参考价也行（ref 为 null）', () => {
+    expect(parseSampleLine('海洋之泪 1000 900')?.ref).toBeNull()
   })
 
   it('格式不对 → null', () => {
@@ -296,5 +306,69 @@ describe('⭐ findClosestItem —— 手填名字 vs 数据里的名字', () => 
 
   it('标点与大小写差异算同一个（.300BLK vs .300 blk）', () => {
     expect(findClosestItem('.300 blk', ['.300BLK']).how).toBe('normalized')
+  })
+})
+
+
+/* ══════════ ⭐ 比值模型（实测找到的真正自变量） ══════════ */
+
+/**
+ * 用户手填 113 条样本，按「挂价」怎么拟合都对不上。
+ * 直到他发了游戏截图，看到界面上有「参考价格 2,860」——
+ * 按「挂价 ÷ 参考价」重排，U 形规律立刻出来（最低点正好在比值 ≈ 1）。
+ *
+ * 更强的推论：如果费率只取决于比值，那么净收益 = 参考价 × k×(1−费率(k))，
+ * 也就是 **最高利润 = 参考价 × 一个普适常数** ——
+ * 所以不需要"每个物品都测"，只要把这个常数定准。
+ */
+describe('⭐ analyzeRatioModel —— 按「挂价 ÷ 参考价」分析', () => {
+  /** 造一条带参考价的样本：给定比值与费率，反推到手 */
+  function mkRatio(item: string, ref: number, k: number, rate: number): FeeSample {
+    const price = Math.round(ref * k)
+    return { item, price, net: price - Math.round(price * rate), ref, at: '' }
+  }
+
+  it('样本不足时明确提示"要把参考价抄上"', () => {
+    const a = analyzeRatioModel([mkRatio('X', 1000, 1, 0.1)])
+    expect(a.ready).toBe(false)
+    expect(a.summary).toContain('参考价')
+  })
+
+  it('⭐ 复现实测的 U 形：比值 ≈1 时费率最低', () => {
+    const a = analyzeRatioModel([
+      mkRatio('X', 1000, 0.1, 0.35), // 远低
+      mkRatio('X', 1000, 0.5, 0.2),
+      mkRatio('X', 1000, 1.0, 0.13), // ★ 最低
+      mkRatio('X', 1000, 3.0, 0.15),
+      mkRatio('X', 1000, 6.0, 0.56),
+      mkRatio('X', 1000, 10.0, 0.82), // 远高
+    ])
+    expect(a.ready).toBe(true)
+    // 比值 1.0 那一段的费率应当是最低的
+    const near1 = a.points.find((p) => Math.abs(p.k - 1) < 0.01)!
+    const far = a.points.find((p) => p.k > 9)!
+    expect(near1.rate).toBeLessThan(far.rate)
+  })
+
+  it('⭐ 找出"净收益 ÷ 参考价"最大的那个点', () => {
+    const a = analyzeRatioModel([
+      mkRatio('X', 2860, 1.0, 0.13), // 净 = 0.87 ref
+      mkRatio('X', 2860, 5.2, 0.36), // 净 = 3.33 ref ← 最大
+      mkRatio('X', 2860, 12.0, 0.82), // 净 = 2.16 ref
+    ])
+    expect(a.best?.k).toBeCloseTo(5.2, 1)
+    expect(a.best?.value).toBeCloseTo(3.33, 1)
+    expect(a.summary).toContain('最高净收益')
+  })
+
+  it('没有参考价的样本被跳过（不编一个）', () => {
+    const a = analyzeRatioModel([
+      { item: 'X', price: 1000, net: 900, at: '' },
+      { item: 'X', price: 2000, net: 1800, at: '' },
+      { item: 'X', price: 3000, net: 2700, at: '' },
+      mkRatio('X', 1000, 1, 0.13),
+    ])
+    expect(a.points).toHaveLength(1)
+    expect(a.ready).toBe(false)
   })
 })

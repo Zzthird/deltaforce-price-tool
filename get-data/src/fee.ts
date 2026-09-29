@@ -26,29 +26,86 @@
  * 如果变，再二分逼近档位边界（`suggestNextProbes` 会算出来）。
  */
 
-/** 一次挂单实测 */
+/**
+ * 一次挂单实测。
+ *
+ * ⚠️⚠️ **列的含义是实测纠正过的**（2026-09-29，用户发了游戏截图）：
+ *
+ *   上架界面显示的是：
+ *     出售总价              2,350   ← 挂价
+ *     手续费                  266   ← ★ 单独一笔
+ *     参考价格              2,860   ← ★ 游戏自己给的参考价
+ *     保证金(在上架时收取)       71   ← ★ 另一笔，且**上架时就扣**
+ *     预计总收益    2350   2,013   = 2350 − 266 − 71 ✓
+ *
+ *   第一版工具把用户填的第三个数当成"预计到手"，于是算出的"费率"
+ *   其实是 `(挂价 − 手续费)/挂价` —— **含义完全反了** ✗，
+ *   那 100 多条样本白测了。
+ *
+ *   所以现在**分开记**：手续费与保证金是两笔不同规则的费用 ✓
+ */
 export interface FeeSample {
   /** 物品名（用户录入时敲的）*/
   item: string
   /** 挂价（哈夫币）*/
   price: number
-  /** 交易行显示的「预计到手」*/
+  /**
+   * 手续费（成功卖出后扣）。
+   * ⚠️ 旧样本没有这个字段（那时列的含义不明）—— 分析时会单独标出来。
+   */
+  fee?: number
+  /** 保证金（**上架时**就收）*/
+  margin?: number
+  /** 游戏界面上的「参考价格」 */
+  ref?: number | null
+  /**
+   * 成交后实际到手 = 挂价 − 手续费 − 保证金。
+   * 新格式由上面三项算出；旧格式（只有 net）保留原值以兼容历史数据。
+   */
   net: number
   /** 实测时间（ISO 8601）*/
   at: string
   /** 若能在本地快照里找到该物品，带回它的品质与大类 —— 用于判断费率是否与它们有关 */
   grade?: number
   category?: string
+  /** 这份是"列含义不明"的旧样本（分析时要排除）*/
+  legacy?: boolean
 }
 
-/** 实际被抽走的钱 */
+/** 手续费率（相对挂价）。没有 fee 字段（旧样本）时返回 null —— **不猜**。 */
+export function feeRateOf(s: FeeSample): number | null {
+  if (typeof s.fee !== 'number' || s.price === 0) return null
+  return s.fee / s.price
+}
+
+/** 保证金率（相对挂价）*/
+export function marginRateOf(s: FeeSample): number | null {
+  if (typeof s.margin !== 'number' || s.price === 0) return null
+  return s.margin / s.price
+}
+
+/** 两笔费用合计 */
+export function totalCostOf(s: FeeSample): number | null {
+  if (typeof s.fee !== 'number' || typeof s.margin !== 'number') return null
+  return s.fee + s.margin
+}
+
+/**
+ * 实际被抽走的钱（手续费 + 保证金）。
+ *
+ * 新格式：直接相加 ✓
+ * 旧格式（只有 net）：`挂价 − net` —— ⚠️ 但那是**含义不明**的（用户当时填的
+ * 可能是手续费而不是到手），所以旧样本一律标 `legacy`，分析时排除。
+ */
 export function feeOf(s: FeeSample): number {
-  return s.price - s.net
+  const total = totalCostOf(s)
+  return total ?? s.price - s.net
 }
 
 /** 抽走比例（0~1）*/
 export function rateOf(s: FeeSample): number {
-  return s.price === 0 ? 0 : (s.price - s.net) / s.price
+  if (s.price === 0) return 0
+  return feeOf(s) / s.price
 }
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -332,6 +389,32 @@ export function analyzeFee(samples: readonly FeeSample[]): FeeAnalysis {
       ? `\n  建议下一个样本（二分逼近档位边界）：${nextProbes.map((n) => n.toLocaleString('zh-CN')).join(' 或 ')}`
       : ''
 
+  /**
+   * ⚠️⚠️ **档位太多 = 自变量选错了** —— 这一条是拿真实时间换来的教训。
+   *
+   * 用户手填 113 条样本，这个函数给他拟出了 20 多个"档位"，
+   * 每个档位只覆盖几十块钱的区间 ✗ —— 而真实的手续费机制不会这么碎 ✗。
+   * 他因此一直以为"阶梯确实存在、只是数据不够"，又去测了几十条 ✗。
+   *
+   * 真相是：**自变量不是挂价，而是「挂价 ÷ 参考价」**（见 analyzeRatioModel）。
+   * 按错误的变量拟合，任何曲线都会被切成很多"档位" ✗。
+   *
+   * 所以档位一多就必须说清"这不像真阶梯，先怀疑自变量"，
+   * 而不是让用户去补更多数据 ✗。
+   */
+  const tooManyTiers = tiers.length > 5
+  const hint = tooManyTiers
+    ? [
+        '',
+        `  ⚠️⚠️ 拟合出 ${tiers.length} 个档位 —— 真实的手续费机制不会这么碎 ✗。`,
+        '     比起"再测更多数据"，更该先怀疑【自变量选错了】：',
+        '       · 是不是该用「挂价 ÷ 参考价」？',
+        '         （实测确认过：手续费与保证金就是按这个算的）',
+        '       · 那就把游戏界面上的「参考价格」也抄进来：挂价 到手 参考价',
+        '     换对变量之后，规律会简单得多。',
+      ].join('\n')
+    : ''
+
   return {
     kind: 'tiered',
     tiers,
@@ -339,10 +422,13 @@ export function analyzeFee(samples: readonly FeeSample[]): FeeAnalysis {
     sampleCount: sorted.length,
     mismatches,
     nextProbes,
-    summary:
-      `阶梯比例（${sorted.length} 个样本，${fit} 个吻合）：\n` +
-      `    挂价区间              费率\n${tierLines}\n` +
+    summary: [
+      `按「挂价」拟合（${sorted.length} 个样本，${fit} 个吻合）：`,
+      '    挂价区间              费率',
+      tierLines,
       `  ⚠️ 边界只是"落在两个已测价格之间"，还不是准确值。${nextLine}`,
+      hint,
+    ].join('\n'),
   }
 }
 
@@ -454,117 +540,12 @@ export function parseAmount(raw: string): number | null {
  * ⚠️ 物品名可能含空格（如「D6 战术头盔」），所以**从后往前**取两个数值字段，
  *    剩下来的整段才是物品名。反过来解析的话名字会被切碎。
  */
-export function parseSampleLine(line: string, now: Date = new Date()): FeeSample | null {
-  const t = line.trim()
-  if (t === '') return null
-
-  const rest = t.split(/\s+/)
-  if (rest.length < 3) return null
-
-  const third = rest.pop()!
-  const second = rest.pop()!
-  const item = rest.join(' ').trim()
-  if (item === '') return null
-
-  const price = parseAmount(second)
-  if (price === null) return null
-
-  let net: number | null = null
-  let feeOverride: number | null = null
-
-  if (/^fee=/i.test(third)) {
-    feeOverride = parseAmount(third.slice(4))
-  } else if (/^r=/i.test(third)) {
-    const pct = Number(third.slice(2).replace('%', ''))
-    if (Number.isFinite(pct)) feeOverride = Math.round((price * pct) / 100)
-  } else {
-    net = parseAmount(third)
-  }
-
-  if (net === null && feeOverride === null) return null
-  if (net === null) net = price - feeOverride!
-
-  return { item, price, net, at: now.toISOString() }
-}
-
-
 /* ══════════════════════════════════════════════════════════════════════
- * 交互录入（带"当前物品"）
- * ══════════════════════════════════════════════════════════════════════
- *
- * 为什么需要"当前物品"这个概念：
- * 挂单时你是在**反复改同一个物品的价格**（1000 → 10000 → 100000），
- * 每行都重打物品名很累。所以：
- *
- *   第一行：`海洋之泪 1000 900`   ← 带名字，顺便把"当前物品"设成它
- *   之后：  `10000 9000`          ← 只敲两个数字 ✓
- *   换物品：`item D6 战术头盔`     ← 显式切换（不记录样本）
- *
- * 判断规则很简单：**两个字段用当前物品，三个以上字段的第一个是物品名**。
- */
-export type ParsedEntry =
-  | { kind: 'sample'; sample: FeeSample }
-  | { kind: 'switch'; item: string }
-  | { kind: 'error'; message: string }
 
 /** 切换当前物品的两种写法：`item 名字` 或 `@名字` */
-export function parseItemSwitch(line: string): string | null {
-  const t = line.trim()
-  const m = /^(?:item|@)\s*(.+)$/i.exec(t)
-  return m && m[1] ? m[1].trim() : null
-}
+/* ══════════════════════════════════════════════════════════════════════
 
-/**
- * 解析一行录入。`currentItem` 是"当前物品"（可空）。
- *
- * ⚠️ 返回的是**判别联合**而不是 `FeeSample | null`：
- *    "切换物品"和"输入有错"是两件完全不同的事，
- *    都压成 `null` 的话，界面就没法给出有用的提示了。
- */
-export function parseEntry(
-  line: string,
-  currentItem: string | null,
-  now: Date = new Date(),
-): ParsedEntry {
-  const t = line.trim()
-  if (t === '') return { kind: 'error', message: '空行' }
-
-  const switched = parseItemSwitch(t)
-  if (switched !== null) return { kind: 'switch', item: switched }
-
-  const fields = t.split(/\s+/)
-
-  // 两个字段 → 沿用当前物品
-  if (fields.length === 2) {
-    if (currentItem === null) {
-      return {
-        kind: 'error',
-        message: '还不知道是哪个物品 —— 第一行请带上物品名，例如：海洋之泪 1000 900',
-      }
-    }
-    const s = parseSampleLine(`${currentItem} ${fields[0]} ${fields[1]}`, now)
-    return s === null
-      ? { kind: 'error', message: `看不懂数字：${fields.join(' ')}` }
-      : { kind: 'sample', sample: s }
-  }
-
-  if (fields.length < 2) return { kind: 'error', message: '太短了' }
-
-  // 三个以上字段 → 第一个（可能含空格）是物品名
-  const s = parseSampleLine(t, now)
-  if (s === null) return { kind: 'error', message: `看不懂这一行：${t}` }
-
-  // 防一个常见手误：把两个数字敲成三列，于是"物品名"变成了数字
-  if (parseAmount(s.item) !== null) {
-    return {
-      kind: 'error',
-      message: `物品名看起来是个数字（${s.item}）—— 是不是多敲了一列？`,
-    }
-  }
-  return { kind: 'sample', sample: s }
-}
-
-
+/** 切换当前物品的两种写法：`item 名字` 或 `@名字` */
 /* ══════════════════════════════════════════════════════════════════════
  * 物品名匹配（为了查参考价）
  * ══════════════════════════════════════════════════════════════════════
@@ -606,4 +587,243 @@ export function findClosestItem(
   // 最短的有并列 → 说明分不清，不猜
   if (hits.length > 1 && hits[1]!.length === best.length) return { matched: null, how: 'none' }
   return { matched: best, how: 'contained' }
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════
+ * 录入解析
+ * ══════════════════════════════════════════════════════════════════════ */
+
+/**
+ * 切换当前物品的两种写法：`item 名字` 或 `@名字`
+ */
+export function parseItemSwitch(line: string): string | null {
+  const t = line.trim()
+  const m = /^(?:item|@)\s*(.+)$/i.exec(t)
+  return m && m[1] ? m[1].trim() : null
+}
+
+export type ParsedEntry =
+  | { kind: 'sample'; sample: FeeSample }
+  | { kind: 'switch'; item: string }
+  | { kind: 'error'; message: string }
+
+/**
+ * 解析一行录入。`currentItem` 是"当前物品"（可空）。
+ *
+ * ═══════════════════════════════════════════════════════════════════════
+ * ⚠️ 列的含义经过两轮实测纠正
+ * ═══════════════════════════════════════════════════════════════════════
+ *   · **第三个数字是「预计到手」**（用户确认）—— 即挂价减去两笔费用后的净额 ✓
+ *   · **游戏界面里还有「参考价格」**（如 2,860）—— 这是**公式的自变量**！
+ *     费率 = f(挂价 ÷ 参考价)，最低点就在比值 ≈ 1 处。
+ *     而它**不在我们的数据里**（moligod 基准价 2528 差 13%，
+ *     官方 avgPrice 23340 差 8 倍），所以必须抄下来 ✓
+ *
+ * 支持这些写法：
+ *
+ *   2350 2013              ← 挂价 + 到手（最常用）
+ *   2350 2013 2860         ← 再加参考价（**强烈建议**，它是公式的自变量）
+ *   2350 net=2013 ref=2860 ← 带键名，不会有歧义
+ *
+ * ⚠️ 物品名可能含空格（「D6 战术头盔」「锈迹斑斑的海盗铜币」），
+ *    所以**从右往左**收集数值字段，剩下的整段才是物品名。
+ */
+export function parseEntry(
+  line: string,
+  currentItem: string | null,
+  now: Date = new Date(),
+): ParsedEntry {
+  const t = line.trim()
+  if (t === '') return { kind: 'error', message: '空行' }
+
+  const switched = parseItemSwitch(t)
+  if (switched !== null) return { kind: 'switch', item: switched }
+
+  const tokens = t.split(/\s+/)
+  let ref: number | null = null
+  let net: number | null = null
+  const numbers: number[] = []
+  let cut = tokens.length
+
+  for (let i = tokens.length - 1; i >= 0; i -= 1) {
+    const tok = tokens[i]!
+    const m = /^(net|ref)=(.+)$/i.exec(tok)
+    if (m) {
+      const v = parseAmount(m[2]!)
+      if (v === null) break
+      if (m[1]!.toLowerCase() === 'ref') ref = v
+      else net = v
+      cut = i
+      continue
+    }
+    const v = parseAmount(tok)
+    if (v === null) break
+    numbers.unshift(v)
+    cut = i
+  }
+
+  // 位置式：第一个是挂价，第二个是到手，第三个是参考价
+  const price = numbers[0] ?? null
+  if (net === null) net = numbers[1] ?? null
+  if (ref === null) ref = numbers[2] ?? null
+
+  const name = tokens.slice(0, cut).join(' ').trim()
+  const item = name !== '' ? name : (currentItem ?? '')
+  if (item === '') {
+    return {
+      kind: 'error',
+      message: '还不知道是哪个物品 —— 第一行请带上物品名，例如：海盗铜币 2350 2013',
+    }
+  }
+  if (parseAmount(item) !== null) {
+    return { kind: 'error', message: `物品名看起来是个数字（${item}）—— 是不是多敲了一列？` }
+  }
+  if (price === null || price <= 0) {
+    return { kind: 'error', message: '缺挂价。格式：挂价 到手 [参考价]' }
+  }
+  if (net === null) {
+    return { kind: 'error', message: '缺到手。格式：挂价 到手 [参考价]' }
+  }
+
+  return {
+    kind: 'sample',
+    sample: {
+      item,
+      price,
+      net,
+      ref: ref !== null && ref > 0 ? ref : null,
+      at: now.toISOString(),
+    },
+  }
+}
+
+
+/**
+ * 兼容层：按"物品 挂价 到手"解析一行（不带当前物品的概念）。
+ * 测试与老调用方用它；交互式录入用 `parseEntry`。
+ */
+export function parseSampleLine(line: string, now: Date = new Date()): FeeSample | null {
+  const r = parseEntry(line, null, now)
+  return r.kind === 'sample' ? r.sample : null
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════
+ * ⭐ 比值模型 —— 实测发现的**真正自变量**
+ * ══════════════════════════════════════════════════════════════════════
+ *
+ * 用户手填 113 条样本（同一个物品），按「挂价」怎么拟合都对不上 ✗。
+ * 直到他发了游戏截图，看到界面上还有一行 **「参考价格 2,860」** ——
+ * 按「挂价 ÷ 参考价」重排，规律立刻出来了：
+ *
+ *     挂价÷参考价        费率
+ *     0.00 ~ 0.20      33.91%     ← 远低于参考价：重罚
+ *     0.80 ~ 1.00      14.32%
+ *     1.00 ~ 1.20      13.10%     ★ 最低点正好在「挂价 ≈ 参考价」
+ *     2.00 ~ 3.00      14.93%
+ *     5.00 ~ 8.00      56.17%
+ *     8.00 ~ 13.0      82.16%     ← 远超参考价：罚得更狠
+ *
+ * 这是 U 形：**挂太低和挂太高都吃亏，贴着参考价挂最省**。
+ *
+ * ⭐ 更强的推论：如果费率只取决于比值 k，那么
+ *
+ *     净收益 = 挂价 × (1 − 费率(k)) = 参考价 × k × (1 − 费率(k))
+ *                                      ↑                ↑
+ *                                每个物品不同     **所有物品同一个常数**
+ *
+ * 也就是 **最高利润 = 该物品的参考价 × 一个普适常数** ✓✓ ——
+ * 所以不需要"每个物品都测"，只需要把这个常数定准 ✓✓
+ *
+ * ⚠️ 但 **参考价不在我们的数据里** ✗（实测：moligod 基准价 2528 差 13%、
+ *    官方 avgPrice 23340 差 8 倍）→ 必须从游戏界面抄 ✓
+ */
+
+export interface RatioPoint {
+  /** 挂价 ÷ 参考价 */
+  k: number
+  /** 该点的费率（手续费 + 保证金 ÷ 挂价）*/
+  rate: number
+  /** 净收益 ÷ 参考价 —— **这个数只取决于 k**，是真正要拟合的量 */
+  value: number
+  price: number
+  ref: number
+}
+
+export interface RatioAnalysis {
+  points: RatioPoint[]
+  /** 净收益 ÷ 参考价 最大的那个点 */
+  best: RatioPoint | null
+  /** 是否样本够（至少 3 个带参考价的样本）*/
+  ready: boolean
+  summary: string
+}
+
+/** 分桶区间（与实测出来那张表一致，方便对照）*/
+const RATIO_BUCKETS: ReadonlyArray<readonly [number, number]> = [
+  [0, 0.2], [0.2, 0.4], [0.4, 0.6], [0.6, 0.8], [0.8, 1],
+  [1, 1.2], [1.2, 1.5], [1.5, 2], [2, 3], [3, 5], [5, 8], [8, 13], [13, 25],
+]
+
+export function analyzeRatioModel(samples: readonly FeeSample[]): RatioAnalysis {
+  const points: RatioPoint[] = []
+  for (const s of samples) {
+    if (typeof s.ref !== 'number' || s.ref <= 0) continue
+    if (s.legacy === true) continue
+    const rate = rateOf(s)
+    points.push({
+      k: s.price / s.ref,
+      rate,
+      value: s.net / s.ref,
+      price: s.price,
+      ref: s.ref,
+    })
+  }
+  points.sort((a, b) => a.k - b.k)
+
+  if (points.length < 3) {
+    return {
+      points,
+      best: null,
+      ready: false,
+      summary:
+        `只有 ${points.length} 个**带参考价**的样本，还不够看规律。
+` +
+        `  ⚠️ 关键：录入时把游戏界面上的「参考价格」也抄上：
+` +
+        `     2350 2013 2860        ← 挂价 到手 参考价`,
+    }
+  }
+
+  let best = points[0]!
+  for (const p of points) if (p.value > best.value) best = p
+
+  const lines: string[] = []
+  for (const [lo, hi] of RATIO_BUCKETS) {
+    const hit = points.filter((p) => p.k >= lo && p.k < hi)
+    if (hit.length === 0) continue
+    const avgRate = hit.reduce((a, p) => a + p.rate, 0) / hit.length
+    lines.push(
+      `    ${(lo.toFixed(2) + '~' + hi.toFixed(2)).padEnd(12)} 费率 ${fmtRate(avgRate).padStart(7)}` +
+        `  样本 ${String(hit.length).padStart(3)}`,
+    )
+  }
+
+  return {
+    points,
+    best,
+    ready: true,
+    summary: [
+      '═══ 按「挂价 ÷ 参考价」看（这才是规律）═══',
+      ...lines,
+      '',
+      `  ⭐ 净收益最高：比值 ${best.k.toFixed(2)}（挂价 ${best.price.toLocaleString('zh-CN')}）`,
+      `     → 净收益 = 参考价 × ${best.value.toFixed(3)}，此时费率 ${fmtRate(best.rate)}`,
+      '',
+      `  推论（如果规律普适）：任何物品都该挂到参考价 × ${best.k.toFixed(2)}**，`,
+      `  最高净收益 ≈ 参考价 × ${best.value.toFixed(3)}**。`,
+      '  ⚠️ 峰值附近的样本越多越准。建议在「挂价 ≈ 参考价 × 3 ~ 8」这段多测几个点。',
+    ].join('\n'),
+  }
 }

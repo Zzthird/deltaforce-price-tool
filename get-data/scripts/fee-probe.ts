@@ -46,6 +46,7 @@ import { createInterface } from 'node:readline'
 import { loadConfig } from '../src/config'
 import {
   analyzeFee,
+  analyzeRatioModel,
   compareAcrossItems,
   feeOf,
   findClosestItem,
@@ -96,9 +97,32 @@ function printSampleLine(s: FeeSample, index: number): void {
 }
 
 function printAnalysis(samples: readonly FeeSample[]): void {
+  /**
+   * ⭐ 先看**比值模型** —— 实测发现这才是真正的规律。
+   *
+   * 用户手填 113 条样本，按「挂价」怎么拟合都对不上 ✗；
+   * 直到他发了游戏截图，看到界面上有「参考价格 2,860」——
+   * 按「挂价 ÷ 参考价」重排，U 形规律立刻出来（最低点正好在比值 ≈ 1）。
+   *
+   * 所以只要样本里带了参考价，就先报这个。
+   */
+  const ratio = analyzeRatioModel(samples)
+  if (ratio.ready) {
+    console.log()
+    console.log(RULE)
+    console.log(`  分析 · 比值模型（共 ${ratio.points.length} 个带参考价的样本）`)
+    console.log(RULE)
+    console.log(ratio.summary)
+  } else if (ratio.points.length > 0 || samples.length >= 3) {
+    console.log()
+    console.log(RULE)
+    console.log(ratio.summary)
+    console.log(RULE)
+  }
+
   console.log()
   console.log(RULE)
-  console.log(`  分析（共 ${samples.length} 个样本）`)
+  console.log(`  分析 · 挂价模型（共 ${samples.length} 个样本）`)
   console.log(RULE)
   const a = analyzeFee(samples)
   console.log(a.summary)
